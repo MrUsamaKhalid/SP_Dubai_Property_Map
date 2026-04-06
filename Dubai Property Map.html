@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dubai Property Intelligence — Sykon Properties 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+/* ═══════════════════════════════════════
+   THEME SYSTEM
+═══════════════════════════════════════ */
+:root, [data-theme="dark"] {
+  --bg:           #0a0a0c;
+  --panel:        #101013;
+  --panel2:       #161619;
+  --panel3:       #1c1c20;
+  --surface:      rgba(255,255,255,0.03);
+  --surface2:     rgba(255,255,255,0.06);
+  --border:       rgba(255,255,255,0.08);
+  --border2:      rgba(255,255,255,0.04);
+  --gold:         #C8A951;
+  --gold2:        #e8c96a;
+  --gold-dim:     rgba(200,169,81,0.12);
+  --teal:         #3ecfcf;
+  --teal-dim:     rgba(62,207,207,0.12);
+  --rose:         #e07a5f;
+  --rose-dim:     rgba(224,122,95,0.12);
+  --green:        #52c97a;
+  --amber:        #f0a500;
+  --red:          #e05252;
+  --text-primary:    #eaeaee;
+  --text-secondary:  #9898a6;
+  --text-muted:      #5e5e6c;
+  --marker-bg:    rgba(10,10,12,0.92);
+  --overlay-bg:   rgba(10,10,12,0.85);
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.5);
+  --shadow-md:    0 4px 16px rgba(0,0,0,0.6);
+  --shadow-lg:    0 12px 40px rgba(0,0,0,0.7);
+  --glow-gold:    0 0 30px rgba(200,169,81,0.08);
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body:    'Plus Jakarta Sans', -apple-system, sans-serif;
+  --mono:         var(--font-body);
+  --scrollbar-thumb: rgba(200,169,81,0.2);
+  --tooltip-shadow: 0 12px 48px rgba(0,0,0,0.7);
+  --radius:       8px;
+  --radius-sm:    5px;
+}
+
+[data-theme="light"] {
+  --bg:           #f2f1ed;
+  --panel:        #ffffff;
+  --panel2:       #f7f6f3;
+  --panel3:       #eeedea;
+  --surface:      rgba(0,0,0,0.025);
+  --surface2:     rgba(0,0,0,0.05);
+  --border:       rgba(0,0,0,0.1);
+  --border2:      rgba(0,0,0,0.05);
+  --gold:         #96761A;
+  --gold2:        #b8922a;
+  --gold-dim:     rgba(150,118,26,0.1);
+  --teal:         #1a8585;
+  --teal-dim:     rgba(26,133,133,0.1);
+  --rose:         #a84430;
+  --rose-dim:     rgba(168,68,48,0.1);
+  --green:        #2a8f4d;
+  --amber:        #b07600;
+  --red:          #b83030;
+  --text-primary:    #1a1a1e;
+  --text-secondary:  #555560;
+  --text-muted:      #8a8a96;
+  --marker-bg:    rgba(255,255,255,0.96);
+  --overlay-bg:   rgba(255,255,255,0.9);
+  --shadow-sm:    0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 40px rgba(0,0,0,0.1);
+  --glow-gold:    0 0 30px rgba(150,118,26,0.06);
+  --scrollbar-thumb: rgba(150,118,26,0.2);
+  --tooltip-shadow: 0 12px 48px rgba(0,0,0,0.12);
+}
+
+html, body {
+  height:100vh; width:100vw; overflow:hidden;
+  background:var(--bg); color:var(--text-primary);
+  font-family:var(--font-body);
+  transition:background 0.4s ease, color 0.4s ease;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* ─── LAYOUT ─── */
+#app { display:grid; grid-template-rows:64px 1fr 40px; height:100vh; width:100vw; }
+
+/* ═══════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════ */
+#topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 28px; background:var(--panel); border-bottom:1px solid var(--border);
+  z-index:1000; transition:background 0.4s;
+}
+.tb-left { display:flex; align-items:center; gap:20px; }
+.tb-logo { display:flex; align-items:center; }
+.tb-logo img { height:42px; width:auto; object-fit:contain; }
+.tb-logo .logo-white { display:block; }
+.tb-logo .logo-dark { display:none; }
+[data-theme="light"] .tb-logo .logo-white { display:none; }
+[data-theme="light"] .tb-logo .logo-dark { display:block; }
+.tb-sep { width:1px; height:24px; background:var(--border); }
+.tb-title { font-size:12px; font-weight:500; color:var(--text-secondary); letter-spacing:0.3px; }
+
+.tb-center { display:flex; gap:2px; background:var(--panel2); border-radius:var(--radius); padding:3px; }
+.tb-stat {
+  display:flex; flex-direction:column; align-items:center;
+  padding:4px 14px; border-radius:var(--radius-sm);
+  transition:background 0.2s;
+}
+.tb-stat:hover { background:var(--surface2); }
+.tb-stat .sv { font-family:var(--mono); font-size:12px; font-weight:500; color:var(--gold); line-height:1.2; }
+.tb-stat .sl { font-size:8px; font-weight:600; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; margin-top:2px; }
+
+.tb-right { display:flex; align-items:center; gap:8px; }
+.tb-badge {
+  display:flex; align-items:center; gap:5px;
+  font-size:10px; font-weight:600; letter-spacing:0.5px;
+  padding:5px 12px; border-radius:var(--radius-sm); text-transform:uppercase;
+}
+.tb-badge.live { background:rgba(82,201,122,0.1); color:var(--green); border:1px solid rgba(82,201,122,0.2); }
+.tb-badge.live::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); animation:blink 1.4s infinite; }
+.tb-badge.date { background:var(--gold-dim); color:var(--gold); border:1px solid rgba(200,169,81,0.15); font-family:var(--mono); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+/* Theme Toggle */
+.theme-toggle {
+  width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+  background:var(--panel2); border:1px solid var(--border); border-radius:var(--radius-sm);
+  cursor:pointer; font-size:15px; transition:all 0.3s; color:var(--text-secondary);
+}
+.theme-toggle:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); transform:rotate(15deg); }
+
+/* ─── SEARCH BAR ─── */
+.search-wrap { position:relative; margin-left:12px; }
+.search-wrap input {
+  width:200px; padding:7px 12px 7px 32px; border-radius:var(--radius);
+  border:1px solid var(--border); background:var(--panel2); color:var(--text-primary);
+  font-family:var(--font-body); font-size:12px; font-weight:400;
+  outline:none; transition:all 0.3s;
+}
+.search-wrap input::placeholder { color:var(--text-muted); font-weight:400; }
+.search-wrap input:focus { border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-dim); width:260px; }
+.search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:12px; color:var(--text-muted); pointer-events:none; }
+.search-clear {
+  position:absolute; right:8px; top:50%; transform:translateY(-50%);
+  font-size:9px; color:var(--text-muted); cursor:pointer; display:none;
+  width:16px; height:16px; border-radius:50%; background:var(--surface2);
+  text-align:center; line-height:16px;
+}
+.search-clear:hover { color:var(--gold); }
+.search-clear.visible { display:block; }
+
+/* ═══════════════════════════════════════
+   BODY LAYOUT
+═══════════════════════════════════════ */
+#body { display:grid; grid-template-columns:290px 1fr 380px; overflow:hidden; }
+
+/* ═══════════════════════════════════════
+   LEFT FEED PANEL
+═══════════════════════════════════════ */
+#feed {
+  background:var(--panel); border-right:1px solid var(--border);
+  display:flex; flex-direction:column; overflow:hidden; transition:background 0.4s;
+}
+.feed-header {
+  padding:12px 16px 10px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+}
+.feed-title {
+  font-family:var(--font-heading); font-size:15px; font-weight:600;
+  color:var(--text-primary); letter-spacing:0.2px;
+}
+.feed-count {
+  font-family:var(--mono); font-size:9px; font-weight:500; color:var(--text-muted);
+  background:var(--panel2); border:1px solid var(--border); padding:3px 8px; border-radius:var(--radius-sm);
+}
+
+.feed-tabs { display:flex; border-bottom:1px solid var(--border); flex-shrink:0; padding:0 4px; }
+.ftab {
+  flex:1; padding:8px 0; text-align:center; font-size:10px; font-weight:600;
+  letter-spacing:0.6px; text-transform:uppercase; color:var(--text-muted); cursor:pointer;
+  border-bottom:2px solid transparent; transition:all 0.2s;
+}
+.ftab.active { color:var(--gold); border-bottom-color:var(--gold); }
+.ftab:hover:not(.active) { color:var(--text-secondary); background:var(--surface); }
+
+.feed-list { flex:1; overflow-y:auto; }
+.feed-list::-webkit-scrollbar { width:3px; }
+.feed-list::-webkit-scrollbar-thumb { background:var(--scrollbar-thumb); border-radius:3px; }
+
+/* Feed Item */
+.feed-item {
+  padding:12px 16px; border-bottom:1px solid var(--border2);
+  cursor:pointer; transition:all 0.2s; position:relative;
+  opacity:0; animation:fadeSlideUp 0.4s ease forwards;
+}
+.feed-item:hover { background:var(--surface); }
+.feed-item.active { background:var(--gold-dim); border-left:3px solid var(--gold); }
+.feed-item.active.villa { background:var(--teal-dim); border-left-color:var(--teal); }
+.feed-item.active.ultra { background:var(--rose-dim); border-left-color:var(--rose); }
+.feed-item.dimmed { opacity:0.2 !important; }
+
+.fi-top { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+.fi-badge {
+  font-size:8px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase;
+  padding:2px 7px; border-radius:3px;
+}
+.fi-badge.apt  { background:var(--gold-dim); color:var(--gold); }
+.fi-badge.villa{ background:var(--teal-dim); color:var(--teal); }
+.fi-badge.ultra{ background:var(--rose-dim); color:var(--rose); }
+
+.fi-fav {
+  margin-left:auto; font-size:13px; cursor:pointer; transition:all 0.25s;
+  color:var(--text-muted); opacity:0.4;
+}
+.fi-fav:hover { opacity:1; color:var(--gold); transform:scale(1.25); }
+.fi-fav.active { opacity:1; color:var(--gold); }
+
+.fi-tier { font-size:8.5px; font-weight:500; color:var(--text-muted); }
+
+.fi-name {
+  font-family:var(--font-heading); font-size:15px; font-weight:600;
+  color:var(--text-primary); line-height:1.25; margin-bottom:4px;
+}
+
+/* Sparkline */
+.fi-spark { margin-bottom:5px; }
+.fi-spark svg { display:block; }
+
+.fi-meta { display:flex; justify-content:space-between; align-items:center; }
+.fi-growth { font-family:var(--mono); font-size:12px; font-weight:500; color:var(--green); }
+.fi-price { font-family:var(--mono); font-size:10px; color:var(--text-secondary); }
+.fi-loc { display:flex; align-items:center; gap:5px; font-size:9px; color:var(--text-muted); margin-top:4px; }
+.fi-loc::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--gold); opacity:0.6; }
+
+/* Feed animations */
+@keyframes fadeSlideUp {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ═══════════════════════════════════════
+   MAP
+═══════════════════════════════════════ */
+#map-container { position:relative; overflow:hidden; }
+#map { width:100%; height:100%; }
+
+/* Map overlay top-left info */
+.map-overlay {
+  position:absolute; top:14px; left:56px; z-index:500;
+  background:var(--overlay-bg); border:1px solid var(--border);
+  border-radius:var(--radius); padding:10px 14px; backdrop-filter:blur(16px);
+  transition:background 0.4s; box-shadow:var(--shadow-md); max-width:280px;
+}
+.mo-row { display:flex; gap:14px; }
+.mo-item { display:flex; flex-direction:column; min-width:0; }
+.mo-val { font-size:12px; font-weight:600; color:var(--gold); white-space:nowrap; }
+.mo-lbl { font-size:7px; font-weight:600; color:var(--text-muted); letter-spacing:0.8px; text-transform:uppercase; margin-top:2px; }
+
+/* Map controls top-right */
+.map-controls {
+  position:absolute; top:14px; right:14px; z-index:500;
+  display:flex; flex-direction:column; gap:5px;
+}
+.mc-btn {
+  width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+  background:var(--overlay-bg); border:1px solid var(--border); border-radius:var(--radius-sm);
+  cursor:pointer; font-size:14px; color:var(--text-secondary);
+  backdrop-filter:blur(16px); transition:all 0.25s; box-shadow:var(--shadow-sm);
+}
+.mc-btn:hover { border-color:var(--gold); color:var(--gold); transform:scale(1.05); }
+.mc-btn.active { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
+
+/* Map layer filter pills */
+.map-filters {
+  position:absolute; bottom:18px; left:50%; transform:translateX(-50%); z-index:500;
+  display:flex; gap:4px; background:var(--overlay-bg); border:1px solid var(--border);
+  border-radius:var(--radius); padding:4px 6px; backdrop-filter:blur(16px);
+  box-shadow:var(--shadow-md);
+}
+.mf-pill {
+  font-size:9px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
+  padding:5px 12px; border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s;
+  color:var(--text-muted); border:1px solid transparent;
+}
+.mf-pill:hover { color:var(--text-secondary); background:var(--surface); }
+.mf-pill.active { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+.mf-pill.active[data-type="villa"] { border-color:var(--teal); color:var(--teal); background:var(--teal-dim); }
+.mf-pill.active[data-type="ultra"] { border-color:var(--rose); color:var(--rose); background:var(--rose-dim); }
+
+/* Leaflet zoom controls */
+.leaflet-control-zoom { border:1px solid var(--border) !important; border-radius:var(--radius-sm) !important; overflow:hidden; box-shadow:var(--shadow-sm) !important; }
+.leaflet-control-zoom a {
+  background:var(--overlay-bg) !important; color:var(--gold) !important;
+  border-bottom:1px solid var(--border) !important; font-size:14px !important;
+  width:34px !important; height:34px !important; line-height:34px !important;
+  backdrop-filter:blur(16px);
+}
+.leaflet-control-zoom a:hover { background:var(--gold-dim) !important; }
+.leaflet-control-attribution { background:var(--overlay-bg) !important; color:var(--text-muted) !important; font-size:8px !important; padding:2px 8px !important; }
+
+/* ─── HOVER TOOLTIP ─── */
+.leaflet-popup.mk-tooltip .leaflet-popup-content-wrapper {
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+  box-shadow:var(--tooltip-shadow); padding:0; overflow:hidden;
+  border-top:3px solid var(--gold);
+}
+.leaflet-popup.mk-tooltip .leaflet-popup-tip { background:var(--panel); border:1px solid var(--border); }
+.leaflet-popup.mk-tooltip .leaflet-popup-content { margin:0; min-width:200px; }
+.mk-tt-inner { padding:12px 14px; }
+.mk-tt-name { font-family:var(--font-heading); font-size:16px; font-weight:600; color:var(--text-primary); margin-bottom:2px; }
+.mk-tt-type { font-size:9px; font-weight:600; letter-spacing:0.5px; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px; }
+.mk-tt-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.mk-tt-stat .lbl { font-size:8px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; color:var(--text-muted); margin-bottom:1px; }
+.mk-tt-stat .val { font-family:var(--mono); font-size:11px; font-weight:500; }
+.mk-tt-stat .val.gold { color:var(--gold); }
+.mk-tt-stat .val.green { color:var(--green); }
+
+/* ═══════════════════════════════════════
+   PIN MARKERS
+═══════════════════════════════════════ */
+.mk-wrap { display:flex; flex-direction:column; align-items:center; cursor:pointer; transition:transform 0.25s ease; }
+.mk-wrap:hover { transform:scale(1.12); }
+.mk-wrap:hover .mk-dot { box-shadow:0 0 0 6px rgba(200,169,81,0.15), 0 0 25px rgba(200,169,81,0.15); }
+.mk-wrap:hover .mk-dot.villa { box-shadow:0 0 0 6px rgba(62,207,207,0.15), 0 0 25px rgba(62,207,207,0.15); }
+.mk-wrap:hover .mk-dot.ultra { box-shadow:0 0 0 6px rgba(224,122,95,0.15), 0 0 25px rgba(224,122,95,0.15); }
+
+.mk-dot {
+  width:40px; height:40px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; flex-direction:column;
+  border:2px solid var(--gold);
+  background:var(--marker-bg);
+  box-shadow:0 0 0 4px rgba(200,169,81,0.08), var(--shadow-md);
+  position:relative; transition:all 0.3s ease;
+}
+.mk-dot.villa { border-color:var(--teal); box-shadow:0 0 0 4px rgba(62,207,207,0.08), var(--shadow-md); }
+.mk-dot.ultra { border-color:var(--rose); box-shadow:0 0 0 4px rgba(224,122,95,0.08), var(--shadow-md); }
+
+.mk-dot.selected { transform:scale(1.2); }
+.mk-dot.selected.apt   { background:rgba(200,169,81,0.2); box-shadow:0 0 0 8px rgba(200,169,81,0.15), 0 0 30px rgba(200,169,81,0.25); }
+.mk-dot.selected.villa { background:rgba(62,207,207,0.2); box-shadow:0 0 0 8px rgba(62,207,207,0.15), 0 0 30px rgba(62,207,207,0.25); }
+.mk-dot.selected.ultra { background:rgba(224,122,95,0.2); box-shadow:0 0 0 8px rgba(224,122,95,0.15), 0 0 30px rgba(224,122,95,0.25); }
+
+.mk-dot::after { display:none; }
+
+.mk-icon { font-size:16px; line-height:1; filter:grayscale(0.1); }
+
+.mk-growth { font-size:10px; font-weight:600; color:var(--gold); margin-top:4px; white-space:nowrap; }
+.mk-dot.villa ~ .mk-growth { color:var(--teal); }
+.mk-dot.ultra ~ .mk-growth { color:var(--rose); }
+
+.mk-label { font-size:8.5px; font-weight:600; color:var(--text-secondary); margin-top:1px; white-space:nowrap; letter-spacing:0.3px; }
+.mk-dimmed { opacity:0.15 !important; pointer-events:none; transition:opacity 0.3s; }
+
+/* ═══════════════════════════════════════
+   RIGHT DETAIL PANEL
+═══════════════════════════════════════ */
+#detail {
+  background:var(--panel); border-left:1px solid var(--border);
+  display:flex; flex-direction:column; overflow:hidden; transition:background 0.4s;
+}
+.det-header {
+  padding:12px 18px 10px; border-bottom:1px solid var(--border); flex-shrink:0;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.det-label { font-family:var(--font-heading); font-size:12px; font-weight:600; letter-spacing:0.5px; color:var(--text-secondary); }
+.det-close {
+  width:26px; height:26px; display:flex; align-items:center; justify-content:center;
+  background:var(--panel2); border:1px solid var(--border); border-radius:var(--radius-sm);
+  cursor:pointer; font-size:10px; color:var(--text-muted); transition:all 0.2s;
+}
+.det-close:hover { border-color:var(--gold); color:var(--gold); transform:rotate(90deg); }
+
+#det-body { flex:1; overflow-y:auto; }
+#det-body::-webkit-scrollbar { width:3px; }
+#det-body::-webkit-scrollbar-thumb { background:var(--scrollbar-thumb); border-radius:3px; }
+
+/* Detail Hero */
+.det-hero {
+  padding:18px 18px 14px; border-bottom:1px solid var(--border);
+  animation:fadeSlideUp 0.35s ease forwards;
+}
+.det-type {
+  font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  color:var(--text-muted); margin-bottom:6px;
+  display:flex; align-items:center; gap:8px;
+}
+.det-type::after { content:''; flex:1; height:1px; background:var(--border2); }
+.det-name {
+  font-family:var(--font-heading); font-size:26px; font-weight:700;
+  color:var(--text-primary); line-height:1.15; margin-bottom:5px;
+}
+.det-sub { font-size:11px; color:var(--text-secondary); font-weight:400; line-height:1.4; }
+
+/* Key metrics */
+.det-metrics {
+  display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border2);
+  animation:fadeSlideUp 0.4s ease forwards; animation-delay:0.06s; opacity:0;
+}
+.det-metric { background:var(--panel); padding:12px 16px; transition:background 0.2s; }
+.det-metric:hover { background:var(--surface); }
+.det-metric.hl { background:var(--gold-dim); }
+.dm-lbl { font-size:8px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
+.dm-val { font-family:var(--mono); font-size:17px; font-weight:500; color:var(--text-primary); line-height:1; }
+.det-metric.hl .dm-val { color:var(--gold); }
+.dm-sub { font-size:9px; color:var(--text-muted); margin-top:3px; }
+
+/* Return badge */
+.det-return {
+  margin:14px 18px; padding:10px 14px;
+  background:rgba(82,201,122,0.06); border:1px solid rgba(82,201,122,0.15);
+  border-radius:var(--radius); display:flex; align-items:center; justify-content:space-between;
+  animation:fadeSlideUp 0.45s ease forwards; animation-delay:0.1s; opacity:0;
+  transition:transform 0.2s;
+}
+.det-return:hover { transform:translateY(-1px); }
+.dr-label { font-size:9px; font-weight:600; color:var(--text-secondary); letter-spacing:0.5px; }
+.dr-val { font-family:var(--mono); font-size:13px; font-weight:500; color:var(--green); }
+
+/* Section */
+.det-section { padding:0 18px 14px; animation:fadeSlideUp 0.5s ease forwards; animation-delay:0.15s; opacity:0; }
+.det-sec-title {
+  font-family:var(--font-heading); font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase;
+  color:var(--text-muted); padding:12px 0 8px;
+  border-top:1px solid var(--border); margin-top:4px;
+  display:flex; align-items:center; gap:8px;
+}
+.det-sec-title::after { content:''; flex:1; height:1px; background:var(--border2); }
+
+/* Timeline */
+.tl { display:flex; flex-direction:column; gap:3px; }
+.tl-row { display:flex; align-items:center; gap:8px; padding:5px 8px; border-radius:var(--radius-sm); transition:background 0.15s; }
+.tl-row:hover { background:var(--surface); }
+.tl-row.cur { background:var(--gold-dim); border:1px solid rgba(200,169,81,0.12); }
+.tl-yr { font-family:var(--mono); font-size:8.5px; color:var(--text-muted); width:74px; flex-shrink:0; }
+.tl-row.cur .tl-yr { color:var(--gold); font-weight:500; }
+.tl-bw { flex:1; height:3px; background:var(--surface2); border-radius:3px; overflow:hidden; }
+.tl-b { height:100%; background:var(--gold); border-radius:3px; transition:width .8s cubic-bezier(0.22,1,0.36,1); width:0; }
+.tl-row.cur .tl-b { background:var(--gold2); }
+.tl-p { font-family:var(--mono); font-size:8.5px; color:var(--text-secondary); width:68px; text-align:right; flex-shrink:0; }
+.tl-row.cur .tl-p { color:var(--gold); font-weight:500; }
+.tl-chg { font-family:var(--mono); font-size:8px; width:36px; text-align:right; flex-shrink:0; }
+.tl-chg.up { color:var(--green); }
+.tl-chg.down { color:var(--red); }
+
+/* Unit prices */
+.unit-grid { display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+.uc {
+  background:var(--panel2); border:1px solid var(--border2); border-radius:var(--radius-sm); padding:9px 11px;
+  transition:all 0.2s;
+}
+.uc:hover { border-color:var(--border); transform:translateY(-1px); box-shadow:var(--shadow-sm); }
+.uc-t { font-size:8px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
+.uc-p { font-family:var(--mono); font-size:11px; font-weight:500; color:var(--text-primary); }
+
+/* Signals */
+.signals { display:flex; flex-direction:column; gap:4px; }
+.signal-row {
+  display:flex; align-items:center; gap:8px;
+  padding:8px 11px; background:var(--panel2); border:1px solid var(--border2); border-radius:var(--radius-sm);
+  transition:all 0.2s;
+}
+.signal-row:hover { border-color:var(--border); transform:translateX(2px); }
+.sig-icon { font-size:11px; width:18px; text-align:center; }
+.sig-text { font-size:10.5px; font-weight:500; color:var(--text-secondary); flex:1; line-height:1.35; }
+.sig-val { font-family:var(--mono); font-size:10px; font-weight:500; }
+.sig-val.up { color:var(--green); }
+.sig-val.gold { color:var(--gold); }
+.sig-val.rose { color:var(--rose); }
+
+/* Comparison bar */
+.cmp-row { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+.cmp-name { font-size:9px; font-weight:600; color:var(--text-secondary); width:90px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.cmp-bw { flex:1; height:16px; background:var(--surface); border-radius:3px; overflow:hidden; position:relative; }
+.cmp-bar { height:100%; border-radius:3px; transition:width 0.8s cubic-bezier(0.22,1,0.36,1); width:0; display:flex; align-items:center; }
+.cmp-bval { font-family:var(--mono); font-size:7.5px; font-weight:500; padding:0 6px; white-space:nowrap; }
+[data-theme="dark"] .cmp-bval { color:rgba(0,0,0,0.85); }
+[data-theme="light"] .cmp-bval { color:#fff; }
+
+/* ═══════════════════════════════════════
+   ROI CALCULATOR MODAL
+═══════════════════════════════════════ */
+.modal-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6);
+  z-index:2000; align-items:center; justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.open { display:flex; }
+.modal {
+  background:var(--panel); border:1px solid var(--border); border-radius:12px;
+  width:460px; max-height:85vh; overflow-y:auto; box-shadow:var(--shadow-lg);
+  animation:modalIn 0.3s ease;
+}
+@keyframes modalIn { from { opacity:0; transform:translateY(20px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+.modal-head {
+  padding:18px 20px 14px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.modal-head h2 { font-family:var(--font-heading); font-size:20px; font-weight:600; color:var(--text-primary); }
+.modal-close {
+  width:28px; height:28px; display:flex; align-items:center; justify-content:center;
+  background:var(--panel2); border:1px solid var(--border); border-radius:var(--radius-sm);
+  cursor:pointer; font-size:12px; color:var(--text-muted); transition:all 0.2s;
+}
+.modal-close:hover { border-color:var(--gold); color:var(--gold); }
+.modal-body { padding:18px 20px; }
+.calc-row { margin-bottom:14px; }
+.calc-row label {
+  display:block; font-size:10px; font-weight:700; letter-spacing:0.8px;
+  text-transform:uppercase; color:var(--text-muted); margin-bottom:5px;
+}
+.calc-row input, .calc-row select {
+  width:100%; padding:9px 12px; border-radius:var(--radius-sm);
+  border:1px solid var(--border); background:var(--panel2); color:var(--text-primary);
+  font-family:var(--mono); font-size:13px; font-weight:500; outline:none; transition:border 0.2s;
+}
+.calc-row input:focus, .calc-row select:focus { border-color:var(--gold); }
+.calc-row .unit { font-size:9px; color:var(--text-muted); margin-top:3px; }
+.calc-result {
+  margin-top:18px; padding:16px; background:var(--panel2); border:1px solid var(--border);
+  border-radius:var(--radius); display:grid; grid-template-columns:1fr 1fr; gap:14px;
+}
+.cr-item {}
+.cr-label { font-size:8px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
+.cr-val { font-family:var(--mono); font-size:16px; font-weight:500; color:var(--text-primary); }
+.cr-val.green { color:var(--green); }
+.cr-val.gold { color:var(--gold); }
+
+/* ═══════════════════════════════════════
+   STATUSBAR + TICKER
+═══════════════════════════════════════ */
+#statusbar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 20px; background:var(--panel); border-top:1px solid var(--border);
+  grid-column:1/-1; transition:background 0.4s; overflow:hidden;
+}
+.sb-left { display:flex; gap:18px; align-items:center; flex-shrink:0; }
+.sb-item { font-size:9px; font-weight:500; color:var(--text-muted); display:flex; gap:6px; align-items:center; }
+.sb-item .sv { color:var(--text-secondary); }
+.sb-dot { width:5px; height:5px; border-radius:50%; background:var(--green); animation:blink 2s infinite; }
+
+/* Market Ticker */
+.ticker-wrap {
+  flex:1; overflow:hidden; margin:0 20px; position:relative;
+}
+.ticker-wrap::before, .ticker-wrap::after {
+  content:''; position:absolute; top:0; bottom:0; width:40px; z-index:1;
+}
+.ticker-wrap::before { left:0; background:linear-gradient(to right, var(--panel), transparent); }
+.ticker-wrap::after { right:0; background:linear-gradient(to left, var(--panel), transparent); }
+.ticker {
+  display:flex; gap:24px; animation:tickerScroll 35s linear infinite; white-space:nowrap;
+}
+.ticker:hover { animation-play-state:paused; }
+@keyframes tickerScroll { 0% { transform:translateX(0); } 100% { transform:translateX(-50%); } }
+.tick-item { display:flex; align-items:center; gap:6px; font-size:9px; }
+.tick-name { font-weight:600; color:var(--text-secondary); }
+.tick-price { font-family:var(--mono); font-weight:500; color:var(--text-muted); }
+.tick-chg { font-family:var(--mono); font-weight:500; }
+.tick-chg.up { color:var(--green); }
+.tick-sep { color:var(--border); }
+
+.sb-brand { font-family:var(--font-heading); font-size:10px; font-weight:600; letter-spacing:1.5px; color:rgba(200,169,81,0.3); flex-shrink:0; }
+
+/* ─── EMPTY STATE ─── */
+.det-empty {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  height:100%; padding:40px 28px; text-align:center;
+}
+.det-empty .ei { font-size:36px; margin-bottom:16px; opacity:0.2; }
+.det-empty .et { font-family:var(--font-heading); font-size:16px; font-weight:600; color:var(--text-muted); margin-bottom:8px; }
+.det-empty .es { font-size:11px; color:var(--text-muted); opacity:0.5; line-height:1.6; }
+.det-empty .shortcut-hint {
+  margin-top:16px; padding:8px 14px; background:var(--panel2); border:1px solid var(--border2);
+  border-radius:var(--radius-sm); font-size:9px; color:var(--text-muted);
+}
+.det-empty .shortcut-hint kbd {
+  display:inline-block; padding:1px 5px; background:var(--panel3); border:1px solid var(--border);
+  border-radius:3px; font-family:var(--mono); font-size:8px; margin:0 2px;
+}
+
+/* ─── COMPARE ─── */
+.cmp-badge {
+  position:absolute; top:8px; right:8px;
+  font-size:7px; font-weight:700; letter-spacing:0.5px;
+  padding:2px 6px; border-radius:3px; text-transform:uppercase;
+  background:var(--gold-dim); color:var(--gold); border:1px solid rgba(200,169,81,0.2);
+  display:none;
+}
+.feed-item.comparing .cmp-badge { display:block; }
+.compare-bar {
+  display:none; padding:8px 16px; background:var(--gold-dim); border-bottom:1px solid var(--border);
+  align-items:center; justify-content:space-between; flex-shrink:0;
+}
+.compare-bar.visible { display:flex; }
+.compare-bar .cb-text { font-size:10px; font-weight:600; color:var(--gold); }
+.compare-bar .cb-btn {
+  font-size:9px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;
+  padding:5px 12px; border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s;
+  background:var(--gold); color:var(--bg); border:none;
+}
+.compare-bar .cb-btn:hover { opacity:0.85; transform:translateY(-1px); }
+.compare-bar .cb-clear { font-size:9px; color:var(--text-muted); cursor:pointer; margin-left:8px; }
+.compare-bar .cb-clear:hover { color:var(--red); }
+
+.compare-panel { padding:18px; }
+.compare-grid { display:grid; gap:1px; background:var(--border2); border-radius:var(--radius); overflow:hidden; }
+.compare-grid .cg-header {
+  background:var(--panel2); padding:10px 12px;
+  font-family:var(--font-heading); font-size:12px; font-weight:600; color:var(--text-primary);
+  text-align:center;
+}
+.compare-grid .cg-label {
+  background:var(--panel); padding:8px 12px;
+  font-size:8.5px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase;
+  color:var(--text-muted); display:flex; align-items:center;
+}
+.compare-grid .cg-val {
+  background:var(--panel); padding:8px 12px;
+  font-family:var(--mono); font-size:11px; font-weight:500; color:var(--text-primary);
+  text-align:center;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width:1200px) { .tb-center { display:none; } }
+@media (max-width:1024px) {
+  #body { grid-template-columns:260px 1fr 0; }
+  #detail {
+    position:fixed; top:64px; right:0; bottom:40px; width:400px;
+    transform:translateX(100%); transition:transform 0.4s cubic-bezier(0.22,1,0.36,1); z-index:900;
+    box-shadow:var(--shadow-lg);
+  }
+  #detail.open { transform:translateX(0); }
+}
+@media (max-width:768px) {
+  #app { grid-template-rows:56px 1fr 0; }
+  #body { grid-template-columns:1fr; }
+  #topbar { padding:0 10px; }
+  .tb-title, .tb-sep { display:none; }
+  .search-wrap input { width:130px; }
+  .search-wrap input:focus { width:170px; }
+  #feed {
+    position:fixed; bottom:0; left:0; right:0; height:45vh;
+    border-right:none; border-top:1px solid var(--border);
+    z-index:800; border-radius:16px 16px 0 0;
+    transform:translateY(calc(100% - 48px)); transition:transform 0.4s cubic-bezier(0.22,1,0.36,1);
+  }
+  #feed.expanded { transform:translateY(0); }
+  .feed-header { cursor:pointer; }
+  .feed-header::after { content:'⌃'; font-size:14px; color:var(--text-muted); transition:transform 0.3s; }
+  #feed.expanded .feed-header::after { transform:rotate(180deg); }
+  #detail { position:fixed; top:0; left:0; right:0; bottom:0; transform:translateY(100%); z-index:900; width:100%; }
+  #detail.open { transform:translateY(0); }
+  #statusbar { display:none; }
+  .map-filters { bottom:calc(48px + 12px); }
+}
+
+/* ═══════════════════════════════════════
+   FLOATING CREDIT BUBBLE
+═══════════════════════════════════════ */
+.credit-bubble {
+  position:fixed; bottom:52px; right:16px; z-index:1500;
+  display:flex; align-items:center; gap:8px;
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:24px; padding:5px 14px 5px 5px;
+  box-shadow:var(--shadow-md); cursor:default;
+  transition:all 0.3s ease; opacity:0.85;
+}
+.credit-bubble:hover { opacity:1; transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+.credit-avatar {
+  width:32px; height:32px; border-radius:50%; overflow:hidden;
+  border:2px solid var(--gold); flex-shrink:0;
+  background:var(--gold-dim); display:flex; align-items:center; justify-content:center;
+}
+.credit-avatar img { width:100%; height:100%; object-fit:cover; }
+.credit-avatar .av-initials { font-family:var(--font-heading); font-size:11px; font-weight:700; color:var(--gold); }
+.credit-text { font-size:10px; font-weight:600; color:var(--text-primary); line-height:1.3; }
+
+@media (max-width:768px) {
+  .credit-bubble { bottom:12px; right:10px; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div class="tb-left">
+    <span class="tb-logo">
+      <img class="logo-dark" src="data:image/png;base64,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" alt="Sykon Properties">
+      <img class="logo-white" src="data:image/png;base64,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" alt="Sykon Properties">
+    </span>
+    <div class="tb-sep"></div>
+    <span class="tb-title">Dubai Property Intelligence 2026</span>
+    <div class="search-wrap">
+      <span class="search-icon">&#9906;</span>
+      <input type="text" id="search" placeholder="Search areas, developers..." autocomplete="off">
+      <span class="search-clear" id="search-clear" onclick="clearSearch()">&#10005;</span>
+    </div>
+  </div>
+  <div class="tb-center">
+    <div class="tb-stat"><span class="sv">AED 1,796</span><span class="sl">City Avg/sqft</span></div>
+    <div class="tb-stat"><span class="sv">+91%</span><span class="sl">Since 2020</span></div>
+    <div class="tb-stat"><span class="sv">148K</span><span class="sl">Transactions</span></div>
+    <div class="tb-stat"><span class="sv">AED 401B</span><span class="sl">Volume 2025</span></div>
+    <div class="tb-stat"><span class="sv">63%</span><span class="sl">Off-Plan Mix</span></div>
+  </div>
+  <div class="tb-right">
+    <div class="tb-badge live">Live Data</div>
+    <div class="tb-badge date">Mar 2026</div>
+    <div class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">&#9788;</div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div id="body">
+
+  <!-- LEFT FEED -->
+  <div id="feed">
+    <div class="feed-header" onclick="toggleFeedMobile()">
+      <span class="feed-title">Area Feed</span>
+      <span class="feed-count" id="feed-count">13 AREAS</span>
+    </div>
+    <div class="compare-bar" id="compare-bar">
+      <span class="cb-text" id="cb-text">0 selected</span>
+      <div>
+        <button class="cb-btn" onclick="showComparison()">Compare</button>
+        <span class="cb-clear" onclick="clearComparison()">Clear</span>
+      </div>
+    </div>
+    <div class="feed-tabs">
+      <div class="ftab active" data-tab="all" onclick="setTab('all',this)">All</div>
+      <div class="ftab" data-tab="villa" onclick="setTab('villa',this)">Villas</div>
+      <div class="ftab" data-tab="apt" onclick="setTab('apt',this)">Apts</div>
+      <div class="ftab" data-tab="ultra" onclick="setTab('ultra',this)">Ultra</div>
+      <div class="ftab" data-tab="favs" onclick="setTab('favs',this)">&#9733;</div>
+    </div>
+    <div class="feed-list" id="feed-list"></div>
+  </div>
+
+  <!-- MAP -->
+  <div id="map-container">
+    <div id="map"></div>
+    <div class="map-overlay">
+      <div class="mo-row">
+        <div class="mo-item"><span class="mo-val" id="mo-areas">13</span><span class="mo-lbl">Areas Tracked</span></div>
+        <div class="mo-item"><span class="mo-val" id="mo-top">+977%</span><span class="mo-lbl">Top Return</span></div>
+        <div class="mo-item"><span class="mo-val" id="mo-avg">+186%</span><span class="mo-lbl">Avg Growth</span></div>
+      </div>
+    </div>
+    <div class="map-controls">
+      <div class="mc-btn" onclick="resetMapView()" title="Reset view">&#8962;</div>
+      <div class="mc-btn" id="heatmap-toggle" onclick="toggleHeatmap()" title="Price heatmap">&#9681;</div>
+      <div class="mc-btn" onclick="openCalc()" title="ROI Calculator">&#9749;</div>
+    </div>
+    <div class="map-filters">
+      <div class="mf-pill active" data-type="all" onclick="setMapFilter('all',this)">All</div>
+      <div class="mf-pill" data-type="apt" onclick="setMapFilter('apt',this)">Apts</div>
+      <div class="mf-pill" data-type="villa" onclick="setMapFilter('villa',this)">Villas</div>
+      <div class="mf-pill" data-type="ultra" onclick="setMapFilter('ultra',this)">Ultra</div>
+    </div>
+  </div>
+
+  <!-- RIGHT DETAIL -->
+  <div id="detail">
+    <div class="det-header">
+      <span class="det-label" id="det-header-lbl">Area Details</span>
+      <div class="det-close" onclick="clearDetail()">&#10005;</div>
+    </div>
+    <div id="det-body">
+      <div class="det-empty">
+        <div class="ei">&#9678;</div>
+        <div class="et">Select an Area</div>
+        <div class="es">Click any pin on the map or item in the feed to view detailed analytics</div>
+        <div class="shortcut-hint"><kbd>&#8593;</kbd><kbd>&#8595;</kbd> Navigate &nbsp; <kbd>/</kbd> Search &nbsp; <kbd>Esc</kbd> Close</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- STATUSBAR + TICKER -->
+<div id="statusbar">
+  <div class="sb-left">
+    <div class="sb-item"><div class="sb-dot"></div><span class="sv">DLD &middot; Cavendish Maxwell</span></div>
+  </div>
+  <div class="ticker-wrap" id="ticker-wrap"></div>
+  <span class="sb-brand">Sykon Properties</span>
+</div>
+
+</div>
+
+<!-- ROI CALCULATOR MODAL -->
+<div class="modal-overlay" id="calc-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Investment Calculator</h2>
+      <div class="modal-close" onclick="closeCalc()">&#10005;</div>
+    </div>
+    <div class="modal-body">
+      <div class="calc-row">
+        <label>Property Area</label>
+        <select id="calc-area" onchange="runCalc()"></select>
+      </div>
+      <div class="calc-row">
+        <label>Purchase Price (AED)</label>
+        <input type="number" id="calc-price" value="3000000" onchange="runCalc()" oninput="runCalc()">
+      </div>
+      <div class="calc-row">
+        <label>Down Payment (%)</label>
+        <input type="number" id="calc-dp" value="25" min="0" max="100" onchange="runCalc()" oninput="runCalc()">
+      </div>
+      <div class="calc-row">
+        <label>Mortgage Rate (% p.a.)</label>
+        <input type="number" id="calc-rate" value="4.5" step="0.1" onchange="runCalc()" oninput="runCalc()">
+      </div>
+      <div class="calc-row">
+        <label>Expected Annual Appreciation (%)</label>
+        <input type="number" id="calc-appr" value="8" step="0.5" onchange="runCalc()" oninput="runCalc()">
+      </div>
+      <div class="calc-row">
+        <label>Annual Rental Yield (%)</label>
+        <input type="number" id="calc-yield" value="6" step="0.5" onchange="runCalc()" oninput="runCalc()">
+      </div>
+      <div class="calc-row">
+        <label>Holding Period (Years)</label>
+        <input type="number" id="calc-years" value="5" min="1" max="30" onchange="runCalc()" oninput="runCalc()">
+      </div>
+      <div class="calc-result" id="calc-result"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   APP STATE
+═══════════════════════════════════════ */
+const App = {
+  activeId: null,
+  currentTab: 'all',
+  currentMapFilter: 'all',
+  searchQuery: '',
+  favorites: JSON.parse(localStorage.getItem('dpi-favorites') || '[]'),
+  compareSet: new Set(),
+  theme: localStorage.getItem('dpi-theme') || 'dark',
+  heatmapOn: false,
+};
+
+/* ═══════════════════════════════════════
+   DATA
+═══════════════════════════════════════ */
+const AREAS = [
+  {
+    id:'nas', name:'Nad Al Sheba', type:'Villa Community', pinType:'villa',
+    code:'NS', lat:25.1522, lng:55.2810,
+    developer:'Meydan Group', launch:'2019', freehold:true,
+    launchP:1200, curP:2131, growth:'+77%', growthPct:77,
+    yoy:'+3.25%', yield_:'4\u20135%',
+    appreciation:'+220\u2013320% absolute value', cagr:'~8.5% annualised',
+    supplyNote:'Limited villa supply, equestrian district',
+    drivers:['Meydan Racecourse proximity','Post-COVID villa shift','Established community premium'],
+    signals:[
+      {icon:'\ud83d\udcc8',text:'YoY Price Growth',val:'+3.25%',cls:'up'},
+      {icon:'\ud83c\udfe0',text:'Rental Yield',val:'4\u20135%',cls:'gold'},
+      {icon:'\u26a1',text:'Service Charge',val:'AED 3\u20135/sqft',cls:'gold'},
+      {icon:'\ud83d\udcca',text:'Capital Growth (launch)',val:'+77%',cls:'up'},
+    ],
+    timeline:[
+      {y:'2019 Launch',p:1200},{y:'2020 COVID',p:1100,chg:'-8%'},{y:'2021 Recovery',p:1400,chg:'+27%'},
+      {y:'2022 Boom',p:1800,chg:'+29%'},{y:'2023 Peak',p:2100,chg:'+17%'},
+      {y:'2024',p:2300,chg:'+10%'},{y:'2025',p:2500,chg:'+9%'},
+      {y:'Mar 2026',p:2131,chg:'+3.25% YoY',cur:true},
+    ],
+    units:[{t:'4-BR Villa',p:'AED 11.4M\u201312M'},{t:'5-BR Villa',p:'AED 13.9M\u201316M'},{t:'6-BR Villa',p:'AED 20M+'},{t:'Service Chg',p:'AED 3\u20135/sqft'}]
+  },
+  {
+    id:'pja', name:'Palm Jebel Ali', type:'Ultra Luxury Waterfront', pinType:'ultra',
+    code:'PJA', lat:25.0217, lng:55.0091,
+    developer:'Nakheel', launch:'2002 / Relaunch 2023', freehold:true,
+    launchP:2000, curP:3300, growth:'+40\u201390%', growthPct:65,
+    yoy:'N/A (off-plan)', yield_:'7\u20139% projected',
+    appreciation:'60\u201370% below Palm Jumeirah', cagr:'Relaunch 2023, 3yr run',
+    supplyNote:'On hold 2009\u20132022 \u00b7 Mega project relaunch',
+    drivers:['Largest palm in world (2x Palm Jum.)','Beach / Coral Collection','Mega project = long runway'],
+    signals:[
+      {icon:'\ud83c\udf0a',text:'vs Palm Jumeirah',val:'60\u201370% discount',cls:'up'},
+      {icon:'\ud83d\udce6',text:'Handover',val:'Q4 2026\u2013Q2 2027',cls:'gold'},
+      {icon:'\ud83d\udcb0',text:'Projected Yield',val:'7\u20139%',cls:'up'},
+      {icon:'\ud83d\udcd0',text:'Mansion Plots',val:'21,000 sqft (2\u00d7 PJ)',cls:'gold'},
+    ],
+    timeline:[
+      {y:'2002 Original',p:600},{y:'2009\u20132022',p:0,note:'PROJECT ON HOLD'},
+      {y:'2023 Relaunch',p:2000},{y:'2024',p:2400,chg:'+20%'},
+      {y:'2025',p:2800,chg:'+17%'},{y:'Mar 2026',p:3300,chg:'+18%',cur:true},
+    ],
+    units:[{t:'1-BR',p:'AED 2.8M'},{t:'2-BR',p:'AED 5.2M'},{t:'3-BR',p:'AED 8.2M'},{t:'6-BR Beach',p:'AED 18M+'},{t:'7-BR Coral',p:'AED 25M+'},{t:'Mansion Plot',p:'AED 35M+'}]
+  },
+  {
+    id:'palm', name:'Palm Jumeirah', type:'Ultra Luxury Island', pinType:'ultra',
+    code:'PJ', lat:25.1124, lng:55.1390,
+    developer:'Nakheel', launch:'2001', freehold:true,
+    launchP:800, curP:8750, growth:'+875%', growthPct:100,
+    yoy:'+15% est.', yield_:'5\u20136%',
+    appreciation:'+386% since 2020 alone', cagr:'~17% annualised (2001\u20132026)',
+    supplyNote:'Supply-constrained island \u2014 no new fronds',
+    drivers:['World-famous address','Zero new supply possible','Global UHNWI demand'],
+    signals:[
+      {icon:'\ud83c\udfdd\ufe0f',text:'Post-COVID Appreciation',val:'+386%',cls:'up'},
+      {icon:'\ud83d\udcc8',text:'2026 Price/sqft',val:'AED 8,000\u20139,500',cls:'gold'},
+      {icon:'\ud83c\udfe0',text:'Signature Villas',val:'AED 50M\u2013200M+',cls:'rose'},
+      {icon:'\ud83d\udc8e',text:'24yr Total Return',val:'+975%',cls:'up'},
+    ],
+    timeline:[
+      {y:'2001 Launch',p:800},{y:'2003 Freehold',p:1200,chg:'+50%'},{y:'2008 Peak',p:3000,chg:'+150%'},
+      {y:'2011 Crash',p:1400,chg:'-53%'},{y:'2020 COVID',p:1800,chg:'flat'},
+      {y:'2021',p:2500,chg:'+38%'},{y:'2022',p:4500,chg:'+80%'},
+      {y:'2024',p:7500,chg:'+67%'},{y:'Mar 2026',p:8750,chg:'+15%',cur:true},
+    ],
+    units:[{t:'1-BR Apt',p:'AED 3M\u20135M'},{t:'2-BR Apt',p:'AED 5M\u20139M'},{t:'4-BR Villa',p:'AED 20M\u201335M'},{t:'Signature Villa',p:'AED 50M\u2013200M+'}]
+  },
+  {
+    id:'marina', name:'Dubai Marina & JBR', type:'Coastal Apartments', pinType:'apt',
+    code:'DM', lat:25.0757, lng:55.1329,
+    developer:'Multiple Developers', launch:'2003', freehold:true,
+    launchP:900, curP:2957, growth:'+228%', growthPct:55,
+    yoy:'+10.3% est.', yield_:'5.5\u20137%',
+    appreciation:'+80\u201390% over 18 years', cagr:'~6.5% annualised',
+    supplyNote:'High-density coastal \u00b7 consistent demand',
+    drivers:['Seefront demand premium','JBR walk tourist appeal','Marina lifestyle hub'],
+    signals:[
+      {icon:'\ud83c\udf0a',text:'Rental Yield',val:'5.5\u20137%',cls:'up'},
+      {icon:'\ud83d\udcc8',text:'YoY Growth',val:'+10.3%',cls:'up'},
+      {icon:'\ud83c\udfe2',text:'Typical 1-BR Rent',val:'AED 100K+/yr',cls:'gold'},
+      {icon:'\ud83d\udccd',text:'Occupancy Rate',val:'92%+ avg',cls:'gold'},
+    ],
+    timeline:[
+      {y:'2003 Launch',p:900},{y:'2008 Peak',p:2200,chg:'+144%'},{y:'2011 Crash',p:1100,chg:'-50%'},
+      {y:'2020 COVID',p:1300,chg:'flat'},{y:'2021',p:1600,chg:'+23%'},{y:'2022',p:2000,chg:'+25%'},
+      {y:'2024',p:2700,chg:'+35%'},{y:'Mar 2026',p:2957,chg:'+10.3%',cur:true},
+    ],
+    units:[{t:'Studio',p:'AED 1.5M\u20132.2M'},{t:'1-BR',p:'AED 2.2M\u20133.5M'},{t:'2-BR',p:'AED 3.5M\u20136M'},{t:'3-BR',p:'AED 6M\u201312M'}]
+  },
+  {
+    id:'emirates', name:'Emirates Living', type:'Ultra Luxury Villas', pinType:'ultra',
+    code:'EL', lat:25.0608, lng:55.1685,
+    developer:'Emaar', launch:'2002', freehold:true,
+    launchP:600, curP:6461, growth:'+977%', growthPct:99,
+    yoy:'+33.7%', yield_:'4\u20135%',
+    appreciation:'AED 2M \u2192 AED 11M+ (Meadows 2002)', cagr:'~19.6% annualised',
+    supplyNote:'Emirates Hills \u2014 fully built out, irreplaceable',
+    drivers:['Sheikh Zayed Road corridor','Emirates Hills no new supply','Ultra-luxury 2022\u201326 boom'],
+    signals:[
+      {icon:'\ud83c\udfc6',text:'24yr Total Return',val:'+977%',cls:'up'},
+      {icon:'\ud83d\udcc8',text:'YoY 2026',val:'+33.7%',cls:'up'},
+      {icon:'\ud83c\udfe0',text:'Emirates Hills Mansions',val:'AED 25M\u2013150M+',cls:'rose'},
+      {icon:'\ud83d\udcca',text:'CAGR (2002\u20132026)',val:'~19.6%',cls:'gold'},
+    ],
+    timeline:[
+      {y:'2002 Launch',p:600},{y:'2008 Peak',p:2200,chg:'+267%'},{y:'2011 Crash',p:1100,chg:'-50%'},
+      {y:'2020 COVID',p:1300,chg:'-7%'},{y:'2021',p:1800,chg:'+38%'},
+      {y:'2022',p:2500,chg:'+39%'},{y:'2023',p:3200,chg:'+28%'},
+      {y:'Mar 2026',p:6461,chg:'+33.7% YoY',cur:true},
+    ],
+    units:[{t:'Springs Town.',p:'AED 4M\u20138M'},{t:'Meadows Villa',p:'AED 8M\u201318M'},{t:'Emirates Hills',p:'AED 25M\u2013150M+'},{t:'Service Chg',p:'AED 4\u20138/sqft'}]
+  },
+  {
+    id:'jge', name:'Jumeirah Golf Estates', type:'Golf Villa Community', pinType:'villa',
+    code:'JGE', lat:25.0250, lng:55.1747,
+    developer:'Nakheel', launch:'2004', freehold:true,
+    launchP:800, curP:2524, growth:'+215%', growthPct:58,
+    yoy:'+15%', yield_:'6.7%',
+    appreciation:'+215% since 2020 low', cagr:'~5.8% annualised (20 yrs)',
+    supplyNote:'Golf views \u00b7 fire&ice course \u00b7 mature community',
+    drivers:['World-class golf courses','Western Dubai villa corridor','DP World Tour venue'],
+    signals:[
+      {icon:'\u26f3',text:'Rental Yield',val:'6.7%',cls:'up'},
+      {icon:'\ud83d\udcc8',text:'YoY Growth',val:'+15%',cls:'up'},
+      {icon:'\ud83c\udfe0',text:'Villa Price Range',val:'AED 6M\u201325M',cls:'gold'},
+      {icon:'\ud83d\udcca',text:'Since 2020 Low',val:'+215%',cls:'up'},
+    ],
+    timeline:[
+      {y:'2004 Launch',p:800},{y:'2008 Peak',p:1400,chg:'+75%'},{y:'2009 Crash',p:700,chg:'-50%'},
+      {y:'2014 Recovery',p:1100,chg:'+57%'},{y:'2020 COVID',p:800,chg:'-27%'},
+      {y:'2021',p:1000,chg:'+25%'},{y:'2022',p:1400,chg:'+40%'},{y:'2023',p:1800,chg:'+29%'},
+      {y:'Mar 2026',p:2524,chg:'+15%',cur:true},
+    ],
+    units:[{t:'4-BR Villa',p:'AED 6M\u20139M'},{t:'5-BR Villa',p:'AED 9M\u201314M'},{t:'6-BR Mansion',p:'AED 12M\u201325M'},{t:'Service Chg',p:'AED 3.5\u20134.5/sqft'}]
+  },
+  {
+    id:'oasis', name:'Emaar Oasis', type:'Lagoon Villa Community', pinType:'villa',
+    code:'EO', lat:25.0082, lng:55.1960,
+    developer:'Emaar', launch:'2023', freehold:true,
+    launchP:1400, curP:2300, growth:'+64%', growthPct:48,
+    yoy:'N/A (off-plan)', yield_:'7\u20139% projected',
+    appreciation:'Palmera +35.8% in 2 yrs', cagr:'~28% annualised (3 yrs)',
+    supplyNote:'Phase 1 buyers already 35%+ in the money',
+    drivers:['Crystal lagoon concept','Phase 1 advantage proven','Emaar brand premium'],
+    signals:[
+      {icon:'\ud83d\udca7',text:'Phase 1 Gain (Palmera)',val:'+35.8% in 2yrs',cls:'up'},
+      {icon:'\ud83d\udce6',text:'Delivery',val:'Q4 2027',cls:'gold'},
+      {icon:'\ud83d\udcc8',text:'Projected Yield',val:'7\u20139%',cls:'up'},
+      {icon:'\ud83c\udfe1',text:'Mirage Villas',val:'AED 15.8M\u201325M',cls:'gold'},
+    ],
+    timeline:[
+      {y:'2023 Launch',p:1400},{y:'2024',p:1650,chg:'+18%'},
+      {y:'2025',p:1800,chg:'+9%'},{y:'Mar 2026',p:2300,chg:'+28% sec.',cur:true},
+    ],
+    units:[{t:'4-5BR Villas',p:'AED 8.5M\u201312M'},{t:'5-6BR Villas',p:'AED 15.8M\u201325M'},{t:'Mansions',p:'AED 20M+'},{t:'Delivery',p:'Q4 2027'}]
+  },
+  {
+    id:'downtown', name:'Downtown Dubai', type:'Luxury Apartments', pinType:'apt',
+    code:'DT', lat:25.1972, lng:55.2744,
+    developer:'Emaar', launch:'2005', freehold:true,
+    launchP:1200, curP:2957, growth:'+146%', growthPct:56,
+    yoy:'+10.3%', yield_:'4.5\u20135.5%',
+    appreciation:'+80\u201390% over 18 years', cagr:'~5.5% annualised',
+    supplyNote:'Highest service charges in Dubai \u00b7 irreplaceable address',
+    drivers:['Burj Khalifa / Dubai Mall anchor','Global tourist premium','Zero comparable alternative'],
+    signals:[
+      {icon:'\ud83d\uddfc',text:'YoY Growth',val:'+10.3%',cls:'up'},
+      {icon:'\ud83d\udcb0',text:'Penthouses',val:'AED 15M\u201350M+',cls:'rose'},
+      {icon:'\ud83d\udcca',text:'Service Charges',val:'AED 25\u201340/sqft',cls:'rose'},
+      {icon:'\ud83c\udfd9\ufe0f',text:'Rental Yield',val:'4.5\u20135.5%',cls:'gold'},
+    ],
+    timeline:[
+      {y:'2005 Launch',p:1200},{y:'2008 Peak',p:1600,chg:'+33%'},{y:'2011 Crash',p:1050,chg:'-34%'},
+      {y:'2020 COVID',p:1300,chg:'flat'},{y:'2021',p:1600,chg:'+23%'},
+      {y:'2022',p:2000,chg:'+25%'},{y:'2024',p:2700,chg:'+35%'},
+      {y:'Mar 2026',p:2957,chg:'+10.3%',cur:true},
+    ],
+    units:[{t:'Studio',p:'AED 1.5M\u20132.2M'},{t:'1-BR',p:'AED 2.2M\u20133.5M'},{t:'2-BR',p:'AED 3.5M\u20136M'},{t:'Penthouse',p:'AED 15M\u201350M+'}]
+  },
+  {
+    id:'bbay', name:'Business Bay', type:'Canal District Apartments', pinType:'apt',
+    code:'BB', lat:25.1852, lng:55.2645,
+    developer:'Multiple', launch:'2005', freehold:true,
+    launchP:1300, curP:2596, growth:'+100%', growthPct:52,
+    yoy:'+13.4%', yield_:'6.5\u20137.2%',
+    appreciation:'Canal views: +15\u201322% premium', cagr:'~4.8% annualised',
+    supplyNote:'Sharpest rent growth in Dubai 2025: +18.2% YoY',
+    drivers:['Canal waterfront premium','Downtown adjacency','Strong rental demand'],
+    signals:[
+      {icon:'\ud83d\udcc8',text:'Rent Growth 2025',val:'+18.2% YoY',cls:'up'},
+      {icon:'\ud83c\udf0a',text:'Canal Premium',val:'+15\u201322% vs inland',cls:'up'},
+      {icon:'\ud83d\udcb0',text:'Rental Yield',val:'6.5\u20137.2%',cls:'gold'},
+      {icon:'\ud83d\udcca',text:'YoY Price Growth',val:'+13.4%',cls:'up'},
+    ],
+    timeline:[
+      {y:'2005 Launch',p:1300},{y:'2008 Peak',p:1600,chg:'+23%'},{y:'2011 Crash',p:800,chg:'-50%'},
+      {y:'2020 COVID',p:1050,chg:'flat'},{y:'2021',p:1300,chg:'+24%'},
+      {y:'2022',p:1600,chg:'+23%'},{y:'2023',p:1900,chg:'+19%'},
+      {y:'Mar 2026',p:2596,chg:'+13.4%',cur:true},
+    ],
+    units:[{t:'1-BR',p:'AED 1.3M\u20131.85M'},{t:'2-BR',p:'AED 2M\u20133.1M'},{t:'3-BR',p:'AED 3.2M\u20134.8M'},{t:'Rent Growth',p:'+18.2% YoY'}]
+  },
+  {
+    id:'hills', name:'Dubai Hills Estate', type:'Villa & Apt Community', pinType:'villa',
+    code:'DHE', lat:25.1121, lng:55.2451,
+    developer:'Emaar / Meraas', launch:'2014', freehold:true,
+    launchP:1000, curP:2700, growth:'+170%', growthPct:57,
+    yoy:'+4.5% apts / +24.7% villas', yield_:'5\u20136%',
+    appreciation:'Sidra Villas: +203% in 8yrs', cagr:'~9% annualised',
+    supplyNote:'Mall anchor \u00b7 Golf course \u00b7 Mature family community',
+    drivers:['Dubai Hills Mall anchor effect','Golf course views','Family villa corridor'],
+    signals:[
+      {icon:'\ud83d\udcc8',text:'Villa YoY Growth',val:'+24.7%',cls:'up'},
+      {icon:'\u26f3',text:'Golf Course Villas',val:'AED 10M\u201315M+',cls:'gold'},
+      {icon:'\ud83d\udcb0',text:'Rental Yield',val:'5\u20136%',cls:'gold'},
+      {icon:'\ud83c\udfe1',text:'Sidra Return (8yr)',val:'+203%',cls:'up'},
+    ],
+    timeline:[
+      {y:'2014 Launch',p:1000},{y:'2017 Sidra',p:1100,chg:'+10%'},
+      {y:'2020 COVID',p:1300,chg:'-7%'},{y:'2021',p:1800,chg:'+38%'},
+      {y:'2022',p:2200,chg:'+22%'},{y:'2023',p:2600,chg:'+18%'},
+      {y:'2024',p:2800,chg:'+8%'},{y:'Mar 2026',p:2700,chg:'villas +24.7%',cur:true},
+    ],
+    units:[{t:'1-BR Apt',p:'AED 1.2M\u20131.8M'},{t:'3-BR Villa (Sidra)',p:'AED 8.2M'},{t:'4-BR Villa',p:'AED 10.3M\u201315.1M'},{t:'5-BR Emerald',p:'AED 39M+'}]
+  },
+  {
+    id:'tilal', name:'Tilal Al Ghaf', type:'Lagoon Villa Community', pinType:'villa',
+    code:'TAG', lat:25.0535, lng:55.2611,
+    developer:'Majid Al Futtaim', launch:'2019', freehold:true,
+    launchP:1100, curP:2075, growth:'+89%', growthPct:42,
+    yoy:'+13.2%', yield_:'5.35\u201311.66%',
+    appreciation:'+18.1% in last 24 months', cagr:'~9.6% annualised',
+    supplyNote:'Lagoon Al Ghaf open \u00b7 Family & luxury mix',
+    drivers:['Crystal lagoon lifestyle','Elysian mansions ultra-luxury tier','Strong family demand'],
+    signals:[
+      {icon:'\ud83d\udca7',text:'Lagoon Lifestyle',val:'Operational',cls:'up'},
+      {icon:'\ud83d\udcc8',text:'YoY Growth',val:'+13.2%',cls:'up'},
+      {icon:'\ud83d\udcb0',text:'Yield Range',val:'5.35\u201311.66%',cls:'gold'},
+      {icon:'\ud83c\udff0',text:'Elysian Mansions',val:'AED 18.65M\u201345M+',cls:'rose'},
+    ],
+    timeline:[
+      {y:'2019 Launch',p:1100},{y:'2020 COVID',p:1000,chg:'-9%'},{y:'2021',p:1300,chg:'+30%'},
+      {y:'2022',p:1600,chg:'+23%'},{y:'2023',p:1900,chg:'+19%'},
+      {y:'2024',p:2100,chg:'+11%'},{y:'Mar 2026',p:2075,chg:'+13.2%',cur:true},
+    ],
+    units:[{t:'3-BR Town.',p:'AED 3.8M\u20134.2M'},{t:'4-BR Villa',p:'AED 6.4M\u20139.5M'},{t:'5-BR Villa',p:'AED 12.5M\u201325M'},{t:'6-BR Mansion',p:'AED 18.65M\u201345M+'}]
+  },
+  {
+    id:'meydan', name:'Meydan', type:'Mixed-Use Community', pinType:'apt',
+    code:'MY', lat:25.1671, lng:55.2900,
+    developer:'Meydan Group', launch:'2014', freehold:true,
+    launchP:1400, curP:2099, growth:'+50%', growthPct:44,
+    yoy:'+34.9% apts', yield_:'6\u20137%',
+    appreciation:'+34.9% YoY \u2014 highest velocity 2026', cagr:'~5.2% annualised',
+    supplyNote:'Racecourse \u00b7 Phase II underway',
+    drivers:['Meydan Racecourse MICE venue','Proximity to Downtown','Limited villa stock'],
+    signals:[
+      {icon:'\ud83d\udc0e',text:'Apt YoY Growth',val:'+34.9%',cls:'up'},
+      {icon:'\ud83d\udcc8',text:'Villa YoY Growth',val:'+25%',cls:'up'},
+      {icon:'\ud83d\udcb0',text:'Rental Yield',val:'6\u20137%',cls:'gold'},
+      {icon:'\ud83c\udfd7\ufe0f',text:'Phase II',val:'In Progress',cls:'gold'},
+    ],
+    timeline:[
+      {y:'2014 Launch',p:1400},{y:'2015\u20132019',p:1200,chg:'-14%'},
+      {y:'2020 COVID',p:1100,chg:'-8%'},{y:'2021',p:1400,chg:'+27%'},
+      {y:'2022',p:1700,chg:'+21%'},{y:'2023',p:2000,chg:'+18%'},
+      {y:'Mar 2026',p:2099,chg:'+34.9% YoY',cur:true},
+    ],
+    units:[{t:'1-BR Apt',p:'AED 1.5M\u20132.2M'},{t:'2-BR Apt',p:'AED 2.2M\u20133.2M'},{t:'3-BR Apt',p:'AED 3M\u20134.5M'},{t:'Villas',p:'AED 2M\u20135M'}]
+  },
+  {
+    id:'creek', name:'Dubai Creek Harbour', type:'Waterfront Apartments', pinType:'apt',
+    code:'DCH', lat:25.2048, lng:55.3503,
+    developer:'Emaar', launch:'2017', freehold:true,
+    launchP:1200, curP:2441, growth:'+103%', growthPct:50,
+    yoy:'+5.6%', yield_:'5\u20136%',
+    appreciation:'Two-speed market: quality towers vs supply zones', cagr:'~8% annualised',
+    supplyNote:'2024\u201325 supply correction \u20135% \u00b7 Now recovering',
+    drivers:['Creek Tower (future tallest)','Lagoon Promenade','Ras Al Khor reserve views'],
+    signals:[
+      {icon:'\ud83c\udfd7\ufe0f',text:'Creek Tower',val:'Future World Tallest',cls:'gold'},
+      {icon:'\u26a0\ufe0f',text:'Supply Correction',val:'2024\u201325 (-5%)',cls:'rose'},
+      {icon:'\ud83d\udcc8',text:'2026 Recovery',val:'+5.6%',cls:'up'},
+      {icon:'\ud83d\udcb0',text:'Rental Yield',val:'5\u20136%',cls:'gold'},
+    ],
+    timeline:[
+      {y:'2017 Launch',p:1200},{y:'2018\u20132019',p:1350,chg:'+12.5%'},{y:'2020 COVID',p:1200,chg:'-11%'},
+      {y:'2021 Recovery',p:1500,chg:'+25%'},{y:'2022',p:1800,chg:'+20%'},
+      {y:'2023',p:2100,chg:'+17%'},{y:'2025 Corr.',p:2200,chg:'-5%'},
+      {y:'Mar 2026',p:2441,chg:'+5.6%',cur:true},
+    ],
+    units:[{t:'1-BR',p:'AED 1.5M\u20132.2M'},{t:'2-BR',p:'AED 2.5M\u20133.5M'},{t:'3-BR',p:'AED 4M\u20136M'},{t:'Service Chg',p:'AED 12\u201318/sqft'}]
+  },
+];
+
+/* ═══════════════════════════════════════
+   THEME
+═══════════════════════════════════════ */
+let currentTileLayer;
+function initTheme() {
+  document.documentElement.setAttribute('data-theme', App.theme);
+  document.getElementById('theme-toggle').innerHTML = App.theme === 'dark' ? '&#9788;' : '&#9790;';
+}
+function toggleTheme() {
+  App.theme = App.theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('dpi-theme', App.theme);
+  document.documentElement.setAttribute('data-theme', App.theme);
+  document.getElementById('theme-toggle').innerHTML = App.theme === 'dark' ? '&#9788;' : '&#9790;';
+  updateMapTiles();
+}
+function updateMapTiles() {
+  if (currentTileLayer) map.removeLayer(currentTileLayer);
+  currentTileLayer = L.tileLayer(App.theme === 'dark'
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    { attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:19 }
+  ).addTo(map);
+}
+
+/* ═══════════════════════════════════════
+   MAP INIT
+═══════════════════════════════════════ */
+const map = L.map('map', { center:[25.09,55.185], zoom:11, zoomControl:true, attributionControl:true });
+currentTileLayer = L.tileLayer(
+  App.theme === 'dark'
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+  { attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:19 }
+).addTo(map);
+
+const rawColorMap = { apt:'#C8A951', villa:'#3ecfcf', ultra:'#e07a5f' };
+const AREA_ICONS = {
+  nas:'\ud83c\udfc7', pja:'\ud83c\udf34', palm:'\ud83c\udfdd\ufe0f', marina:'\u2693',
+  emirates:'\ud83c\udfc6', jge:'\u26f3', oasis:'\ud83d\udca7', downtown:'\ud83c\udfdb\ufe0f',
+  bbay:'\ud83c\udfe2', hills:'\u26f0\ufe0f', tilal:'\ud83c\udfe1', meydan:'\ud83c\udfc7', creek:'\ud83d\udea2',
+};
+const markers = {};
+let hoverPopup = null;
+
+AREAS.forEach(d => {
+  const cls = d.pinType;
+  const areaIcon = AREA_ICONS[d.id] || d.code;
+  const icon = L.divIcon({
+    html:`<div class="mk-wrap" id="mkwrap-${d.id}">
+      <div class="mk-dot ${cls}" id="mkdot-${d.id}"><span class="mk-icon">${areaIcon}</span></div>
+      <div class="mk-growth">${d.growth}</div>
+      <div class="mk-label">${d.name.length > 16 ? d.name.substring(0,15)+'\u2026' : d.name}</div>
+    </div>`,
+    className:'', iconSize:[100,85], iconAnchor:[50,19],
+  });
+  const m = L.marker([d.lat, d.lng], { icon }).addTo(map);
+  m.on('click', () => selectArea(d.id));
+  m.on('mouseover', () => showTooltip(d));
+  m.on('mouseout', () => hideTooltip());
+  markers[d.id] = m;
+});
+
+/* ═══════════════════════════════════════
+   HEATMAP
+═══════════════════════════════════════ */
+let heatLayer = null;
+function toggleHeatmap() {
+  App.heatmapOn = !App.heatmapOn;
+  document.getElementById('heatmap-toggle').classList.toggle('active', App.heatmapOn);
+  if (App.heatmapOn) {
+    const maxP = Math.max(...AREAS.map(a => a.curP));
+    const pts = AREAS.map(a => [a.lat, a.lng, a.curP / maxP]);
+    heatLayer = L.heatLayer(pts, { radius:45, blur:35, maxZoom:14, gradient:{0.2:'#3ecfcf',0.5:'#C8A951',0.8:'#e8c96a',1:'#e07a5f'} }).addTo(map);
+  } else if (heatLayer) {
+    map.removeLayer(heatLayer);
+    heatLayer = null;
+  }
+}
+
+/* ═══════════════════════════════════════
+   TOOLTIP
+═══════════════════════════════════════ */
+function showTooltip(d) {
+  if (hoverPopup) map.closePopup(hoverPopup);
+  const html = `<div class="mk-tt-inner">
+    <div class="mk-tt-name">${d.name}</div>
+    <div class="mk-tt-type">${d.type}</div>
+    <div class="mk-tt-stats">
+      <div class="mk-tt-stat"><div class="lbl">Price/sqft</div><div class="val gold">AED ${d.curP.toLocaleString()}</div></div>
+      <div class="mk-tt-stat"><div class="lbl">Growth</div><div class="val green">${d.growth}</div></div>
+      <div class="mk-tt-stat"><div class="lbl">YoY</div><div class="val green">${d.yoy}</div></div>
+      <div class="mk-tt-stat"><div class="lbl">Yield</div><div class="val gold">${d.yield_}</div></div>
+    </div>
+  </div>`;
+  hoverPopup = L.popup({ className:'mk-tooltip', closeButton:false, offset:[0,-30], autoPan:false })
+    .setLatLng([d.lat, d.lng]).setContent(html).openOn(map);
+}
+function hideTooltip() { if(hoverPopup){map.closePopup(hoverPopup);hoverPopup=null;} }
+function resetMapView() { map.flyTo([25.09, 55.185], 11, {duration:0.8}); }
+
+function setMapFilter(type, el) {
+  App.currentMapFilter = type;
+  document.querySelectorAll('.mf-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  updateMarkerDimming();
+}
+
+/* ═══════════════════════════════════════
+   SPARKLINE
+═══════════════════════════════════════ */
+function buildSparkline(timeline, pinType, w=72, h=22) {
+  const pts = timeline.filter(t => t.p > 0).map(t => t.p);
+  if (pts.length < 2) return '';
+  const min = Math.min(...pts), max = Math.max(...pts), range = max - min || 1;
+  const coords = pts.map((p, i) => {
+    const x = (i / (pts.length - 1)) * w;
+    const y = h - ((p - min) / range) * (h - 3) - 1.5;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  const color = rawColorMap[pinType];
+  const last = coords.split(' ').pop().split(',');
+  return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">
+    <defs><linearGradient id="sg-${pinType}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${color}" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <polygon points="0,${h} ${coords} ${w},${h}" fill="url(#sg-${pinType})" />
+    <polyline points="${coords}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${last[0]}" cy="${last[1]}" r="2" fill="${color}"/>
+  </svg>`;
+}
+
+/* ═══════════════════════════════════════
+   MARKET TICKER
+═══════════════════════════════════════ */
+function buildTicker() {
+  const wrap = document.getElementById('ticker-wrap');
+  const items = AREAS.map(a => `<span class="tick-item"><span class="tick-name">${a.code}</span><span class="tick-price">AED ${a.curP.toLocaleString()}</span><span class="tick-chg up">${a.growth}</span></span><span class="tick-sep">\u00b7</span>`).join('');
+  wrap.innerHTML = `<div class="ticker">${items}${items}</div>`;
+}
+buildTicker();
+
+/* ═══════════════════════════════════════
+   FAVORITES
+═══════════════════════════════════════ */
+function toggleFavorite(id, ev) {
+  if (ev) ev.stopPropagation();
+  const idx = App.favorites.indexOf(id);
+  if (idx >= 0) App.favorites.splice(idx, 1); else App.favorites.push(id);
+  localStorage.setItem('dpi-favorites', JSON.stringify(App.favorites));
+  buildFeed(App.currentTab);
+  if (App.activeId === id) selectArea(id);
+}
+
+/* ═══════════════════════════════════════
+   COMPARISON
+═══════════════════════════════════════ */
+function toggleCompare(id, ev) {
+  if (ev) ev.stopPropagation();
+  if (App.compareSet.has(id)) App.compareSet.delete(id); else if (App.compareSet.size < 3) App.compareSet.add(id);
+  updateCompareBar(); buildFeed(App.currentTab);
+}
+function updateCompareBar() {
+  const bar = document.getElementById('compare-bar'), text = document.getElementById('cb-text');
+  if (App.compareSet.size > 0) { bar.classList.add('visible'); text.textContent = `${App.compareSet.size} area${App.compareSet.size>1?'s':''} selected`; }
+  else bar.classList.remove('visible');
+}
+function clearComparison() { App.compareSet.clear(); updateCompareBar(); buildFeed(App.currentTab); }
+function showComparison() {
+  if (App.compareSet.size < 2) return;
+  const areas = [...App.compareSet].map(id => AREAS.find(a => a.id === id)).filter(Boolean);
+  document.getElementById('det-header-lbl').textContent = 'Comparison';
+  document.getElementById('detail').classList.add('open');
+  const metrics = [
+    {label:'Type', fn:a=>a.type}, {label:'Developer', fn:a=>a.developer},
+    {label:'Price/sqft', fn:a=>`AED ${a.curP.toLocaleString()}`},
+    {label:'Growth', fn:a=>a.growth}, {label:'YoY', fn:a=>a.yoy},
+    {label:'Yield', fn:a=>a.yield_}, {label:'Launch', fn:a=>a.launch}, {label:'CAGR', fn:a=>a.cagr},
+  ];
+  document.getElementById('det-body').innerHTML = `<div class="compare-panel">
+    <div class="compare-grid" style="grid-template-columns:100px repeat(${areas.length},1fr)">
+      <div class="cg-header" style="background:var(--panel)"></div>
+      ${areas.map(a => `<div class="cg-header">${a.name}</div>`).join('')}
+      ${metrics.map(m => `<div class="cg-label">${m.label}</div>${areas.map(a => `<div class="cg-val">${m.fn(a)}</div>`).join('')}`).join('')}
+    </div></div>`;
+}
+
+/* ═══════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════ */
+let searchTimeout;
+document.getElementById('search').addEventListener('input', function(e) {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    App.searchQuery = e.target.value.trim().toLowerCase();
+    document.getElementById('search-clear').classList.toggle('visible', App.searchQuery.length > 0);
+    buildFeed(App.currentTab); updateMarkerDimming();
+  }, 150);
+});
+function clearSearch() {
+  document.getElementById('search').value = ''; App.searchQuery = '';
+  document.getElementById('search-clear').classList.remove('visible');
+  buildFeed(App.currentTab); updateMarkerDimming();
+}
+function matchesSearch(d) {
+  if (!App.searchQuery) return true;
+  const q = App.searchQuery;
+  return d.name.toLowerCase().includes(q) || d.developer.toLowerCase().includes(q) || d.type.toLowerCase().includes(q) || d.code.toLowerCase().includes(q) || d.pinType.includes(q);
+}
+function updateMarkerDimming() {
+  AREAS.forEach(d => {
+    const wrap = document.getElementById(`mkwrap-${d.id}`);
+    if (!wrap) return;
+    const ok = matchesSearch(d) && (App.currentMapFilter === 'all' || d.pinType === App.currentMapFilter);
+    wrap.classList.toggle('mk-dimmed', !ok);
+  });
+}
+
+/* ═══════════════════════════════════════
+   FEED BUILD
+═══════════════════════════════════════ */
+function buildFeed(filter='all') {
+  const list = document.getElementById('feed-list');
+  list.innerHTML = '';
+  let items = filter === 'favs' ? AREAS.filter(a => App.favorites.includes(a.id))
+    : filter === 'all' ? AREAS : AREAS.filter(a => a.pinType === filter);
+  items = items.filter(matchesSearch);
+  document.getElementById('feed-count').textContent = `${items.length} AREA${items.length !== 1 ? 'S' : ''}`;
+  items.forEach((d, idx) => {
+    const isFav = App.favorites.includes(d.id);
+    const el = document.createElement('div');
+    el.className = `feed-item ${d.pinType} ${App.activeId===d.id?'active':''} ${App.compareSet.has(d.id)?'comparing':''}`;
+    el.id = `fi-${d.id}`;
+    el.style.animationDelay = `${idx * 35}ms`;
+    el.onclick = () => selectArea(d.id);
+    el.innerHTML = `
+      <div class="fi-top">
+        <span class="fi-badge ${d.pinType}">${d.pinType==='apt'?'APT':d.pinType==='villa'?'VILLA':'ULTRA'}</span>
+        <span class="fi-tier">Launch ${d.launch}</span>
+        <span class="fi-fav ${isFav?'active':''}" onclick="toggleFavorite('${d.id}',event)">${isFav?'\u2605':'\u2606'}</span>
+      </div>
+      <div class="fi-name">${d.name}</div>
+      <div class="fi-spark">${buildSparkline(d.timeline, d.pinType)}</div>
+      <div class="fi-meta">
+        <span class="fi-growth">${d.growth}</span>
+        <span class="fi-price">AED ${d.curP.toLocaleString()}/sqft</span>
+      </div>
+      <div class="fi-loc">${d.developer} \u00b7 ${d.yoy} YoY</div>
+      <span class="cmp-badge">Comparing</span>`;
+    el.addEventListener('contextmenu', e => { e.preventDefault(); toggleCompare(d.id, e); });
+    list.appendChild(el);
+  });
+}
+buildFeed();
+
+function setTab(t, el) {
+  App.currentTab = t;
+  document.querySelectorAll('.ftab').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  buildFeed(t);
+}
+
+/* ═══════════════════════════════════════
+   DETAIL PANEL
+═══════════════════════════════════════ */
+function selectArea(id) {
+  App.activeId = id;
+  const d = AREAS.find(a => a.id === id);
+  if(!d) return;
+  window.location.hash = id;
+  document.getElementById('detail').classList.add('open');
+  document.querySelectorAll('.feed-item').forEach(el => el.classList.remove('active'));
+  const fi = document.getElementById(`fi-${id}`);
+  if(fi) { fi.classList.add('active'); fi.scrollIntoView({block:'nearest',behavior:'smooth'}); }
+  Object.keys(markers).forEach(k => {
+    const dot = document.getElementById(`mkdot-${k}`);
+    if(dot) { dot.classList.remove('selected','apt','villa','ultra'); dot.classList.add(AREAS.find(a=>a.id===k).pinType); }
+  });
+  const sel = document.getElementById(`mkdot-${id}`);
+  if(sel) sel.classList.add('selected');
+  document.getElementById('det-header-lbl').textContent = d.type;
+  const maxP = Math.max(...d.timeline.filter(t=>t.p>0).map(t=>t.p));
+  const color = rawColorMap[d.pinType];
+  const sorted = [...AREAS].sort((a,b) => b.curP - a.curP);
+  const maxCP = sorted[0].curP;
+  const cmpHtml = sorted.map(a => {
+    const pct = Math.round(a.curP/maxCP*100);
+    const barColor = a.id===id ? color : 'rgba(128,128,128,0.2)';
+    return `<div class="cmp-row"><span class="cmp-name" title="${a.name}">${a.code}</span>
+      <div class="cmp-bw"><div class="cmp-bar" style="background:${barColor};width:0" data-w="${pct}"><span class="cmp-bval">${a.curP.toLocaleString()}</span></div></div></div>`;
+  }).join('');
+  const isFav = App.favorites.includes(d.id);
+
+  document.getElementById('det-body').innerHTML = `
+    <div class="det-hero">
+      <div class="det-type">${d.type}</div>
+      <div class="det-name">${d.name} <span class="fi-fav ${isFav?'active':''}" style="font-size:18px;vertical-align:middle;cursor:pointer" onclick="toggleFavorite('${d.id}')">${isFav?'\u2605':'\u2606'}</span></div>
+      <div class="det-sub">${d.developer} \u00b7 Launch ${d.launch} \u00b7 ${d.freehold?'Freehold':''}</div>
+    </div>
+    <div class="det-metrics">
+      <div class="det-metric"><div class="dm-lbl">Launch Price</div><div class="dm-val">AED ${d.launchP.toLocaleString()}</div><div class="dm-sub">per sqft</div></div>
+      <div class="det-metric hl"><div class="dm-lbl">March 2026</div><div class="dm-val">AED ${d.curP.toLocaleString()}</div><div class="dm-sub">per sqft</div></div>
+      <div class="det-metric"><div class="dm-lbl">Launch Growth</div><div class="dm-val" style="color:${color}">${d.growth}</div><div class="dm-sub">total appreciation</div></div>
+      <div class="det-metric"><div class="dm-lbl">YoY (2026)</div><div class="dm-val" style="font-size:15px;color:var(--green)">${d.yoy}</div><div class="dm-sub">year-on-year</div></div>
+    </div>
+    <div class="det-return"><div><div class="dr-label">TOTAL RETURN</div><div style="font-size:9px;color:var(--text-muted);margin-top:2px">${d.cagr}</div></div><div class="dr-val">${d.appreciation}</div></div>
+    <div class="det-section">
+      <div class="det-sec-title">Market Signals</div>
+      <div class="signals">${d.signals.map(s=>`<div class="signal-row"><span class="sig-icon">${s.icon}</span><span class="sig-text">${s.text}</span><span class="sig-val ${s.cls}">${s.val}</span></div>`).join('')}</div>
+      <div style="margin-top:8px;padding:9px 11px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);">
+        <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Supply Context</div>
+        <div style="font-size:10.5px;color:var(--text-secondary);line-height:1.5">${d.supplyNote}</div>
+      </div>
+      <div class="det-sec-title">Key Price Drivers</div>
+      <div style="display:flex;flex-direction:column;gap:3px">
+        ${d.drivers.map((dr,i)=>`<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 9px;background:var(--surface);border-radius:var(--radius-sm);transition:transform 0.15s" onmouseover="this.style.transform='translateX(3px)'" onmouseout="this.style.transform=''">
+          <span style="font-family:var(--mono);font-size:9px;color:${color};margin-top:1px;font-weight:500">${String(i+1).padStart(2,'0')}</span>
+          <span style="font-size:10.5px;color:var(--text-secondary);line-height:1.4">${dr}</span>
+        </div>`).join('')}
+      </div>
+      <div class="det-sec-title">Price Evolution / sqft</div>
+      <div class="tl">
+        ${d.timeline.map(t=> t.p===0
+          ? `<div class="tl-row"><span class="tl-yr">${t.y}</span><span style="font-size:9px;color:var(--text-muted);font-family:var(--mono);flex:1">${t.note||'\u2014'}</span></div>`
+          : `<div class="tl-row ${t.cur?'cur':''}"><span class="tl-yr">${t.y}</span><div class="tl-bw"><div class="tl-b" data-w="${Math.round(t.p/maxP*100)}"></div></div><span class="tl-p">AED ${t.p.toLocaleString()}</span>${t.chg?`<span class="tl-chg ${t.chg.includes('-')?'down':'up'}">${t.chg}</span>`:'<span class="tl-chg"></span>'}</div>`
+        ).join('')}
+      </div>
+      <div class="det-sec-title">Current Unit Prices</div>
+      <div class="unit-grid">${d.units.map(u=>`<div class="uc"><div class="uc-t">${u.t}</div><div class="uc-p">${u.p}</div></div>`).join('')}</div>
+      <div class="det-sec-title">Price vs All Areas (AED/sqft)</div>
+      <div>${cmpHtml}</div>
+      <div style="height:18px"></div>
+    </div>`;
+  setTimeout(() => {
+    document.querySelectorAll('.tl-b').forEach(b => { b.style.width = b.dataset.w + '%'; });
+    document.querySelectorAll('.cmp-bar').forEach(b => { b.style.width = b.dataset.w + '%'; });
+  }, 80);
+}
+
+function clearDetail() {
+  App.activeId = null;
+  window.location.hash = '';
+  document.querySelectorAll('.feed-item').forEach(el => el.classList.remove('active'));
+  Object.keys(markers).forEach(k => { const dot = document.getElementById(`mkdot-${k}`); if(dot) dot.classList.remove('selected'); });
+  document.getElementById('det-header-lbl').textContent = 'Area Details';
+  document.getElementById('det-body').innerHTML = `<div class="det-empty">
+    <div class="ei">&#9678;</div><div class="et">Select an Area</div>
+    <div class="es">Click any pin on the map or item in the feed to view detailed analytics</div>
+    <div class="shortcut-hint"><kbd>&#8593;</kbd><kbd>&#8595;</kbd> Navigate &nbsp; <kbd>/</kbd> Search &nbsp; <kbd>Esc</kbd> Close</div>
+  </div>`;
+  document.getElementById('detail').classList.remove('open');
+}
+
+/* ═══════════════════════════════════════
+   ROI CALCULATOR
+═══════════════════════════════════════ */
+function initCalc() {
+  const sel = document.getElementById('calc-area');
+  sel.innerHTML = AREAS.map(a => `<option value="${a.id}">${a.name} (AED ${a.curP.toLocaleString()}/sqft)</option>`).join('');
+  runCalc();
+}
+function openCalc() { document.getElementById('calc-modal').classList.add('open'); initCalc(); }
+function closeCalc() { document.getElementById('calc-modal').classList.remove('open'); }
+function runCalc() {
+  const price = +document.getElementById('calc-price').value || 0;
+  const dp = (+document.getElementById('calc-dp').value || 0) / 100;
+  const rate = (+document.getElementById('calc-rate').value || 0) / 100;
+  const appr = (+document.getElementById('calc-appr').value || 0) / 100;
+  const yld = (+document.getElementById('calc-yield').value || 0) / 100;
+  const years = +document.getElementById('calc-years').value || 1;
+  const downPay = price * dp;
+  const loan = price - downPay;
+  const futureVal = price * Math.pow(1 + appr, years);
+  const capitalGain = futureVal - price;
+  const totalRent = price * yld * years;
+  const totalInterest = loan * rate * years;
+  const totalReturn = capitalGain + totalRent - totalInterest;
+  const roi = downPay > 0 ? (totalReturn / downPay * 100) : 0;
+  const cashOnCash = downPay > 0 ? ((price * yld - loan * rate) / downPay * 100) : 0;
+  const el = document.getElementById('calc-result');
+  el.innerHTML = `
+    <div class="cr-item"><div class="cr-label">Future Value (${years}yr)</div><div class="cr-val gold">AED ${Math.round(futureVal).toLocaleString()}</div></div>
+    <div class="cr-item"><div class="cr-label">Capital Gain</div><div class="cr-val green">AED ${Math.round(capitalGain).toLocaleString()}</div></div>
+    <div class="cr-item"><div class="cr-label">Total Rental Income</div><div class="cr-val">AED ${Math.round(totalRent).toLocaleString()}</div></div>
+    <div class="cr-item"><div class="cr-label">Mortgage Interest</div><div class="cr-val" style="color:var(--red)">AED ${Math.round(totalInterest).toLocaleString()}</div></div>
+    <div class="cr-item"><div class="cr-label">Net Profit</div><div class="cr-val green">AED ${Math.round(totalReturn).toLocaleString()}</div></div>
+    <div class="cr-item"><div class="cr-label">ROI on Down Payment</div><div class="cr-val green">${roi.toFixed(1)}%</div></div>
+    <div class="cr-item"><div class="cr-label">Cash-on-Cash Return</div><div class="cr-val gold">${cashOnCash.toFixed(1)}% / yr</div></div>
+    <div class="cr-item"><div class="cr-label">Down Payment</div><div class="cr-val">AED ${Math.round(downPay).toLocaleString()}</div></div>`;
+}
+
+/* ═══════════════════════════════════════
+   KEYBOARD
+═══════════════════════════════════════ */
+document.addEventListener('keydown', function(e) {
+  const searchEl = document.getElementById('search');
+  if (document.activeElement === searchEl) { if(e.key==='Escape'){clearSearch();searchEl.blur();} return; }
+  // Close modal on Esc
+  if (e.key === 'Escape' && document.getElementById('calc-modal').classList.contains('open')) { closeCalc(); return; }
+  const visibleItems = document.querySelectorAll('.feed-item:not(.dimmed)');
+  const ids = Array.from(visibleItems).map(el => el.id.replace('fi-',''));
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    const curIdx = ids.indexOf(App.activeId);
+    let nextIdx = e.key === 'ArrowDown' ? (curIdx < ids.length - 1 ? curIdx + 1 : 0) : (curIdx > 0 ? curIdx - 1 : ids.length - 1);
+    if (ids[nextIdx]) selectArea(ids[nextIdx]);
+  }
+  if (e.key === 'Escape') clearDetail();
+  if (e.key === '/' && !e.ctrlKey && !e.metaKey) { e.preventDefault(); searchEl.focus(); }
+});
+
+/* ═══════════════════════════════════════
+   MOBILE
+═══════════════════════════════════════ */
+function toggleFeedMobile() { if(window.innerWidth<=768) document.getElementById('feed').classList.toggle('expanded'); }
+
+/* ═══════════════════════════════════════
+   DEEP LINKING
+═══════════════════════════════════════ */
+function handleHash() {
+  const h = window.location.hash.replace('#','');
+  if (h && AREAS.find(a => a.id === h)) selectArea(h);
+}
+window.addEventListener('hashchange', handleHash);
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+initTheme();
+handleHash();
+</script>
+
+<!-- CREDIT BUBBLE -->
+<div class="credit-bubble">
+  <div class="credit-avatar" id="credit-avatar">
+    <img src="data:image/jpeg;base64,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" alt="Usama Khalid">
+  </div>
+  <div class="credit-text"><strong>Usama Khalid</strong></div>
+</div>
+
+</body>
+</html>
