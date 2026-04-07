@@ -638,6 +638,147 @@ html, body {
   text-align:center;
 }
 
+/* ─── HEAT BADGE ─── */
+.heat-badge {
+  display:inline-block; font-size:8px; font-weight:700; letter-spacing:0.5px;
+  padding:2px 7px; border-radius:10px; margin-left:4px; vertical-align:middle;
+  line-height:1.4;
+}
+.heat-badge.heat-cold { background:rgba(62,130,247,0.15); color:#3e82f7; }
+.heat-badge.heat-warm { background:rgba(200,169,81,0.15); color:var(--gold); }
+.heat-badge.heat-hot { background:rgba(224,80,80,0.15); color:#e05050; }
+
+/* ─── FILTER PANEL ─── */
+.filter-toggle {
+  width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+  background:var(--panel2); border:1px solid var(--border); border-radius:var(--radius-sm);
+  cursor:pointer; font-size:15px; transition:all 0.3s; color:var(--text-secondary);
+}
+.filter-toggle:hover { border-color:var(--gold); color:var(--gold); }
+.filter-panel {
+  position:fixed; top:64px; left:0; bottom:40px; width:310px;
+  background:var(--panel); border-right:1px solid var(--border);
+  z-index:1100; transform:translateX(-100%); transition:transform 0.35s cubic-bezier(0.22,1,0.36,1);
+  overflow-y:auto; padding:16px 18px; box-shadow:var(--shadow-lg);
+}
+.filter-panel.open { transform:translateX(0); }
+.filter-panel h3 { font-family:var(--font-heading); font-size:14px; margin-bottom:14px; color:var(--text-primary); }
+.filter-group { margin-bottom:16px; }
+.filter-group label { display:block; font-size:9px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px; }
+.filter-group .range-row { display:flex; align-items:center; gap:8px; }
+.filter-group .range-val { font-family:var(--mono); font-size:10px; color:var(--text-secondary); min-width:50px; text-align:center; }
+.filter-group input[type="range"] {
+  -webkit-appearance:none; appearance:none; width:100%; height:4px;
+  background:var(--surface2); border-radius:4px; outline:none;
+}
+.filter-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:14px; height:14px; border-radius:50%;
+  background:var(--gold); cursor:pointer; border:2px solid var(--panel);
+}
+.filter-toggles { display:flex; flex-wrap:wrap; gap:5px; }
+.filter-toggles .ft-btn {
+  font-size:9px; font-weight:600; letter-spacing:0.3px; padding:5px 10px;
+  border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s;
+  background:var(--panel2); border:1px solid var(--border); color:var(--text-muted);
+}
+.filter-toggles .ft-btn.active { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
+.filter-match-count { font-size:10px; font-weight:600; color:var(--gold); margin-top:12px; padding:8px; background:var(--gold-dim); border-radius:var(--radius-sm); text-align:center; }
+
+/* ─── PLAYBACK BAR ─── */
+.playback-bar {
+  position:absolute; bottom:50px; left:50%; transform:translateX(-50%); z-index:500;
+  display:flex; align-items:center; gap:10px; background:var(--overlay-bg);
+  border:1px solid var(--border); border-radius:var(--radius); padding:6px 14px;
+  backdrop-filter:blur(16px); box-shadow:var(--shadow-md);
+}
+.playback-bar .pb-label { font-size:9px; font-weight:600; color:var(--gold); min-width:60px; text-align:center; font-family:var(--mono); }
+.playback-bar input[type="range"] {
+  -webkit-appearance:none; appearance:none; width:180px; height:4px;
+  background:var(--surface2); border-radius:4px; outline:none;
+}
+.playback-bar input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
+  background:var(--gold); cursor:pointer;
+}
+
+/* ─── SIMILAR AREAS ─── */
+.similar-cards { display:flex; gap:6px; flex-wrap:wrap; }
+.similar-card {
+  flex:1; min-width:80px; background:var(--panel2); border:1px solid var(--border2);
+  border-radius:var(--radius-sm); padding:8px 10px; cursor:pointer; transition:all 0.2s;
+}
+.similar-card:hover { border-color:var(--gold); transform:translateY(-2px); box-shadow:var(--shadow-sm); }
+.similar-card .sc-name { font-family:var(--font-heading); font-size:11px; font-weight:600; color:var(--text-primary); margin-bottom:3px; }
+.similar-card .sc-growth { font-family:var(--mono); font-size:10px; color:var(--green); }
+.similar-card .sc-price { font-family:var(--mono); font-size:9px; color:var(--text-muted); }
+
+/* ─── RADAR CHART ─── */
+.radar-chart-wrap { display:flex; justify-content:center; margin:12px 0; }
+
+/* ─── CMD PALETTE ─── */
+.cmd-palette {
+  display:none; position:fixed; inset:0; z-index:3000;
+  background:rgba(0,0,0,0.5); backdrop-filter:blur(6px);
+  align-items:flex-start; justify-content:center; padding-top:18vh;
+}
+.cmd-palette.open { display:flex; }
+.cmd-inner {
+  width:480px; max-width:92vw; background:var(--panel); border:1px solid var(--border);
+  border-radius:12px; box-shadow:var(--shadow-lg); overflow:hidden;
+  animation:modalIn 0.2s ease;
+}
+.cmd-input-wrap { padding:12px 16px; border-bottom:1px solid var(--border); }
+.cmd-input-wrap input {
+  width:100%; padding:8px 0; border:none; background:transparent;
+  color:var(--text-primary); font-family:var(--font-body); font-size:15px;
+  outline:none;
+}
+.cmd-input-wrap input::placeholder { color:var(--text-muted); }
+.cmd-results { max-height:300px; overflow-y:auto; }
+.cmd-item {
+  display:flex; align-items:center; gap:10px; padding:10px 16px;
+  cursor:pointer; transition:background 0.1s; font-size:13px; color:var(--text-secondary);
+}
+.cmd-item:hover, .cmd-item.active { background:var(--gold-dim); color:var(--text-primary); }
+.cmd-item .ci-icon { width:20px; text-align:center; font-size:14px; flex-shrink:0; }
+.cmd-item .ci-label { flex:1; }
+.cmd-item .ci-type { font-size:9px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; color:var(--text-muted); }
+.cmd-hint { padding:8px 16px; font-size:9px; color:var(--text-muted); border-top:1px solid var(--border); text-align:center; }
+
+/* ─── CONFETTI CANVAS ─── */
+#confetti-canvas { position:fixed; inset:0; z-index:9999; pointer-events:none; }
+
+/* ─── PDF EXPORT / PRINT ─── */
+.det-export-btn {
+  display:flex; align-items:center; justify-content:center;
+  width:26px; height:26px; background:var(--panel2); border:1px solid var(--border);
+  border-radius:var(--radius-sm); cursor:pointer; font-size:11px; color:var(--text-muted);
+  transition:all 0.2s; margin-right:6px;
+}
+.det-export-btn:hover { border-color:var(--gold); color:var(--gold); }
+
+@media print {
+  body { background:#fff !important; color:#000 !important; }
+  #topbar, #feed, #map-container, #statusbar, .credit-bubble, .map-overlay,
+  .map-controls, .map-filters, .filter-panel, .playback-bar, .cmd-palette,
+  .det-close, .det-export-btn, .modal-overlay { display:none !important; }
+  #app { display:block !important; height:auto !important; }
+  #body { display:block !important; }
+  #detail { position:static !important; transform:none !important; width:100% !important;
+    border:none !important; background:#fff !important; display:block !important; }
+  #detail.open { transform:none !important; }
+  #det-body { overflow:visible !important; }
+  .det-hero { padding:20px 0 !important; }
+  .det-name { color:#000 !important; font-size:28px !important; }
+  .det-metrics { background:none !important; }
+  .det-metric { border:1px solid #ddd !important; background:#fff !important; }
+  .det-section { padding:0 !important; }
+  .print-logo { display:block !important; text-align:center; margin-bottom:20px; }
+  .print-logo img { height:50px; }
+  @page { margin:1.5cm; }
+}
+.print-logo { display:none; }
+
 /* ─── RESPONSIVE ─── */
 @media (max-width:1200px) { .tb-center { display:none; } }
 @media (max-width:1024px) {
@@ -812,6 +953,13 @@ html, body {
   .mk-growth { font-size:9px; }
   .mk-label { font-size:7.5px; }
 
+  /* ── New features mobile ── */
+  .filter-panel { width:100%; bottom:0; top:52px; }
+  .playback-bar { bottom:68px; width:calc(100% - 32px); }
+  .playback-bar input[type="range"] { flex:1; width:auto; }
+  .cmd-palette { padding-top:8vh; }
+  .cmd-inner { width:95vw; }
+
   /* ── Leaflet controls ── */
   .leaflet-control-zoom { display:none !important; }
   .leaflet-control-attribution { font-size:7px !important; }
@@ -890,6 +1038,7 @@ html, body {
   <div class="tb-right">
     <div class="tb-badge live">Live Data</div>
     <div class="tb-badge date">Mar 2026</div>
+    <div class="filter-toggle" onclick="toggleFilterPanel()" title="Smart Filters">&#9776;</div>
     <div class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">&#9788;</div>
   </div>
 </div>
@@ -933,7 +1082,12 @@ html, body {
     <div class="map-controls">
       <div class="mc-btn" onclick="resetMapView()" title="Reset view">&#8962;</div>
       <div class="mc-btn" id="heatmap-toggle" onclick="toggleHeatmap()" title="Price heatmap">&#9681;</div>
+      <div class="mc-btn" id="playback-toggle" onclick="togglePlayback()" title="Historical Playback">&#9654;</div>
       <div class="mc-btn" onclick="openCalc()" title="ROI Calculator">&#9749;</div>
+    </div>
+    <div class="playback-bar" id="playback-bar" style="display:none">
+      <span class="pb-label" id="pb-label">--</span>
+      <input type="range" id="pb-slider" min="0" max="7" value="7" oninput="onPlaybackChange(this.value)">
     </div>
     <div class="map-filters">
       <div class="mf-pill active" data-type="all" onclick="setMapFilter('all',this)">All</div>
@@ -947,7 +1101,10 @@ html, body {
   <div id="detail">
     <div class="det-header">
       <span class="det-label" id="det-header-lbl">Area Details</span>
-      <div class="det-close" onclick="clearDetail()">&#10005;</div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <div class="det-export-btn" onclick="exportReport()" title="Export PDF">&#128196;</div>
+        <div class="det-close" onclick="clearDetail()">&#10005;</div>
+      </div>
     </div>
     <div id="det-body">
       <div class="det-empty">
@@ -1329,6 +1486,57 @@ const AREAS = [
 ];
 
 /* ═══════════════════════════════════════
+   EARLY INIT: HEAT SCORES + FILTERS (needed before buildFeed/markers)
+═══════════════════════════════════════ */
+function parseYieldNum(y) { const m = y.match(/(\d+\.?\d*)/); return m ? parseFloat(m[1]) : 0; }
+function computeHeatScores() {
+  const maxGrowth = Math.max(...AREAS.map(a => a.growthPct));
+  const minGrowth = Math.min(...AREAS.map(a => a.growthPct));
+  const maxP = Math.max(...AREAS.map(a => a.curP));
+  const minP = Math.min(...AREAS.map(a => a.curP));
+  function parseYield(y) { const m = y.match(/(\d+\.?\d*)/); return m ? parseFloat(m[1]) : 0; }
+  function parseYoy(y) { const m = y.match(/([+-]?\d+\.?\d*)/); return m ? parseFloat(m[1]) : 0; }
+  const yields = AREAS.map(a => parseYield(a.yield_));
+  const yoys = AREAS.map(a => parseYoy(a.yoy));
+  const maxYield = Math.max(...yields), minYield = Math.min(...yields);
+  const maxYoy = Math.max(...yoys), minYoy = Math.min(...yoys);
+  const sorted = [...AREAS].sort((a,b) => a.curP - b.curP);
+  const priceRank = {};
+  sorted.forEach((a,i) => { priceRank[a.id] = (i+1) / AREAS.length; });
+  AREAS.forEach((a, idx) => {
+    const normGrowth = maxGrowth === minGrowth ? 0.5 : (a.growthPct - minGrowth) / (maxGrowth - minGrowth);
+    const normYield = maxYield === minYield ? 0.5 : (yields[idx] - minYield) / (maxYield - minYield);
+    const normYoy = maxYoy === minYoy ? 0.5 : (yoys[idx] - minYoy) / (maxYoy - minYoy);
+    const normPrice = priceRank[a.id];
+    const raw = normGrowth * 0.4 + normYield * 0.3 + normYoy * 0.2 + normPrice * 0.1;
+    a.heatScore = Math.max(1, Math.min(10, Math.round(raw * 9 + 1)));
+  });
+}
+function heatBadgeHtml(score) {
+  const cls = score <= 3 ? 'heat-cold' : score <= 6 ? 'heat-warm' : 'heat-hot';
+  const label = score <= 3 ? 'Cold' : score <= 6 ? 'Warm' : 'Hot';
+  return `<span class="heat-badge ${cls}">${score}/10 ${label}</span>`;
+}
+computeHeatScores();
+
+const SmartFilter = {
+  priceMin: 0, priceMax: 10000,
+  growthMin: 0, growthMax: 1000,
+  yieldMin: 0, yieldMax: 15,
+  types: new Set(['villa','apt','ultra']),
+  freeholdOnly: false
+};
+function passesSmartFilter(d) {
+  if (d.curP < SmartFilter.priceMin || d.curP > SmartFilter.priceMax) return false;
+  if (d.growthPct < SmartFilter.growthMin || d.growthPct > SmartFilter.growthMax) return false;
+  const yld = parseYieldNum(d.yield_);
+  if (yld < SmartFilter.yieldMin || yld > SmartFilter.yieldMax) return false;
+  if (!SmartFilter.types.has(d.pinType)) return false;
+  if (SmartFilter.freeholdOnly && !d.freehold) return false;
+  return true;
+}
+
+/* ═══════════════════════════════════════
    THEME
 ═══════════════════════════════════════ */
 let currentTileLayer;
@@ -1375,10 +1583,11 @@ let hoverPopup = null;
 AREAS.forEach(d => {
   const cls = d.pinType;
   const areaIcon = AREA_ICONS[d.id] || d.code;
+  const hbHtml = heatBadgeHtml(d.heatScore);
   const icon = L.divIcon({
     html:`<div class="mk-wrap" id="mkwrap-${d.id}">
       <div class="mk-dot ${cls}" id="mkdot-${d.id}"><span class="mk-icon">${areaIcon}</span></div>
-      <div class="mk-growth">${d.growth}</div>
+      <div class="mk-growth">${d.growth} ${hbHtml}</div>
       <div class="mk-label">${d.name.length > 16 ? d.name.substring(0,15)+'\u2026' : d.name}</div>
     </div>`,
     className:'', iconSize:[100,85], iconAnchor:[50,19],
@@ -1541,7 +1750,7 @@ function updateMarkerDimming() {
   AREAS.forEach(d => {
     const wrap = document.getElementById(`mkwrap-${d.id}`);
     if (!wrap) return;
-    const ok = matchesSearch(d) && (App.currentMapFilter === 'all' || d.pinType === App.currentMapFilter);
+    const ok = matchesSearch(d) && passesSmartFilter(d) && (App.currentMapFilter === 'all' || d.pinType === App.currentMapFilter);
     wrap.classList.toggle('mk-dimmed', !ok);
   });
 }
@@ -1554,7 +1763,7 @@ function buildFeed(filter='all') {
   list.innerHTML = '';
   let items = filter === 'favs' ? AREAS.filter(a => App.favorites.includes(a.id))
     : filter === 'all' ? AREAS : AREAS.filter(a => a.pinType === filter);
-  items = items.filter(matchesSearch);
+  items = items.filter(matchesSearch).filter(passesSmartFilter);
   document.getElementById('feed-count').textContent = `${items.length} AREA${items.length !== 1 ? 'S' : ''}`;
   items.forEach((d, idx) => {
     const isFav = App.favorites.includes(d.id);
@@ -1566,6 +1775,7 @@ function buildFeed(filter='all') {
     el.innerHTML = `
       <div class="fi-top">
         <span class="fi-badge ${d.pinType}">${d.pinType==='apt'?'APT':d.pinType==='villa'?'VILLA':'ULTRA'}</span>
+        ${heatBadgeHtml(d.heatScore)}
         <span class="fi-tier">Launch ${d.launch}</span>
         <span class="fi-fav ${isFav?'active':''}" onclick="toggleFavorite('${d.id}',event)">${isFav?'\u2605':'\u2606'}</span>
       </div>
@@ -1609,6 +1819,8 @@ function selectArea(id) {
   const sel = document.getElementById(`mkdot-${id}`);
   if(sel) sel.classList.add('selected');
   document.getElementById('det-header-lbl').textContent = d.type;
+  /* Feature 9: confetti for top performer */
+  if (d.id === 'emirates') triggerConfetti();
   const maxP = Math.max(...d.timeline.filter(t=>t.p>0).map(t=>t.p));
   const color = rawColorMap[d.pinType];
   const sorted = [...AREAS].sort((a,b) => b.curP - a.curP);
@@ -1628,14 +1840,15 @@ function selectArea(id) {
       <div class="det-sub">${d.developer} \u00b7 Launch ${d.launch} \u00b7 ${d.freehold?'Freehold':''}</div>
     </div>
     <div class="det-metrics">
-      <div class="det-metric"><div class="dm-lbl">Launch Price</div><div class="dm-val">AED ${d.launchP.toLocaleString()}</div><div class="dm-sub">per sqft</div></div>
-      <div class="det-metric hl"><div class="dm-lbl">March 2026</div><div class="dm-val">AED ${d.curP.toLocaleString()}</div><div class="dm-sub">per sqft</div></div>
+      <div class="det-metric"><div class="dm-lbl">Launch Price</div><div class="dm-val" data-animate-val="${d.launchP}" data-animate-prefix="AED " data-animate-duration="1000">AED 0</div><div class="dm-sub">per sqft</div></div>
+      <div class="det-metric hl"><div class="dm-lbl">March 2026</div><div class="dm-val" data-animate-val="${d.curP}" data-animate-prefix="AED " data-animate-duration="1200">AED 0</div><div class="dm-sub">per sqft</div></div>
       <div class="det-metric"><div class="dm-lbl">Launch Growth</div><div class="dm-val" style="color:${color}">${d.growth}</div><div class="dm-sub">total appreciation</div></div>
       <div class="det-metric"><div class="dm-lbl">YoY (2026)</div><div class="dm-val" style="font-size:15px;color:var(--green)">${d.yoy}</div><div class="dm-sub">year-on-year</div></div>
     </div>
     <div class="det-return"><div><div class="dr-label">TOTAL RETURN</div><div style="font-size:9px;color:var(--text-muted);margin-top:2px">${d.cagr}</div></div><div class="dr-val">${d.appreciation}</div></div>
+    ${buildRadarChart(d)}
     <div class="det-section">
-      <div class="det-sec-title">Market Signals</div>
+      <div class="det-sec-title">Market Signals ${heatBadgeHtml(d.heatScore)}</div>
       <div class="signals">${d.signals.map(s=>`<div class="signal-row"><span class="sig-icon">${s.icon}</span><span class="sig-text">${s.text}</span><span class="sig-val ${s.cls}">${s.val}</span></div>`).join('')}</div>
       <div style="margin-top:8px;padding:9px 11px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);">
         <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;">Supply Context</div>
@@ -1657,13 +1870,21 @@ function selectArea(id) {
       </div>
       <div class="det-sec-title">Current Unit Prices</div>
       <div class="unit-grid">${d.units.map(u=>`<div class="uc"><div class="uc-t">${u.t}</div><div class="uc-p">${u.p}</div></div>`).join('')}</div>
+      <div class="det-sec-title">Yield vs Appreciation ${buildDonutSvg(parseYieldNum(d.yield_), d.growthPct > 0 ? Math.min(d.growthPct / 10, 10) : 1)}</div>
+      <div style="font-size:10px;color:var(--text-muted);margin-bottom:8px;display:flex;gap:12px;align-items:center">
+        <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--teal);display:inline-block"></span>Yield</span>
+        <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--gold);display:inline-block"></span>Appreciation</span>
+      </div>
+      ${buildSimilarHtml(d)}
       <div class="det-sec-title">Price vs All Areas (AED/sqft)</div>
       <div>${cmpHtml}</div>
       <div style="height:18px"></div>
-    </div>`;
+    </div>
+    <div class="print-logo"><div style="font-family:var(--font-heading);font-size:24px;font-weight:700;color:#96761A">Sykon Properties</div><div style="font-size:10px;color:#888;margin-top:4px">Dubai Property Intelligence Report &middot; Generated ${new Date().toLocaleDateString()}</div></div>`;
   setTimeout(() => {
     document.querySelectorAll('.tl-b').forEach(b => { b.style.width = b.dataset.w + '%'; });
     document.querySelectorAll('.cmp-bar').forEach(b => { b.style.width = b.dataset.w + '%'; });
+    animateCounters();
   }, 80);
 }
 
@@ -1723,8 +1944,18 @@ function runCalc() {
    KEYBOARD
 ═══════════════════════════════════════ */
 document.addEventListener('keydown', function(e) {
+  // Feature 8: Cmd+K / Ctrl+K command palette
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    const pal = document.getElementById('cmd-palette');
+    if (pal.classList.contains('open')) closeCmdPalette(); else openCmdPalette();
+    return;
+  }
+  // Close cmd palette on Esc
+  if (e.key === 'Escape' && document.getElementById('cmd-palette').classList.contains('open')) { closeCmdPalette(); return; }
   const searchEl = document.getElementById('search');
   if (document.activeElement === searchEl) { if(e.key==='Escape'){clearSearch();searchEl.blur();} return; }
+  if (document.activeElement === document.getElementById('cmd-input')) return;
   // Close modal on Esc
   if (e.key === 'Escape' && document.getElementById('calc-modal').classList.contains('open')) { closeCalc(); return; }
   const visibleItems = document.querySelectorAll('.feed-item:not(.dimmed)');
@@ -1835,11 +2066,416 @@ function handleHash() {
 window.addEventListener('hashchange', handleHash);
 
 /* ═══════════════════════════════════════
+   FEATURE 1: ANIMATED NUMBER COUNTERS
+═══════════════════════════════════════ */
+function animateValue(el, start, end, duration) {
+  if (!el) return;
+  const startTime = performance.now();
+  const isInt = Number.isInteger(end);
+  function tick(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+    const current = start + (end - start) * ease;
+    el.textContent = isInt ? Math.round(current).toLocaleString() : current.toFixed(1);
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+function animateCounters() {
+  document.querySelectorAll('[data-animate-val]').forEach(el => {
+    const end = parseFloat(el.dataset.animateVal);
+    const prefix = el.dataset.animatePrefix || '';
+    const suffix = el.dataset.animateSuffix || '';
+    const dur = parseInt(el.dataset.animateDuration) || 1200;
+    const isInt = !el.dataset.animateVal.includes('.');
+    const startTime = performance.now();
+    function tick(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / dur, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      const current = end * ease;
+      el.textContent = prefix + (isInt ? Math.round(current).toLocaleString() : current.toFixed(1)) + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+/* Feature 2 (Heat Index) and Feature 4 (Smart Filters) moved to early init above */
+
+/* ═══════════════════════════════════════
+   FEATURE 3: SVG RADAR CHART
+═══════════════════════════════════════ */
+function buildRadarChart(d) {
+  const maxP = Math.max(...AREAS.map(a => a.curP));
+  const maxGrowth = Math.max(...AREAS.map(a => a.growthPct));
+  function parseNum(s) { const m = s.match(/(\d+\.?\d*)/); return m ? parseFloat(m[1]) : 0; }
+  const axes = [
+    { label:'Price', val: d.curP / maxP },
+    { label:'Growth', val: d.growthPct / maxGrowth },
+    { label:'Yield', val: Math.min(1, parseNum(d.yield_) / 10) },
+    { label:'Stability', val: parseNum(d.yoy) >= 0 ? Math.min(1, parseNum(d.yoy) / 20 + 0.5) : 0.3 },
+    { label:'Demand', val: Math.min(1, d.heatScore / 10) },
+    { label:'Supply', val: d.units.length >= 4 ? 0.8 : d.units.length >= 2 ? 0.5 : 0.3 }
+  ];
+  const cx = 100, cy = 100, r = 80, n = axes.length;
+  let gridLines = '', labelEls = '', dataPoints = [];
+  for (let ring = 1; ring <= 4; ring++) {
+    const rr = r * ring / 4;
+    let pts = [];
+    for (let i = 0; i < n; i++) {
+      const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+      pts.push(`${cx + rr * Math.cos(angle)},${cy + rr * Math.sin(angle)}`);
+    }
+    gridLines += `<polygon points="${pts.join(' ')}" fill="none" stroke="var(--border)" stroke-width="0.5"/>`;
+  }
+  for (let i = 0; i < n; i++) {
+    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+    const ex = cx + r * Math.cos(angle), ey = cy + r * Math.sin(angle);
+    gridLines += `<line x1="${cx}" y1="${cy}" x2="${ex}" y2="${ey}" stroke="var(--border)" stroke-width="0.5"/>`;
+    const lx = cx + (r + 14) * Math.cos(angle), ly = cy + (r + 14) * Math.sin(angle);
+    labelEls += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="var(--text-muted)" font-size="8" font-family="var(--font-body)">${axes[i].label}</text>`;
+    const val = Math.max(0.05, axes[i].val);
+    const dx = cx + r * val * Math.cos(angle), dy = cy + r * val * Math.sin(angle);
+    dataPoints.push(`${dx},${dy}`);
+  }
+  return `<div class="radar-chart-wrap"><svg viewBox="0 0 200 200" width="200" height="200">
+    ${gridLines}
+    <polygon points="${dataPoints.join(' ')}" fill="rgba(200,169,81,0.2)" stroke="var(--gold)" stroke-width="1.5"/>
+    ${dataPoints.map(p => {const [x,y]=p.split(',');return `<circle cx="${x}" cy="${y}" r="3" fill="var(--gold)"/>`;}).join('')}
+    ${labelEls}
+  </svg></div>`;
+}
+
+/* ═══════════════════════════════════════
+   FEATURE 4: SMART FILTERS (UI handlers)
+═══════════════════════════════════════ */
+function toggleFilterPanel() {
+  document.getElementById('filter-panel').classList.toggle('open');
+}
+function toggleFilterType(el) {
+  el.classList.toggle('active');
+  const t = el.dataset.ftype;
+  if (SmartFilter.types.has(t)) SmartFilter.types.delete(t); else SmartFilter.types.add(t);
+  applyFilters();
+}
+function toggleFreeholdFilter(el) {
+  el.classList.toggle('active');
+  SmartFilter.freeholdOnly = el.classList.contains('active');
+  applyFilters();
+}
+function applyFilters() {
+  SmartFilter.priceMin = +document.getElementById('fp-price-min').value;
+  SmartFilter.priceMax = +document.getElementById('fp-price-max').value;
+  SmartFilter.growthMin = +document.getElementById('fp-growth-min').value;
+  SmartFilter.growthMax = +document.getElementById('fp-growth-max').value;
+  SmartFilter.yieldMin = +document.getElementById('fp-yield-min').value;
+  SmartFilter.yieldMax = +document.getElementById('fp-yield-max').value;
+  document.getElementById('fp-price-min-val').textContent = SmartFilter.priceMin.toLocaleString();
+  document.getElementById('fp-price-max-val').textContent = SmartFilter.priceMax.toLocaleString();
+  document.getElementById('fp-growth-min-val').textContent = SmartFilter.growthMin + '%';
+  document.getElementById('fp-growth-max-val').textContent = SmartFilter.growthMax + '%';
+  document.getElementById('fp-yield-min-val').textContent = SmartFilter.yieldMin + '%';
+  document.getElementById('fp-yield-max-val').textContent = SmartFilter.yieldMax + '%';
+  const count = AREAS.filter(passesSmartFilter).length;
+  document.getElementById('fp-match-count').textContent = count + ' area' + (count !== 1 ? 's' : '') + ' match';
+  buildFeed(App.currentTab);
+  updateMarkerDimming();
+}
+
+/* ═══════════════════════════════════════
+   FEATURE 5: HISTORICAL PLAYBACK
+═══════════════════════════════════════ */
+let playbackActive = false;
+function togglePlayback() {
+  playbackActive = !playbackActive;
+  document.getElementById('playback-bar').style.display = playbackActive ? 'flex' : 'none';
+  document.getElementById('playback-toggle').classList.toggle('active', playbackActive);
+  if (playbackActive) {
+    // Find max timeline length
+    const maxLen = Math.max(...AREAS.map(a => a.timeline.length));
+    const slider = document.getElementById('pb-slider');
+    slider.max = maxLen - 1;
+    slider.value = maxLen - 1;
+    onPlaybackChange(maxLen - 1);
+  } else {
+    // Reset marker labels to current
+    AREAS.forEach(d => {
+      const growthEl = document.querySelector(`#mkwrap-${d.id} .mk-growth`);
+      if (growthEl) growthEl.textContent = d.growth;
+    });
+  }
+}
+function onPlaybackChange(idx) {
+  idx = parseInt(idx);
+  // Use first area's timeline labels as reference
+  const refArea = AREAS.reduce((a,b) => a.timeline.length > b.timeline.length ? a : b);
+  const label = refArea.timeline[idx] ? refArea.timeline[idx].y : '--';
+  document.getElementById('pb-label').textContent = label;
+  AREAS.forEach(d => {
+    const tl = d.timeline;
+    const entry = tl[Math.min(idx, tl.length - 1)];
+    if (!entry) return;
+    const growthEl = document.querySelector(`#mkwrap-${d.id} .mk-growth`);
+    if (growthEl && entry.p > 0) {
+      const pct = d.launchP > 0 ? Math.round((entry.p - d.launchP) / d.launchP * 100) : 0;
+      growthEl.textContent = (pct >= 0 ? '+' : '') + pct + '%';
+    }
+  });
+}
+
+/* ═══════════════════════════════════════
+   FEATURE 6: SIMILAR AREAS
+═══════════════════════════════════════ */
+function findSimilarAreas(d, count) {
+  const maxGrowth = Math.max(...AREAS.map(a => a.growthPct));
+  const maxP = Math.max(...AREAS.map(a => a.curP));
+  const maxYield = Math.max(...AREAS.map(a => parseYieldNum(a.yield_)));
+  function norm(a) {
+    return [a.growthPct / (maxGrowth||1), a.curP / (maxP||1), parseYieldNum(a.yield_) / (maxYield||1)];
+  }
+  const dv = norm(d);
+  const distances = AREAS.filter(a => a.id !== d.id).map(a => {
+    const av = norm(a);
+    const dist = Math.sqrt(av.reduce((s,v,i) => s + Math.pow(v - dv[i], 2), 0));
+    return { area: a, dist };
+  });
+  distances.sort((a,b) => a.dist - b.dist);
+  return distances.slice(0, count).map(x => x.area);
+}
+function buildSimilarHtml(d) {
+  const similar = findSimilarAreas(d, 3);
+  return `<div class="det-sec-title">Similar Areas</div>
+    <div class="similar-cards">
+      ${similar.map(s => `<div class="similar-card" onclick="selectArea('${s.id}')">
+        <div class="sc-name">${s.name}</div>
+        <div class="sc-growth">${s.growth}</div>
+        <div class="sc-price">AED ${s.curP.toLocaleString()}/sqft</div>
+      </div>`).join('')}
+    </div>`;
+}
+
+/* ═══════════════════════════════════════
+   FEATURE 7: MINI DONUT CHARTS
+═══════════════════════════════════════ */
+function buildDonutSvg(yieldPct, appreciationPct) {
+  const total = yieldPct + appreciationPct;
+  if (total === 0) return '';
+  const yieldFrac = yieldPct / total;
+  const circumference = 2 * Math.PI * 15;
+  const yieldDash = circumference * yieldFrac;
+  const apprDash = circumference * (1 - yieldFrac);
+  return `<svg width="40" height="40" viewBox="0 0 40 40" style="vertical-align:middle;margin-right:6px">
+    <circle cx="20" cy="20" r="15" fill="none" stroke="var(--teal)" stroke-width="5"
+      stroke-dasharray="${yieldDash} ${circumference - yieldDash}"
+      stroke-dashoffset="${circumference * 0.25}" />
+    <circle cx="20" cy="20" r="15" fill="none" stroke="var(--gold)" stroke-width="5"
+      stroke-dasharray="${apprDash} ${circumference - apprDash}"
+      stroke-dashoffset="${circumference * 0.25 - yieldDash}" />
+  </svg>`;
+}
+
+/* ═══════════════════════════════════════
+   FEATURE 8: CMD+K COMMAND PALETTE
+═══════════════════════════════════════ */
+let cmdPaletteActiveIdx = 0;
+function openCmdPalette() {
+  const pal = document.getElementById('cmd-palette');
+  pal.classList.add('open');
+  const inp = document.getElementById('cmd-input');
+  inp.value = '';
+  inp.focus();
+  cmdPaletteActiveIdx = 0;
+  renderCmdResults('');
+}
+function closeCmdPalette() {
+  document.getElementById('cmd-palette').classList.remove('open');
+}
+function getCmdItems(query) {
+  const q = query.toLowerCase();
+  const items = [];
+  // Area items
+  AREAS.forEach(a => {
+    items.push({ type:'area', label:a.name, icon:AREA_ICONS[a.id]||a.code, id:a.id });
+  });
+  // Action items
+  items.push({ type:'action', label:'Toggle Theme', icon:'\u263c', action: () => toggleTheme() });
+  items.push({ type:'action', label:'ROI Calculator', icon:'\u2615', action: () => { closeCmdPalette(); openCalc(); } });
+  items.push({ type:'action', label:'Toggle Heatmap', icon:'\u25d1', action: () => toggleHeatmap() });
+  items.push({ type:'action', label:'Reset View', icon:'\u2302', action: () => resetMapView() });
+  items.push({ type:'action', label:'Export PDF', icon:'\ud83d\udcc4', action: () => { closeCmdPalette(); window.print(); } });
+  items.push({ type:'action', label:'Toggle Filters', icon:'\u2630', action: () => { closeCmdPalette(); toggleFilterPanel(); } });
+  if (!q) return items;
+  return items.filter(it => it.label.toLowerCase().includes(q));
+}
+function renderCmdResults(query) {
+  const items = getCmdItems(query);
+  const container = document.getElementById('cmd-results');
+  container.innerHTML = items.map((it, i) =>
+    `<div class="cmd-item ${i === cmdPaletteActiveIdx ? 'active' : ''}" data-idx="${i}">
+      <span class="ci-icon">${it.icon}</span>
+      <span class="ci-label">${it.label}</span>
+      <span class="ci-type">${it.type}</span>
+    </div>`
+  ).join('');
+  container.querySelectorAll('.cmd-item').forEach(el => {
+    el.addEventListener('click', () => executeCmdItem(items[parseInt(el.dataset.idx)]));
+    el.addEventListener('mouseenter', () => {
+      cmdPaletteActiveIdx = parseInt(el.dataset.idx);
+      container.querySelectorAll('.cmd-item').forEach(e => e.classList.remove('active'));
+      el.classList.add('active');
+    });
+  });
+}
+function executeCmdItem(item) {
+  if (!item) return;
+  if (item.type === 'area') { closeCmdPalette(); selectArea(item.id); }
+  else if (item.action) { item.action(); closeCmdPalette(); }
+}
+document.getElementById('cmd-input').addEventListener('input', function(e) {
+  cmdPaletteActiveIdx = 0;
+  renderCmdResults(e.target.value);
+});
+document.getElementById('cmd-input').addEventListener('keydown', function(e) {
+  const items = getCmdItems(e.target.value);
+  if (e.key === 'ArrowDown') { e.preventDefault(); cmdPaletteActiveIdx = Math.min(cmdPaletteActiveIdx + 1, items.length - 1); renderCmdResults(e.target.value); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); cmdPaletteActiveIdx = Math.max(cmdPaletteActiveIdx - 1, 0); renderCmdResults(e.target.value); }
+  else if (e.key === 'Enter') { e.preventDefault(); executeCmdItem(items[cmdPaletteActiveIdx]); }
+  else if (e.key === 'Escape') { closeCmdPalette(); }
+});
+document.getElementById('cmd-palette').addEventListener('click', function(e) {
+  if (e.target === this) closeCmdPalette();
+});
+
+/* ═══════════════════════════════════════
+   FEATURE 9: GOLD CONFETTI
+═══════════════════════════════════════ */
+var confettiTriggered = false;
+function triggerConfetti() {
+  if (confettiTriggered) return;
+  confettiTriggered = true;
+  const canvas = document.getElementById('confetti-canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const particles = [];
+  const colors = ['#C8A951','#e8c96a','#f0a500','#d4a843','#b8922a','#e07a5f'];
+  for (let i = 0; i < 150; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height * -1,
+      w: Math.random() * 8 + 3,
+      h: Math.random() * 4 + 2,
+      vx: (Math.random() - 0.5) * 4,
+      vy: Math.random() * 3 + 2,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotation: Math.random() * 360,
+      rotSpeed: (Math.random() - 0.5) * 10,
+      alpha: 1
+    });
+  }
+  let frame = 0;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    particles.forEach(p => {
+      if (p.alpha <= 0) return;
+      alive = true;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.05;
+      p.rotation += p.rotSpeed;
+      if (frame > 60) p.alpha -= 0.008;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation * Math.PI / 180);
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    frame++;
+    if (alive && frame < 300) requestAnimationFrame(animate);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  requestAnimationFrame(animate);
+}
+
+/* ═══════════════════════════════════════
+   FEATURE 10: PDF EXPORT (print CSS already added)
+═══════════════════════════════════════ */
+function exportReport() {
+  window.print();
+}
+
+/* ═══════════════════════════════════════
    INIT
 ═══════════════════════════════════════ */
 initTheme();
 handleHash();
 </script>
+
+<!-- FILTER PANEL -->
+<div class="filter-panel" id="filter-panel">
+  <h3>Smart Filters</h3>
+  <div class="filter-group">
+    <label>Price Range (AED/sqft)</label>
+    <div class="range-row">
+      <span class="range-val" id="fp-price-min-val">0</span>
+      <input type="range" id="fp-price-min" min="0" max="10000" value="0" step="100" oninput="applyFilters()">
+      <input type="range" id="fp-price-max" min="0" max="10000" value="10000" step="100" oninput="applyFilters()">
+      <span class="range-val" id="fp-price-max-val">10,000</span>
+    </div>
+  </div>
+  <div class="filter-group">
+    <label>Growth % Range</label>
+    <div class="range-row">
+      <span class="range-val" id="fp-growth-min-val">0%</span>
+      <input type="range" id="fp-growth-min" min="0" max="1000" value="0" step="5" oninput="applyFilters()">
+      <input type="range" id="fp-growth-max" min="0" max="1000" value="1000" step="5" oninput="applyFilters()">
+      <span class="range-val" id="fp-growth-max-val">1000%</span>
+    </div>
+  </div>
+  <div class="filter-group">
+    <label>Yield Range</label>
+    <div class="range-row">
+      <span class="range-val" id="fp-yield-min-val">0%</span>
+      <input type="range" id="fp-yield-min" min="0" max="15" value="0" step="0.5" oninput="applyFilters()">
+      <input type="range" id="fp-yield-max" min="0" max="15" value="15" step="0.5" oninput="applyFilters()">
+      <span class="range-val" id="fp-yield-max-val">15%</span>
+    </div>
+  </div>
+  <div class="filter-group">
+    <label>Property Type</label>
+    <div class="filter-toggles">
+      <span class="ft-btn active" data-ftype="villa" onclick="toggleFilterType(this)">Villa</span>
+      <span class="ft-btn active" data-ftype="apt" onclick="toggleFilterType(this)">Apt</span>
+      <span class="ft-btn active" data-ftype="ultra" onclick="toggleFilterType(this)">Ultra</span>
+    </div>
+  </div>
+  <div class="filter-group">
+    <label>Freehold Only</label>
+    <div class="filter-toggles">
+      <span class="ft-btn" id="fp-freehold" onclick="toggleFreeholdFilter(this)">Freehold</span>
+    </div>
+  </div>
+  <div class="filter-match-count" id="fp-match-count">13 areas match</div>
+</div>
+
+<!-- COMMAND PALETTE -->
+<div class="cmd-palette" id="cmd-palette">
+  <div class="cmd-inner">
+    <div class="cmd-input-wrap">
+      <input type="text" id="cmd-input" placeholder="Search areas or actions..." autocomplete="off">
+    </div>
+    <div class="cmd-results" id="cmd-results"></div>
+    <div class="cmd-hint">&#8593;&#8595; Navigate &middot; Enter Select &middot; Esc Close</div>
+  </div>
+</div>
+
+<!-- CONFETTI CANVAS -->
+<canvas id="confetti-canvas"></canvas>
 
 <!-- CREDIT BUBBLE -->
 <div class="credit-bubble">
