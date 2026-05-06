@@ -508,6 +508,32 @@ html, body {
   width:460px; max-height:85vh; overflow-y:auto; box-shadow:var(--shadow-lg);
   animation:modalIn 0.3s ease;
 }
+.modal.modal-wide { width:760px; max-width:96vw; }
+@media (max-width:768px) {
+  .modal.modal-wide { width:96vw; }
+}
+/* Calculator tabs */
+.calc-tabs {
+  display:flex; gap:4px; padding:14px 20px 0; border-bottom:1px solid var(--border);
+  background:var(--panel);
+}
+.calc-tab {
+  flex:1; padding:10px 14px; font-size:12px; font-weight:600;
+  letter-spacing:0.4px; color:var(--text-muted); cursor:pointer;
+  border-bottom:2px solid transparent; transition:all 0.2s ease;
+  text-align:center; user-select:none;
+  font-family:var(--font-body);
+  display:flex; align-items:center; justify-content:center; gap:6px;
+}
+.calc-tab:hover { color:var(--text-primary); }
+.calc-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+.calc-tab-icon { font-size:14px; }
+.calc-panel { display:none; }
+.calc-panel.active { display:block; }
+@media (max-width:768px) {
+  .calc-tabs { overflow-x:auto; padding:10px 12px 0; }
+  .calc-tab { flex:0 0 auto; min-width:110px; padding:9px 10px; font-size:11px; }
+}
 @keyframes modalIn { from { opacity:0; transform:translateY(20px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
 .modal-head {
   padding:18px 20px 14px; border-bottom:1px solid var(--border);
@@ -1221,43 +1247,63 @@ html, body {
 
 </div>
 
-<!-- ROI CALCULATOR MODAL -->
+<!-- CALCULATOR MODAL (Mortgage / ROI / Affordability) -->
 <div class="modal-overlay" id="calc-modal">
-  <div class="modal">
+  <div class="modal modal-wide">
     <div class="modal-head">
-      <h2>Investment Calculator</h2>
+      <h2>Calculator</h2>
       <div class="modal-close" onclick="closeCalc()">&#10005;</div>
     </div>
+    <div class="calc-tabs" role="tablist">
+      <div class="calc-tab" data-calc-tab="mortgage" onclick="switchCalcTab('mortgage')" role="tab"><span class="calc-tab-icon">&#127960;</span> Mortgage</div>
+      <div class="calc-tab active" data-calc-tab="roi" onclick="switchCalcTab('roi')" role="tab"><span class="calc-tab-icon">&#128200;</span> ROI</div>
+      <div class="calc-tab" data-calc-tab="affordability" onclick="switchCalcTab('affordability')" role="tab"><span class="calc-tab-icon">&#128181;</span> Affordability</div>
+    </div>
     <div class="modal-body">
-      <div class="calc-row">
-        <label>Property Area</label>
-        <select id="calc-area" onchange="runCalc()"></select>
+
+      <!-- MORTGAGE PANEL -->
+      <div class="calc-panel" data-calc-panel="mortgage" role="tabpanel">
+        <div class="calc-empty-hint" style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:12px;">Mortgage calculator loading…</div>
       </div>
-      <div class="calc-row">
-        <label>Purchase Price (AED)</label>
-        <input type="number" id="calc-price" value="3000000" onchange="runCalc()" oninput="runCalc()">
+
+      <!-- ROI PANEL (existing fields preserved) -->
+      <div class="calc-panel active" data-calc-panel="roi" role="tabpanel">
+        <div class="calc-row">
+          <label>Property Area</label>
+          <select id="calc-area" onchange="runCalc()"></select>
+        </div>
+        <div class="calc-row">
+          <label>Purchase Price (AED)</label>
+          <input type="number" id="calc-price" value="3000000" onchange="runCalc()" oninput="runCalc()">
+        </div>
+        <div class="calc-row">
+          <label>Down Payment (%)</label>
+          <input type="number" id="calc-dp" value="25" min="0" max="100" onchange="runCalc()" oninput="runCalc()">
+        </div>
+        <div class="calc-row">
+          <label>Mortgage Rate (% p.a.)</label>
+          <input type="number" id="calc-rate" value="4.5" step="0.1" onchange="runCalc()" oninput="runCalc()">
+        </div>
+        <div class="calc-row">
+          <label>Expected Annual Appreciation (%)</label>
+          <input type="number" id="calc-appr" value="8" step="0.5" onchange="runCalc()" oninput="runCalc()">
+        </div>
+        <div class="calc-row">
+          <label>Annual Rental Yield (%)</label>
+          <input type="number" id="calc-yield" value="6" step="0.5" onchange="runCalc()" oninput="runCalc()">
+        </div>
+        <div class="calc-row">
+          <label>Holding Period (Years)</label>
+          <input type="number" id="calc-years" value="5" min="1" max="30" onchange="runCalc()" oninput="runCalc()">
+        </div>
+        <div class="calc-result" id="calc-result"></div>
       </div>
-      <div class="calc-row">
-        <label>Down Payment (%)</label>
-        <input type="number" id="calc-dp" value="25" min="0" max="100" onchange="runCalc()" oninput="runCalc()">
+
+      <!-- AFFORDABILITY PANEL -->
+      <div class="calc-panel" data-calc-panel="affordability" role="tabpanel">
+        <div class="calc-empty-hint" style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:12px;">Affordability search loading…</div>
       </div>
-      <div class="calc-row">
-        <label>Mortgage Rate (% p.a.)</label>
-        <input type="number" id="calc-rate" value="4.5" step="0.1" onchange="runCalc()" oninput="runCalc()">
-      </div>
-      <div class="calc-row">
-        <label>Expected Annual Appreciation (%)</label>
-        <input type="number" id="calc-appr" value="8" step="0.5" onchange="runCalc()" oninput="runCalc()">
-      </div>
-      <div class="calc-row">
-        <label>Annual Rental Yield (%)</label>
-        <input type="number" id="calc-yield" value="6" step="0.5" onchange="runCalc()" oninput="runCalc()">
-      </div>
-      <div class="calc-row">
-        <label>Holding Period (Years)</label>
-        <input type="number" id="calc-years" value="5" min="1" max="30" onchange="runCalc()" oninput="runCalc()">
-      </div>
-      <div class="calc-result" id="calc-result"></div>
+
     </div>
   </div>
 </div>
@@ -2080,8 +2126,28 @@ function initCalc() {
   sel.innerHTML = AREAS.map(a => `<option value="${a.id}">${a.name} (AED ${a.curP.toLocaleString()}/sqft)</option>`).join('');
   runCalc();
 }
-function openCalc() { document.getElementById('calc-modal').classList.add('open'); initCalc(); }
+let _activeCalcTab = 'roi';
+function openCalc(tab, areaId) {
+  document.getElementById('calc-modal').classList.add('open');
+  initCalc();
+  if (areaId) {
+    const sel = document.getElementById('calc-area');
+    if (sel) { sel.value = areaId; runCalc(); }
+  }
+  switchCalcTab(tab || _activeCalcTab || 'roi');
+}
 function closeCalc() { document.getElementById('calc-modal').classList.remove('open'); }
+function switchCalcTab(tab) {
+  _activeCalcTab = tab;
+  document.querySelectorAll('.calc-tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.calcTab === tab);
+  });
+  document.querySelectorAll('.calc-panel').forEach(el => {
+    el.classList.toggle('active', el.dataset.calcPanel === tab);
+  });
+  if (tab === 'mortgage' && typeof renderMortgageTab === 'function') renderMortgageTab();
+  if (tab === 'affordability' && typeof renderAffordabilityTab === 'function') renderAffordabilityTab();
+}
 function runCalc() {
   const price = +document.getElementById('calc-price').value || 0;
   const dp = (+document.getElementById('calc-dp').value || 0) / 100;
