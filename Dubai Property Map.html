@@ -702,6 +702,48 @@ html, body {
   display:flex; align-items:center; justify-content:center;
 }
 .aff-chip .x:hover { background:rgba(255,255,255,0.4); }
+
+/* Financing Snapshot card (detail panel) */
+.fin-snapshot {
+  margin:12px 18px 0;
+  background:linear-gradient(135deg, rgba(200,169,81,0.10), rgba(62,207,207,0.06));
+  border:1px solid var(--border2); border-radius:var(--radius);
+  padding:14px;
+  position:relative;
+  overflow:hidden;
+}
+.fin-snapshot::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, var(--gold), var(--teal));
+}
+.fin-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.fin-title {
+  font-size:9px; font-weight:700; letter-spacing:1.2px;
+  color:var(--text-muted); text-transform:uppercase;
+}
+.fin-pills { display:flex; gap:4px; }
+.fin-pill {
+  padding:3px 9px; font-size:9px; font-weight:700;
+  border-radius:999px; border:1px solid var(--border);
+  background:var(--panel2); color:var(--text-muted);
+  cursor:pointer; transition:all .15s; letter-spacing:0.4px;
+  user-select:none;
+}
+.fin-pill.active { background:var(--gold); color:#0a0a0a; border-color:var(--gold); }
+.fin-stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+.fin-stat .lbl { font-size:9px; font-weight:600; color:var(--text-muted); letter-spacing:0.5px; text-transform:uppercase; }
+.fin-stat .val { font-family:var(--mono); font-size:14px; font-weight:600; color:var(--text-primary); margin-top:2px; }
+.fin-stat .val.gold { color:var(--gold); }
+.fin-stat .val.teal { color:var(--teal); }
+.fin-cta {
+  display:block; width:100%; text-align:center;
+  padding:9px 12px; font-size:11px; font-weight:700;
+  background:transparent; color:var(--text-primary);
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  cursor:pointer; transition:all .15s; letter-spacing:0.3px;
+  font-family:var(--font-body);
+}
+.fin-cta:hover { border-color:var(--gold); color:var(--gold); transform:translateY(-1px); }
 @keyframes modalIn { from { opacity:0; transform:translateY(20px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
 .modal-head {
   padding:18px 20px 14px; border-bottom:1px solid var(--border);
@@ -2325,6 +2367,7 @@ function selectArea(id) {
       <div class="det-metric"><div class="dm-lbl">YoY (2026)</div><div class="dm-val" style="font-size:15px;color:var(--green)">${d.yoy}</div><div class="dm-sub">year-on-year</div></div>
     </div>
     <div class="det-return"><div><div class="dr-label">TOTAL RETURN</div><div style="font-size:9px;color:var(--text-muted);margin-top:2px">${d.cagr}</div></div><div class="dr-val">${d.appreciation}</div></div>
+    ${buildFinancingSnapshot(d)}
     ${buildRadarChart(d)}
     <div class="det-section">
       <div class="det-sec-title">Market Signals ${heatBadgeHtml(d.heatScore)}</div>
@@ -2928,9 +2971,61 @@ selectArea = function(id) {
 ═══════════════════════════════════════ */
 function handleHash() {
   const h = window.location.hash.replace('#','');
-  if (h && AREAS.find(a => a.id === h)) selectArea(h);
+  if (!h) return;
+  // Legacy form: #areaId
+  if (AREAS.find(a => a.id === h)) { selectArea(h); return; }
+  // New form: #calc=mortgage&area=marina or #calc=roi
+  if (h.indexOf('=') !== -1) {
+    const params = {};
+    h.split('&').forEach(kv => { const [k,v] = kv.split('='); if (k) params[k] = decodeURIComponent(v||''); });
+    if (params.area && AREAS.find(a => a.id === params.area)) selectArea(params.area);
+    if (params.calc) {
+      const validTabs = ['mortgage','roi','affordability'];
+      const tab = validTabs.indexOf(params.calc) !== -1 ? params.calc : 'roi';
+      setTimeout(() => openCalc(tab, params.area), 200);
+    }
+  }
 }
 window.addEventListener('hashchange', handleHash);
+
+/* ═══════════════════════════════════════
+   FINANCING SNAPSHOT (Layer 1 of mortgage system)
+═══════════════════════════════════════ */
+function estimateMonthlyForArea(a, dpPct, rate, years) {
+  const price = estimateAreaUnitPrice(a);
+  const loan = price * (1 - dpPct/100);
+  if (loan <= 0) return { price:price, monthly:0 };
+  const r = rate/100/12, n = years*12;
+  const monthly = (loan * r) / (1 - Math.pow(1+r, -n));
+  return { price, monthly };
+}
+function estimate5yrROI(a) {
+  // Rough: yield + appreciation compounded over 5 years
+  const yld = parseYieldNum(a.yield_) || 5;
+  const annualGrowth = Math.min(a.growthPct / Math.max(a.yearsLive || 5, 1), 25); // cap to avoid extreme outliers
+  const apprPct = Math.pow(1 + annualGrowth/100, 5) - 1;
+  return Math.round((yld * 5) + (apprPct * 100));
+}
+function buildFinancingSnapshot(d) {
+  const est = estimateMonthlyForArea(d, 25, 4.5, 20);
+  const roi5 = estimate5yrROI(d);
+  return `<div class="fin-snapshot">
+    <div class="fin-head">
+      <div class="fin-title">Financing Snapshot</div>
+      <div class="fin-pills">
+        <span class="fin-pill active" data-fin-mode="buy">BUY</span>
+        <span class="fin-pill" data-fin-mode="invest">INVEST</span>
+      </div>
+    </div>
+    <div class="fin-stats">
+      <div class="fin-stat"><div class="lbl">Avg Unit ~</div><div class="val">${fmtAED(est.price)}</div></div>
+      <div class="fin-stat"><div class="lbl">Monthly</div><div class="val gold">${fmtAED(est.monthly)}</div></div>
+      <div class="fin-stat"><div class="lbl">Down 25%</div><div class="val">${fmtAED(est.price * 0.25)}</div></div>
+      <div class="fin-stat"><div class="lbl">5yr ROI Est.</div><div class="val teal">${roi5 >= 0 ? '+' : ''}${roi5}%</div></div>
+    </div>
+    <button class="fin-cta" onclick="openCalc('mortgage','${d.id}')">Open full calculator &rarr;</button>
+  </div>`;
+}
 
 /* ═══════════════════════════════════════
    FEATURE 1: ANIMATED NUMBER COUNTERS
