@@ -634,6 +634,74 @@ html, body {
   font-family:var(--font-body);
 }
 .mort-pdf-btn:hover { transform:translateY(-1px); }
+
+/* Affordability tab */
+.aff-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+@media (max-width:768px) { .aff-grid { grid-template-columns:1fr; } }
+.aff-summary {
+  background:linear-gradient(135deg, rgba(62,207,207,0.12), rgba(62,207,207,0.02));
+  border:1px solid rgba(62,207,207,0.3); border-radius:var(--radius);
+  padding:16px; margin-bottom:14px;
+}
+.aff-summary .lbl { font-size:9px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--text-muted); }
+.aff-summary .val {
+  font-family:var(--font-heading); font-size:24px; font-weight:600;
+  color:var(--teal); margin-top:3px; line-height:1.1;
+}
+.aff-summary .sub { font-size:10px; color:var(--text-muted); margin-top:4px; }
+.aff-list-title { font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--text-muted); margin:14px 0 8px; }
+.aff-list { max-height:380px; overflow:auto; border:1px solid var(--border); border-radius:var(--radius-sm); }
+.aff-row {
+  display:grid; grid-template-columns:1.4fr 1fr 1fr;
+  padding:10px 12px; border-bottom:1px solid var(--border);
+  cursor:pointer; transition:background .15s; align-items:center;
+}
+.aff-row:last-child { border-bottom:none; }
+.aff-row:hover { background:rgba(200,169,81,0.08); }
+.aff-row .name { font-size:12px; font-weight:600; color:var(--text-primary); }
+.aff-row .name small { display:block; font-size:9px; font-weight:500; color:var(--text-muted); margin-top:1px; text-transform:uppercase; letter-spacing:0.4px; }
+.aff-row .price, .aff-row .monthly { font-family:var(--mono); font-size:11px; color:var(--text-secondary); text-align:right; }
+.aff-row .monthly { color:var(--gold); font-weight:600; }
+.aff-row.no-match {
+  cursor:default; opacity:0.5;
+}
+.aff-row.no-match:hover { background:transparent; }
+.aff-empty { padding:24px; text-align:center; color:var(--text-muted); font-size:11px; }
+.aff-clear-btn {
+  background:transparent; color:var(--text-secondary);
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:6px 12px; font-size:11px; cursor:pointer; font-family:var(--font-body);
+  transition:all .15s; margin-top:10px;
+}
+.aff-clear-btn:hover { color:var(--gold); border-color:var(--gold); }
+
+/* Pulse gold for matching markers */
+@keyframes affPulse {
+  0%, 100% { transform:scale(1); filter:drop-shadow(0 0 0 rgba(200,169,81,0)); }
+  50% { transform:scale(1.06); filter:drop-shadow(0 0 8px rgba(200,169,81,0.7)); }
+}
+.mk-aff-match .mk { animation:affPulse 1.6s ease-in-out infinite; }
+
+/* Topbar chip when affordability filter active */
+.aff-chip {
+  display:none;
+  align-items:center; gap:8px;
+  padding:5px 10px 5px 12px;
+  background:linear-gradient(135deg,#0ea5b8,#067c8c);
+  color:#fff; border-radius:999px;
+  font-size:11px; font-weight:600;
+  margin-right:10px; cursor:default;
+  box-shadow:0 2px 6px rgba(14,165,184,0.35);
+}
+.aff-chip.active { display:inline-flex; }
+.aff-chip .x {
+  background:rgba(255,255,255,0.2);
+  border:none; color:#fff; cursor:pointer;
+  width:18px; height:18px; border-radius:50%;
+  font-size:10px; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+}
+.aff-chip .x:hover { background:rgba(255,255,255,0.4); }
 @keyframes modalIn { from { opacity:0; transform:translateY(20px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
 .modal-head {
   padding:18px 20px 14px; border-bottom:1px solid var(--border);
@@ -1254,6 +1322,10 @@ html, body {
     <div class="tb-stat"><span class="sv">63%</span><span class="sl">Off-Plan Mix</span></div>
   </div>
   <div class="tb-right">
+    <div class="aff-chip" id="aff-chip" title="Affordability filter active">
+      <span>Affordable view</span>
+      <button class="x" onclick="clearAffordabilityFilter()" title="Clear">&#10005;</button>
+    </div>
     <div class="tb-badge live">Live Data</div>
     <div class="tb-badge date">Mar 2026</div>
     <div class="filter-toggle" onclick="toggleFilterPanel()" title="Smart Filters">&#9776;</div>
@@ -1443,7 +1515,53 @@ html, body {
 
       <!-- AFFORDABILITY PANEL -->
       <div class="calc-panel" data-calc-panel="affordability" role="tabpanel">
-        <div class="calc-empty-hint" style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:12px;">Affordability search loading…</div>
+        <div class="aff-grid">
+          <div>
+            <div class="calc-row">
+              <label>Buyer Type</label>
+              <div class="buyer-toggles">
+                <div class="buyer-toggle active" data-aff-buyer="resident" onclick="setAffBuyerType('resident')">Resident</div>
+                <div class="buyer-toggle" data-aff-buyer="nonresident" onclick="setAffBuyerType('nonresident')">Non-Resident</div>
+                <div class="buyer-toggle" data-aff-buyer="cash" onclick="setAffBuyerType('cash')">Cash</div>
+              </div>
+            </div>
+            <div class="calc-row" id="aff-budget-row">
+              <label>Monthly Budget I Can Afford (AED)</label>
+              <input type="range" id="aff-budget" min="3000" max="80000" step="500" value="12000" oninput="renderAffordabilityTab()">
+              <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-top:4px;">
+                <span>AED 3K</span>
+                <span id="aff-budget-val" style="color:var(--gold);font-weight:700;font-size:13px">AED 12,000</span>
+                <span>AED 80K</span>
+              </div>
+            </div>
+            <div class="calc-row">
+              <label>Down Payment Available (AED)</label>
+              <input type="range" id="aff-cash" min="100000" max="5000000" step="50000" value="600000" oninput="renderAffordabilityTab()">
+              <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-top:4px;">
+                <span>AED 100K</span>
+                <span id="aff-cash-val" style="color:var(--gold);font-weight:700;font-size:13px">AED 600,000</span>
+                <span>AED 5M</span>
+              </div>
+            </div>
+            <div class="calc-row" id="aff-rate-row">
+              <label>Rate / Term</label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <input type="number" id="aff-rate" value="4.5" step="0.1" oninput="renderAffordabilityTab()">
+                <input type="number" id="aff-term" value="20" min="5" max="25" oninput="renderAffordabilityTab()">
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="aff-summary">
+              <div class="lbl">Max Affordable Property</div>
+              <div class="val" id="aff-max-price">AED —</div>
+              <div class="sub" id="aff-max-sub">Loan + down payment</div>
+            </div>
+            <div class="aff-list-title" id="aff-list-title">Matching Areas</div>
+            <div class="aff-list" id="aff-list"></div>
+            <button class="aff-clear-btn" onclick="clearAffordabilityFilter()">Clear filter & restore map</button>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -2108,8 +2226,11 @@ function updateMarkerDimming() {
   AREAS.forEach(d => {
     const wrap = document.getElementById(`mkwrap-${d.id}`);
     if (!wrap) return;
-    const ok = matchesSearch(d) && passesSmartFilter(d) && (App.currentMapFilter === 'all' || d.pinType === App.currentMapFilter);
+    let ok = matchesSearch(d) && passesSmartFilter(d) && (App.currentMapFilter === 'all' || d.pinType === App.currentMapFilter);
+    if (Affordability.active && !Affordability.matchingIds.has(d.id)) ok = false;
     wrap.classList.toggle('mk-dimmed', !ok);
+    // Pulse gold for affordability matches
+    wrap.classList.toggle('mk-aff-match', Affordability.active && Affordability.matchingIds.has(d.id));
   });
 }
 
@@ -2509,6 +2630,122 @@ function renderMortgageTab() {
   ` : '';
 
   document.getElementById('mort-output').innerHTML = heroHtml + cashHtml + annHtml + amortHtml;
+}
+
+/* ═══════════════════════════════════════
+   AFFORDABILITY ENGINE
+═══════════════════════════════════════ */
+const Affordability = {
+  active: false,
+  buyerType: 'resident',
+  budget: 12000,
+  cash: 600000,
+  rate: 4.5,
+  termYears: 20,
+  maxPrice: 0,
+  matchingIds: new Set(),
+};
+function setAffBuyerType(t) {
+  Affordability.buyerType = t;
+  document.querySelectorAll('[data-aff-buyer]').forEach(el => {
+    el.classList.toggle('active', el.dataset.affBuyer === t);
+  });
+  // Cash buyer: hide budget + rate (price = cash)
+  const isCash = t === 'cash';
+  document.getElementById('aff-budget-row').style.display = isCash ? 'none' : 'block';
+  document.getElementById('aff-rate-row').style.display = isCash ? 'none' : 'block';
+  renderAffordabilityTab();
+}
+function calcMaxPriceFromBudget(monthly, rate, years) {
+  if (monthly <= 0) return 0;
+  const r = rate / 100 / 12;
+  const n = years * 12;
+  // Inverse of monthly = loan*r / (1 - (1+r)^-n)  →  loan = monthly*(1-(1+r)^-n)/r
+  if (r === 0) return monthly * n;
+  return (monthly * (1 - Math.pow(1 + r, -n))) / r;
+}
+function estimateAreaUnitPrice(a) {
+  // Assume average unit ~ 1000 sqft for apt, 3000 sqft for villa, 1500 mixed
+  const sqft = a.pinType === 'villa' ? 3000 : a.pinType === 'apt' ? 1000 : 1500;
+  return Math.round(a.curP * sqft);
+}
+function calcAffordability(s) {
+  let maxPrice;
+  if (s.buyerType === 'cash') {
+    maxPrice = s.cash;
+  } else {
+    const minDpPct = s.buyerType === 'nonresident' ? 25 : 20;
+    // Use the user's cash to determine actual DP %, but enforce minimum.
+    // Then compute max loan from budget, and max price = loan + cash, BUT
+    // capped by cash/minDp (since DP must be at least minDp% of price).
+    const maxLoan = calcMaxPriceFromBudget(s.budget, s.rate, s.termYears);
+    const priceFromBudget = maxLoan + s.cash;
+    const priceFromCash = s.cash / (minDpPct / 100); // price s.t. DP = cash exactly at minDp%
+    maxPrice = Math.min(priceFromBudget, priceFromCash);
+  }
+  const matches = [];
+  AREAS.forEach(a => {
+    const est = estimateAreaUnitPrice(a);
+    if (est <= maxPrice) {
+      // Compute monthly payment for this area's est price
+      const dp = s.buyerType === 'cash' ? est : Math.max(s.cash, est * (s.buyerType === 'nonresident' ? 0.25 : 0.20));
+      const loan = est - dp;
+      let monthly = 0;
+      if (loan > 0 && s.buyerType !== 'cash') {
+        const r = s.rate / 100 / 12;
+        const n = s.termYears * 12;
+        monthly = (loan * r) / (1 - Math.pow(1 + r, -n));
+      }
+      matches.push({ area:a, est, monthly, headroom: maxPrice - est });
+    }
+  });
+  matches.sort((a, b) => a.headroom - b.headroom); // closest to budget first
+  return { maxPrice, matches };
+}
+function renderAffordabilityTab() {
+  Affordability.budget = +document.getElementById('aff-budget').value;
+  Affordability.cash = +document.getElementById('aff-cash').value;
+  Affordability.rate = +document.getElementById('aff-rate').value || 4.5;
+  Affordability.termYears = +document.getElementById('aff-term').value || 20;
+
+  document.getElementById('aff-budget-val').textContent = fmtAED(Affordability.budget) + '/mo';
+  document.getElementById('aff-cash-val').textContent = fmtAED(Affordability.cash);
+
+  const result = calcAffordability(Affordability);
+  Affordability.maxPrice = result.maxPrice;
+  Affordability.matchingIds = new Set(result.matches.map(m => m.area.id));
+  Affordability.active = true;
+
+  document.getElementById('aff-max-price').textContent = fmtAED(result.maxPrice);
+  document.getElementById('aff-list-title').textContent =
+    `${result.matches.length} matching area${result.matches.length !== 1 ? 's' : ''}`;
+
+  const list = document.getElementById('aff-list');
+  if (!result.matches.length) {
+    list.innerHTML = '<div class="aff-empty">No areas match this budget. Try increasing your monthly budget or down payment.</div>';
+  } else {
+    list.innerHTML = result.matches.map(m => `
+      <div class="aff-row" onclick="affJumpTo('${m.area.id}')">
+        <div class="name">${m.area.name}<small>${m.area.pinType.toUpperCase()} &middot; ${m.area.growth}</small></div>
+        <div class="price">${fmtAED(m.est)}</div>
+        <div class="monthly">${m.monthly > 0 ? fmtAED(m.monthly) + '/mo' : 'Cash'}</div>
+      </div>
+    `).join('');
+  }
+
+  // Update map dimming + chip
+  document.getElementById('aff-chip').classList.add('active');
+  updateMarkerDimming();
+}
+function affJumpTo(id) {
+  closeCalc();
+  selectArea(id);
+}
+function clearAffordabilityFilter() {
+  Affordability.active = false;
+  Affordability.matchingIds.clear();
+  document.getElementById('aff-chip').classList.remove('active');
+  updateMarkerDimming();
 }
 
 let _activeCalcTab = 'roi';
