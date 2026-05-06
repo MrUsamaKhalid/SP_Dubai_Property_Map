@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -508,6 +508,242 @@ html, body {
   width:460px; max-height:85vh; overflow-y:auto; box-shadow:var(--shadow-lg);
   animation:modalIn 0.3s ease;
 }
+.modal.modal-wide { width:760px; max-width:96vw; }
+@media (max-width:768px) {
+  .modal.modal-wide { width:96vw; }
+}
+/* Calculator tabs */
+.calc-tabs {
+  display:flex; gap:4px; padding:14px 20px 0; border-bottom:1px solid var(--border);
+  background:var(--panel);
+}
+.calc-tab {
+  flex:1; padding:10px 14px; font-size:12px; font-weight:600;
+  letter-spacing:0.4px; color:var(--text-muted); cursor:pointer;
+  border-bottom:2px solid transparent; transition:all 0.2s ease;
+  text-align:center; user-select:none;
+  font-family:var(--font-body);
+  display:flex; align-items:center; justify-content:center; gap:6px;
+}
+.calc-tab:hover { color:var(--text-primary); }
+.calc-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+.calc-tab-icon { font-size:14px; }
+.calc-panel { display:none; }
+.calc-panel.active { display:block; }
+@media (max-width:768px) {
+  .calc-tabs { overflow-x:auto; padding:10px 12px 0; }
+  .calc-tab { flex:0 0 auto; min-width:110px; padding:9px 10px; font-size:11px; }
+}
+
+/* Mortgage tab */
+.mort-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+@media (max-width:768px) { .mort-grid { grid-template-columns:1fr; } }
+.mort-section-title {
+  font-family:var(--font-heading); font-size:13px; font-weight:600;
+  color:var(--text-primary); margin:14px 0 10px; letter-spacing:0.3px;
+}
+.buyer-toggles { display:flex; gap:6px; margin-bottom:14px; }
+.buyer-toggle {
+  flex:1; padding:10px 12px; text-align:center; font-size:11px; font-weight:600;
+  border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer;
+  background:var(--panel2); color:var(--text-secondary); transition:all .2s;
+  letter-spacing:0.3px;
+}
+.buyer-toggle:hover { border-color:var(--gold); color:var(--text-primary); }
+.buyer-toggle.active { background:var(--gold); color:#0a0a0a; border-color:var(--gold); font-weight:700; }
+.dp-slider-row { display:flex; align-items:center; gap:12px; }
+.dp-slider-row input[type=range] {
+  flex:1; accent-color:var(--gold);
+  height:4px; appearance:none; background:var(--border); border-radius:2px;
+}
+.dp-slider-row .dp-pct { width:54px; text-align:center; font-family:var(--mono); font-weight:700; color:var(--gold); font-size:14px; }
+.dp-slider-row .dp-aed { font-family:var(--mono); font-size:11px; color:var(--text-muted); white-space:nowrap; }
+.dp-min-hint { font-size:10px; color:var(--text-muted); margin-top:4px; font-style:italic; }
+
+/* Mortgage hero */
+.mort-hero {
+  background:linear-gradient(135deg, rgba(200,169,81,0.10), rgba(200,169,81,0.02));
+  border:1px solid rgba(200,169,81,0.3); border-radius:var(--radius);
+  padding:20px; margin-top:8px; margin-bottom:14px;
+}
+.mort-hero-monthly {
+  font-family:var(--font-heading); font-size:32px; font-weight:600;
+  color:var(--gold); letter-spacing:-0.5px; line-height:1.1;
+}
+.mort-hero-label { font-size:9px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
+.mort-hero-sub {
+  display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px;
+  padding-top:14px; border-top:1px solid var(--border);
+}
+.mort-hero-sub-item .lbl { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
+.mort-hero-sub-item .val { font-family:var(--mono); font-size:14px; font-weight:600; color:var(--text-primary); }
+.mort-pi-bar { height:6px; border-radius:3px; background:var(--panel2); margin-top:10px; overflow:hidden; display:flex; }
+.mort-pi-bar .pi-principal { background:var(--green); height:100%; }
+.mort-pi-bar .pi-interest { background:var(--gold); height:100%; }
+.mort-pi-legend { display:flex; gap:14px; margin-top:6px; font-size:10px; color:var(--text-muted); }
+.mort-pi-legend .dot { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:5px; vertical-align:middle; }
+
+/* Cash to close */
+.cash-card {
+  background:var(--panel2); border:1px solid var(--border); border-radius:var(--radius);
+  padding:16px; margin-bottom:12px;
+}
+.cash-row {
+  display:flex; justify-content:space-between; padding:7px 0;
+  font-size:12px; border-bottom:1px dashed var(--border);
+}
+.cash-row:last-child { border-bottom:none; }
+.cash-row .lbl { color:var(--text-secondary); }
+.cash-row .lbl small { display:block; font-size:9px; color:var(--text-muted); margin-top:1px; }
+.cash-row .val { font-family:var(--mono); font-weight:600; color:var(--text-primary); }
+.cash-total {
+  margin-top:8px; padding:12px; background:rgba(200,169,81,0.10);
+  border:1px solid rgba(200,169,81,0.4); border-radius:var(--radius-sm);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.cash-total .lbl { font-size:11px; font-weight:700; letter-spacing:0.5px; color:var(--gold); text-transform:uppercase; }
+.cash-total .val { font-family:var(--mono); font-size:18px; font-weight:700; color:var(--gold); }
+
+/* Annual costs (collapsible) */
+.collapsible-head {
+  display:flex; justify-content:space-between; align-items:center;
+  cursor:pointer; padding:10px 0; user-select:none;
+}
+.collapsible-head .chev { font-size:10px; color:var(--text-muted); transition:transform .2s; }
+.collapsible.open .chev { transform:rotate(90deg); }
+.collapsible-body { display:none; padding-top:4px; }
+.collapsible.open .collapsible-body { display:block; }
+
+/* Amortization */
+.amort-spark { width:100%; height:50px; margin-bottom:10px; }
+.amort-table { width:100%; border-collapse:collapse; font-size:11px; }
+.amort-table th, .amort-table td {
+  padding:7px 8px; text-align:right; border-bottom:1px solid var(--border);
+  font-family:var(--mono);
+}
+.amort-table th { font-size:9px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--text-muted); text-align:right; }
+.amort-table th:first-child, .amort-table td:first-child { text-align:left; }
+.amort-table tbody tr:hover { background:rgba(200,169,81,0.05); }
+
+/* Save PDF button */
+.mort-actions { margin-top:16px; display:flex; justify-content:flex-end; }
+.mort-pdf-btn {
+  background:var(--gold); color:#0a0a0a; font-weight:700; font-size:11px;
+  padding:8px 16px; border:none; border-radius:var(--radius-sm); cursor:pointer;
+  letter-spacing:0.5px; transition:transform .15s;
+  font-family:var(--font-body);
+}
+.mort-pdf-btn:hover { transform:translateY(-1px); }
+
+/* Affordability tab */
+.aff-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+@media (max-width:768px) { .aff-grid { grid-template-columns:1fr; } }
+.aff-summary {
+  background:linear-gradient(135deg, rgba(62,207,207,0.12), rgba(62,207,207,0.02));
+  border:1px solid rgba(62,207,207,0.3); border-radius:var(--radius);
+  padding:16px; margin-bottom:14px;
+}
+.aff-summary .lbl { font-size:9px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--text-muted); }
+.aff-summary .val {
+  font-family:var(--font-heading); font-size:24px; font-weight:600;
+  color:var(--teal); margin-top:3px; line-height:1.1;
+}
+.aff-summary .sub { font-size:10px; color:var(--text-muted); margin-top:4px; }
+.aff-list-title { font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--text-muted); margin:14px 0 8px; }
+.aff-list { max-height:380px; overflow:auto; border:1px solid var(--border); border-radius:var(--radius-sm); }
+.aff-row {
+  display:grid; grid-template-columns:1.4fr 1fr 1fr;
+  padding:10px 12px; border-bottom:1px solid var(--border);
+  cursor:pointer; transition:background .15s; align-items:center;
+}
+.aff-row:last-child { border-bottom:none; }
+.aff-row:hover { background:rgba(200,169,81,0.08); }
+.aff-row .name { font-size:12px; font-weight:600; color:var(--text-primary); }
+.aff-row .name small { display:block; font-size:9px; font-weight:500; color:var(--text-muted); margin-top:1px; text-transform:uppercase; letter-spacing:0.4px; }
+.aff-row .price, .aff-row .monthly { font-family:var(--mono); font-size:11px; color:var(--text-secondary); text-align:right; }
+.aff-row .monthly { color:var(--gold); font-weight:600; }
+.aff-row.no-match {
+  cursor:default; opacity:0.5;
+}
+.aff-row.no-match:hover { background:transparent; }
+.aff-empty { padding:24px; text-align:center; color:var(--text-muted); font-size:11px; }
+.aff-clear-btn {
+  background:transparent; color:var(--text-secondary);
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:6px 12px; font-size:11px; cursor:pointer; font-family:var(--font-body);
+  transition:all .15s; margin-top:10px;
+}
+.aff-clear-btn:hover { color:var(--gold); border-color:var(--gold); }
+
+/* Pulse gold for matching markers */
+@keyframes affPulse {
+  0%, 100% { transform:scale(1); filter:drop-shadow(0 0 0 rgba(200,169,81,0)); }
+  50% { transform:scale(1.06); filter:drop-shadow(0 0 8px rgba(200,169,81,0.7)); }
+}
+.mk-aff-match .mk { animation:affPulse 1.6s ease-in-out infinite; }
+
+/* Topbar chip when affordability filter active */
+.aff-chip {
+  display:none;
+  align-items:center; gap:8px;
+  padding:5px 10px 5px 12px;
+  background:linear-gradient(135deg,#0ea5b8,#067c8c);
+  color:#fff; border-radius:999px;
+  font-size:11px; font-weight:600;
+  margin-right:10px; cursor:default;
+  box-shadow:0 2px 6px rgba(14,165,184,0.35);
+}
+.aff-chip.active { display:inline-flex; }
+.aff-chip .x {
+  background:rgba(255,255,255,0.2);
+  border:none; color:#fff; cursor:pointer;
+  width:18px; height:18px; border-radius:50%;
+  font-size:10px; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+}
+.aff-chip .x:hover { background:rgba(255,255,255,0.4); }
+
+/* Financing Snapshot card (detail panel) */
+.fin-snapshot {
+  margin:12px 18px 0;
+  background:linear-gradient(135deg, rgba(200,169,81,0.10), rgba(62,207,207,0.06));
+  border:1px solid var(--border2); border-radius:var(--radius);
+  padding:14px;
+  position:relative;
+  overflow:hidden;
+}
+.fin-snapshot::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, var(--gold), var(--teal));
+}
+.fin-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.fin-title {
+  font-size:9px; font-weight:700; letter-spacing:1.2px;
+  color:var(--text-muted); text-transform:uppercase;
+}
+.fin-pills { display:flex; gap:4px; }
+.fin-pill {
+  padding:3px 9px; font-size:9px; font-weight:700;
+  border-radius:999px; border:1px solid var(--border);
+  background:var(--panel2); color:var(--text-muted);
+  cursor:pointer; transition:all .15s; letter-spacing:0.4px;
+  user-select:none;
+}
+.fin-pill.active { background:var(--gold); color:#0a0a0a; border-color:var(--gold); }
+.fin-stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+.fin-stat .lbl { font-size:9px; font-weight:600; color:var(--text-muted); letter-spacing:0.5px; text-transform:uppercase; }
+.fin-stat .val { font-family:var(--mono); font-size:14px; font-weight:600; color:var(--text-primary); margin-top:2px; }
+.fin-stat .val.gold { color:var(--gold); }
+.fin-stat .val.teal { color:var(--teal); }
+.fin-cta {
+  display:block; width:100%; text-align:center;
+  padding:9px 12px; font-size:11px; font-weight:700;
+  background:transparent; color:var(--text-primary);
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  cursor:pointer; transition:all .15s; letter-spacing:0.3px;
+  font-family:var(--font-body);
+}
+.fin-cta:hover { border-color:var(--gold); color:var(--gold); transform:translateY(-1px); }
 @keyframes modalIn { from { opacity:0; transform:translateY(20px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
 .modal-head {
   padding:18px 20px 14px; border-bottom:1px solid var(--border);
@@ -1008,6 +1244,98 @@ html, body {
 @media (max-width:768px) {
   .credit-bubble { bottom:12px; right:10px; }
 }
+
+/* ═══════ THEME TOAST ═══════ */
+.theme-toast {
+  position:fixed;
+  top:64px;
+  right:14px;
+  width:280px;
+  background:linear-gradient(135deg,#2563eb 0%,#1e40af 100%);
+  color:#fff;
+  border-radius:12px;
+  box-shadow:0 12px 32px rgba(37,99,235,0.35), 0 4px 12px rgba(0,0,0,0.18);
+  padding:14px 16px 18px 16px;
+  z-index:9000;
+  opacity:0;
+  transform:translateX(20px);
+  pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+  font-family:var(--font-body);
+}
+.theme-toast.visible {
+  opacity:1;
+  transform:translateX(0);
+  pointer-events:auto;
+}
+.theme-toast::before {
+  content:'';
+  position:absolute;
+  top:-8px;
+  right:18px;
+  width:14px;
+  height:14px;
+  background:linear-gradient(135deg,#2563eb 0%,#2563eb 50%,transparent 50%);
+  transform:rotate(45deg);
+  border-top-left-radius:3px;
+}
+.tt-row { display:flex; align-items:center; gap:10px; }
+.tt-icon {
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,0.18);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.tt-text { flex:1; }
+.tt-title { font-size:13px;font-weight:700;line-height:1.2; }
+.tt-sub { font-size:11px;font-weight:500;opacity:0.9;line-height:1.3;margin-top:2px; }
+.tt-actions { display:flex; gap:8px; margin-top:12px; align-items:center; }
+.tt-btn {
+  background:#fff;color:#1e40af;
+  border:none;border-radius:999px;
+  padding:6px 14px;font-weight:700;font-size:12px;
+  cursor:pointer;font-family:var(--font-body);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.tt-btn:hover { transform:translateY(-1px); box-shadow:0 4px 10px rgba(0,0,0,0.18); }
+.tt-shortcut {
+  font-size:10px;font-weight:600;opacity:0.85;
+  font-family:var(--font-body);letter-spacing:.4px;
+}
+.tt-shortcut kbd {
+  display:inline-block;background:rgba(255,255,255,0.2);
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:4px;padding:1px 5px;
+  font-size:10px;font-family:var(--font-body);
+  margin:0 1px;
+}
+.tt-close {
+  position:absolute;top:8px;right:10px;
+  width:18px;height:18px;
+  background:transparent;border:none;
+  color:rgba(255,255,255,0.85);
+  cursor:pointer;font-size:14px;line-height:1;
+  padding:0;
+}
+.tt-close:hover { color:#fff; }
+.tt-progress {
+  position:absolute;
+  bottom:0;left:0;right:0;height:3px;
+  background:rgba(255,255,255,0.15);
+  border-bottom-left-radius:12px;border-bottom-right-radius:12px;
+  overflow:hidden;
+}
+.tt-progress-bar {
+  height:100%;background:rgba(255,255,255,0.85);
+  width:100%;transform-origin:left;
+  transform:scaleX(1);
+  transition:transform 7s linear;
+}
+.theme-toast.visible .tt-progress-bar { transform:scaleX(0); }
+@media (max-width:768px) {
+  .theme-toast { right:10px; left:10px; width:auto; top:60px; }
+  .theme-toast::before { right:14px; }
+}
 </style>
 </head>
 <body>
@@ -1036,6 +1364,10 @@ html, body {
     <div class="tb-stat"><span class="sv">63%</span><span class="sl">Off-Plan Mix</span></div>
   </div>
   <div class="tb-right">
+    <div class="aff-chip" id="aff-chip" title="Affordability filter active">
+      <span>Affordable view</span>
+      <button class="x" onclick="clearAffordabilityFilter()" title="Clear">&#10005;</button>
+    </div>
     <div class="tb-badge live">Live Data</div>
     <div class="tb-badge date">Mar 2026</div>
     <div class="filter-toggle" onclick="toggleFilterPanel()" title="Smart Filters">&#9776;</div>
@@ -1129,46 +1461,232 @@ html, body {
 
 </div>
 
-<!-- ROI CALCULATOR MODAL -->
+<!-- CALCULATOR MODAL (Mortgage / ROI / Affordability) -->
 <div class="modal-overlay" id="calc-modal">
-  <div class="modal">
+  <div class="modal modal-wide">
     <div class="modal-head">
-      <h2>Investment Calculator</h2>
+      <h2>Calculator</h2>
       <div class="modal-close" onclick="closeCalc()">&#10005;</div>
     </div>
+    <div class="calc-tabs" role="tablist">
+      <div class="calc-tab" data-calc-tab="mortgage" onclick="switchCalcTab('mortgage')" role="tab"><span class="calc-tab-icon">&#127960;</span> Mortgage</div>
+      <div class="calc-tab active" data-calc-tab="roi" onclick="switchCalcTab('roi')" role="tab"><span class="calc-tab-icon">&#128200;</span> ROI</div>
+      <div class="calc-tab" data-calc-tab="affordability" onclick="switchCalcTab('affordability')" role="tab"><span class="calc-tab-icon">&#128181;</span> Affordability</div>
+    </div>
     <div class="modal-body">
-      <div class="calc-row">
-        <label>Property Area</label>
-        <select id="calc-area" onchange="runCalc()"></select>
+
+      <!-- MORTGAGE PANEL -->
+      <div class="calc-panel" data-calc-panel="mortgage" role="tabpanel">
+        <div class="mort-grid">
+          <div>
+            <div class="calc-row">
+              <label>Buyer Type</label>
+              <div class="buyer-toggles" id="mort-buyer-toggles">
+                <div class="buyer-toggle active" data-buyer="resident" onclick="setBuyerType('resident')">Resident</div>
+                <div class="buyer-toggle" data-buyer="nonresident" onclick="setBuyerType('nonresident')">Non-Resident</div>
+                <div class="buyer-toggle" data-buyer="cash" onclick="setBuyerType('cash')">Cash</div>
+              </div>
+            </div>
+            <div class="calc-row">
+              <label>Property Area</label>
+              <select id="mort-area" onchange="onMortAreaChange()"></select>
+            </div>
+            <div class="calc-row">
+              <label>Property Price (AED)</label>
+              <input type="number" id="mort-price" value="2400000" step="50000" oninput="renderMortgageTab()" onchange="renderMortgageTab()">
+            </div>
+            <div class="calc-row" id="mort-dp-row">
+              <label>Down Payment</label>
+              <div class="dp-slider-row">
+                <input type="range" id="mort-dp" min="20" max="100" value="25" step="1" oninput="renderMortgageTab()">
+                <span class="dp-pct" id="mort-dp-pct">25%</span>
+              </div>
+              <div class="dp-aed" id="mort-dp-aed" style="margin-top:4px;font-family:var(--mono);font-size:11px;color:var(--text-muted)"></div>
+              <div class="dp-min-hint" id="mort-dp-min-hint"></div>
+            </div>
+            <div class="calc-row" id="mort-rate-row">
+              <label>Interest Rate (% p.a.)</label>
+              <input type="number" id="mort-rate" value="4.5" step="0.1" oninput="renderMortgageTab()" onchange="renderMortgageTab()">
+            </div>
+            <div class="calc-row" id="mort-term-row">
+              <label>Term (Years)</label>
+              <input type="number" id="mort-term" value="20" min="5" max="25" oninput="renderMortgageTab()" onchange="renderMortgageTab()">
+            </div>
+          </div>
+          <div>
+            <div id="mort-output"></div>
+          </div>
+        </div>
+        <div class="mort-actions">
+          <button class="mort-pdf-btn" onclick="window.print()">&#128196; Save as PDF</button>
+        </div>
       </div>
-      <div class="calc-row">
-        <label>Purchase Price (AED)</label>
-        <input type="number" id="calc-price" value="3000000" onchange="runCalc()" oninput="runCalc()">
+
+      <!-- ROI PANEL (existing fields preserved) -->
+      <div class="calc-panel active" data-calc-panel="roi" role="tabpanel">
+        <div class="calc-row">
+          <label>Property Area</label>
+          <select id="calc-area" onchange="runCalc()"></select>
+        </div>
+        <div class="calc-row">
+          <label>Purchase Price (AED)</label>
+          <input type="number" id="calc-price" value="3000000" onchange="runCalc()" oninput="runCalc()">
+        </div>
+        <div class="calc-row">
+          <label>Down Payment (%)</label>
+          <input type="number" id="calc-dp" value="25" min="0" max="100" onchange="runCalc()" oninput="runCalc()">
+        </div>
+        <div class="calc-row">
+          <label>Mortgage Rate (% p.a.)</label>
+          <input type="number" id="calc-rate" value="4.5" step="0.1" onchange="runCalc()" oninput="runCalc()">
+        </div>
+        <div class="calc-row">
+          <label>Expected Annual Appreciation (%)</label>
+          <input type="number" id="calc-appr" value="8" step="0.5" onchange="runCalc()" oninput="runCalc()">
+        </div>
+        <div class="calc-row">
+          <label>Annual Rental Yield (%)</label>
+          <input type="number" id="calc-yield" value="6" step="0.5" onchange="runCalc()" oninput="runCalc()">
+        </div>
+        <div class="calc-row">
+          <label>Holding Period (Years)</label>
+          <input type="number" id="calc-years" value="5" min="1" max="30" onchange="runCalc()" oninput="runCalc()">
+        </div>
+        <div class="calc-result" id="calc-result"></div>
       </div>
-      <div class="calc-row">
-        <label>Down Payment (%)</label>
-        <input type="number" id="calc-dp" value="25" min="0" max="100" onchange="runCalc()" oninput="runCalc()">
+
+      <!-- AFFORDABILITY PANEL -->
+      <div class="calc-panel" data-calc-panel="affordability" role="tabpanel">
+        <div class="aff-grid">
+          <div>
+            <div class="calc-row">
+              <label>Buyer Type</label>
+              <div class="buyer-toggles">
+                <div class="buyer-toggle active" data-aff-buyer="resident" onclick="setAffBuyerType('resident')">Resident</div>
+                <div class="buyer-toggle" data-aff-buyer="nonresident" onclick="setAffBuyerType('nonresident')">Non-Resident</div>
+                <div class="buyer-toggle" data-aff-buyer="cash" onclick="setAffBuyerType('cash')">Cash</div>
+              </div>
+            </div>
+            <div class="calc-row" id="aff-budget-row">
+              <label>Monthly Budget I Can Afford (AED)</label>
+              <input type="range" id="aff-budget" min="3000" max="80000" step="500" value="12000" oninput="renderAffordabilityTab()">
+              <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-top:4px;">
+                <span>AED 3K</span>
+                <span id="aff-budget-val" style="color:var(--gold);font-weight:700;font-size:13px">AED 12,000</span>
+                <span>AED 80K</span>
+              </div>
+            </div>
+            <div class="calc-row">
+              <label>Down Payment Available (AED)</label>
+              <input type="range" id="aff-cash" min="100000" max="5000000" step="50000" value="600000" oninput="renderAffordabilityTab()">
+              <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--text-muted);margin-top:4px;">
+                <span>AED 100K</span>
+                <span id="aff-cash-val" style="color:var(--gold);font-weight:700;font-size:13px">AED 600,000</span>
+                <span>AED 5M</span>
+              </div>
+            </div>
+            <div class="calc-row" id="aff-rate-row">
+              <label>Rate / Term</label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <input type="number" id="aff-rate" value="4.5" step="0.1" oninput="renderAffordabilityTab()">
+                <input type="number" id="aff-term" value="20" min="5" max="25" oninput="renderAffordabilityTab()">
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="aff-summary">
+              <div class="lbl">Max Affordable Property</div>
+              <div class="val" id="aff-max-price">AED —</div>
+              <div class="sub" id="aff-max-sub">Loan + down payment</div>
+            </div>
+            <div class="aff-list-title" id="aff-list-title">Matching Areas</div>
+            <div class="aff-list" id="aff-list"></div>
+            <button class="aff-clear-btn" onclick="clearAffordabilityFilter()">Clear filter & restore map</button>
+          </div>
+        </div>
       </div>
-      <div class="calc-row">
-        <label>Mortgage Rate (% p.a.)</label>
-        <input type="number" id="calc-rate" value="4.5" step="0.1" onchange="runCalc()" oninput="runCalc()">
-      </div>
-      <div class="calc-row">
-        <label>Expected Annual Appreciation (%)</label>
-        <input type="number" id="calc-appr" value="8" step="0.5" onchange="runCalc()" oninput="runCalc()">
-      </div>
-      <div class="calc-row">
-        <label>Annual Rental Yield (%)</label>
-        <input type="number" id="calc-yield" value="6" step="0.5" onchange="runCalc()" oninput="runCalc()">
-      </div>
-      <div class="calc-row">
-        <label>Holding Period (Years)</label>
-        <input type="number" id="calc-years" value="5" min="1" max="30" onchange="runCalc()" oninput="runCalc()">
-      </div>
-      <div class="calc-result" id="calc-result"></div>
+
     </div>
   </div>
 </div>
+
+<!-- THEME TOAST -->
+<div class="theme-toast" id="theme-toast" role="status" aria-live="polite">
+  <button class="tt-close" id="tt-close" title="Dismiss" aria-label="Dismiss">&#10005;</button>
+  <div class="tt-row">
+    <div class="tt-icon">&#9790;</div>
+    <div class="tt-text">
+      <div class="tt-title">Dark mode available</div>
+      <div class="tt-sub">Easier on the eyes for long sessions.</div>
+    </div>
+  </div>
+  <div class="tt-actions">
+    <button class="tt-btn" id="tt-switch">Switch to Dark</button>
+    <span class="tt-shortcut">or press <kbd>Shift</kbd>+<kbd>D</kbd></span>
+  </div>
+  <div class="tt-progress"><div class="tt-progress-bar"></div></div>
+</div>
+
+<!-- FILTER PANEL -->
+<div class="filter-panel" id="filter-panel">
+  <h3>Smart Filters</h3>
+  <div class="filter-group">
+    <label>Price Range (AED/sqft)</label>
+    <div class="range-row">
+      <span class="range-val" id="fp-price-min-val">0</span>
+      <input type="range" id="fp-price-min" min="0" max="10000" value="0" step="100" oninput="applyFilters()">
+      <input type="range" id="fp-price-max" min="0" max="10000" value="10000" step="100" oninput="applyFilters()">
+      <span class="range-val" id="fp-price-max-val">10,000</span>
+    </div>
+  </div>
+  <div class="filter-group">
+    <label>Growth % Range</label>
+    <div class="range-row">
+      <span class="range-val" id="fp-growth-min-val">0%</span>
+      <input type="range" id="fp-growth-min" min="0" max="1000" value="0" step="5" oninput="applyFilters()">
+      <input type="range" id="fp-growth-max" min="0" max="1000" value="1000" step="5" oninput="applyFilters()">
+      <span class="range-val" id="fp-growth-max-val">1000%</span>
+    </div>
+  </div>
+  <div class="filter-group">
+    <label>Yield Range</label>
+    <div class="range-row">
+      <span class="range-val" id="fp-yield-min-val">0%</span>
+      <input type="range" id="fp-yield-min" min="0" max="15" value="0" step="0.5" oninput="applyFilters()">
+      <input type="range" id="fp-yield-max" min="0" max="15" value="15" step="0.5" oninput="applyFilters()">
+      <span class="range-val" id="fp-yield-max-val">15%</span>
+    </div>
+  </div>
+  <div class="filter-group">
+    <label>Property Type</label>
+    <div class="filter-toggles">
+      <span class="ft-btn active" data-ftype="villa" onclick="toggleFilterType(this)">Villa</span>
+      <span class="ft-btn active" data-ftype="apt" onclick="toggleFilterType(this)">Apt</span>
+      <span class="ft-btn active" data-ftype="ultra" onclick="toggleFilterType(this)">Ultra</span>
+    </div>
+  </div>
+  <div class="filter-group">
+    <label>Freehold Only</label>
+    <div class="filter-toggles">
+      <span class="ft-btn" id="fp-freehold" onclick="toggleFreeholdFilter(this)">Freehold</span>
+    </div>
+  </div>
+  <div class="filter-match-count" id="fp-match-count">13 areas match</div>
+</div>
+
+<!-- COMMAND PALETTE -->
+<div class="cmd-palette" id="cmd-palette">
+  <div class="cmd-inner">
+    <div class="cmd-input-wrap">
+      <input type="text" id="cmd-input" placeholder="Search areas or actions..." autocomplete="off">
+    </div>
+    <div class="cmd-results" id="cmd-results"></div>
+    <div class="cmd-hint">&#8593;&#8595; Navigate &middot; Enter Select &middot; Esc Close</div>
+  </div>
+</div>
+
+<!-- CONFETTI CANVAS -->
+<canvas id="confetti-canvas"></canvas>
 
 <script>
 /* ═══════════════════════════════════════
@@ -1181,7 +1699,7 @@ const App = {
   searchQuery: '',
   favorites: JSON.parse(localStorage.getItem('dpi-favorites') || '[]'),
   compareSet: new Set(),
-  theme: localStorage.getItem('dpi-theme') || 'dark',
+  theme: localStorage.getItem('dpi-theme') || 'light',
   heatmapOn: false,
 };
 
@@ -1750,8 +2268,11 @@ function updateMarkerDimming() {
   AREAS.forEach(d => {
     const wrap = document.getElementById(`mkwrap-${d.id}`);
     if (!wrap) return;
-    const ok = matchesSearch(d) && passesSmartFilter(d) && (App.currentMapFilter === 'all' || d.pinType === App.currentMapFilter);
+    let ok = matchesSearch(d) && passesSmartFilter(d) && (App.currentMapFilter === 'all' || d.pinType === App.currentMapFilter);
+    if (Affordability.active && !Affordability.matchingIds.has(d.id)) ok = false;
     wrap.classList.toggle('mk-dimmed', !ok);
+    // Pulse gold for affordability matches
+    wrap.classList.toggle('mk-aff-match', Affordability.active && Affordability.matchingIds.has(d.id));
   });
 }
 
@@ -1846,6 +2367,7 @@ function selectArea(id) {
       <div class="det-metric"><div class="dm-lbl">YoY (2026)</div><div class="dm-val" style="font-size:15px;color:var(--green)">${d.yoy}</div><div class="dm-sub">year-on-year</div></div>
     </div>
     <div class="det-return"><div><div class="dr-label">TOTAL RETURN</div><div style="font-size:9px;color:var(--text-muted);margin-top:2px">${d.cagr}</div></div><div class="dr-val">${d.appreciation}</div></div>
+    ${buildFinancingSnapshot(d)}
     ${buildRadarChart(d)}
     <div class="det-section">
       <div class="det-sec-title">Market Signals ${heatBadgeHtml(d.heatScore)}</div>
@@ -1910,8 +2432,387 @@ function initCalc() {
   sel.innerHTML = AREAS.map(a => `<option value="${a.id}">${a.name} (AED ${a.curP.toLocaleString()}/sqft)</option>`).join('');
   runCalc();
 }
-function openCalc() { document.getElementById('calc-modal').classList.add('open'); initCalc(); }
+/* ═══════════════════════════════════════
+   MORTGAGE CALCULATOR ENGINE (UAE-aware)
+═══════════════════════════════════════ */
+const MortgageState = {
+  buyerType: 'resident', // resident | nonresident | cash
+  price: 2400000,
+  dpPct: 25,
+  rate: 4.5,
+  termYears: 20,
+};
+function getMortMinDp(buyerType, price) {
+  if (buyerType === 'cash') return 100;
+  if (buyerType === 'nonresident') return 25;
+  if (buyerType === 'resident') return price >= 5000000 ? 30 : 20;
+  return 20;
+}
+function setBuyerType(t) {
+  MortgageState.buyerType = t;
+  document.querySelectorAll('#mort-buyer-toggles .buyer-toggle').forEach(el => {
+    el.classList.toggle('active', el.dataset.buyer === t);
+  });
+  // Adjust slider min, lock to 100% for cash
+  const slider = document.getElementById('mort-dp');
+  const min = getMortMinDp(t, MortgageState.price);
+  slider.min = min;
+  if (t === 'cash') {
+    slider.value = 100;
+    slider.disabled = true;
+  } else {
+    slider.disabled = false;
+    if (+slider.value < min) slider.value = min;
+  }
+  // Hide rate/term rows for cash buyer
+  const isCash = t === 'cash';
+  document.getElementById('mort-rate-row').style.display = isCash ? 'none' : 'block';
+  document.getElementById('mort-term-row').style.display = isCash ? 'none' : 'block';
+  renderMortgageTab();
+}
+function onMortAreaChange() {
+  const sel = document.getElementById('mort-area');
+  const a = AREAS.find(x => x.id === sel.value);
+  if (a) {
+    // Estimate avg unit price from price/sqft × ~1000sqft typical apt size
+    const est = Math.round(a.curP * 1000 / 50000) * 50000;
+    document.getElementById('mort-price').value = Math.max(est, 500000);
+    renderMortgageTab();
+  }
+}
+function calcMortgage(s) {
+  const loan = s.price * (1 - s.dpPct / 100);
+  if (s.buyerType === 'cash' || loan <= 0) {
+    return { monthly:0, totalInterest:0, totalCost:s.price, schedule:[] };
+  }
+  const r = s.rate / 100 / 12;
+  const n = s.termYears * 12;
+  const monthly = (loan * r) / (1 - Math.pow(1 + r, -n));
+  const totalCost = monthly * n;
+  const totalInterest = totalCost - loan;
+  // Build year-by-year schedule
+  const schedule = [];
+  let bal = loan;
+  for (let y = 1; y <= s.termYears; y++) {
+    const startBal = bal;
+    let yrInterest = 0, yrPrincipal = 0;
+    for (let m = 0; m < 12 && bal > 0; m++) {
+      const i = bal * r;
+      const p = Math.min(monthly - i, bal);
+      yrInterest += i; yrPrincipal += p; bal -= p;
+    }
+    schedule.push({ year:y, startBal, interest:yrInterest, principal:yrPrincipal, endBal:Math.max(bal,0) });
+  }
+  return { monthly, totalInterest, totalCost, schedule, loan };
+}
+function calcCashToClose(s, m) {
+  const loan = s.price * (1 - s.dpPct / 100);
+  const isCash = s.buyerType === 'cash';
+  const dp = s.price * (s.dpPct / 100);
+  const dldTransfer = s.price * 0.04;
+  const dldAdmin = 580;
+  const agencyBase = s.price * 0.02;
+  const agencyVat = agencyBase * 0.05;
+  const agencyTotal = agencyBase + agencyVat;
+  const mortgageReg = isCash ? 0 : (loan * 0.0025 + 290);
+  const bankFee = isCash ? 0 : Math.min(loan * 0.01, 8000);
+  const valuation = isCash ? 0 : 3000;
+  const total = dp + dldTransfer + dldAdmin + agencyTotal + mortgageReg + bankFee + valuation;
+  return { dp, dldTransfer, dldAdmin, agencyBase, agencyVat, agencyTotal, mortgageReg, bankFee, valuation, total };
+}
+function calcAnnualCosts(s) {
+  const isCash = s.buyerType === 'cash';
+  const loan = s.price * (1 - s.dpPct / 100);
+  const serviceCharges = Math.round(s.price * 0.012); // ~1.2% rough estimate
+  const lifeIns = isCash ? 0 : Math.round(loan * 0.004);
+  const propIns = Math.round(s.price * 0.0005);
+  return { serviceCharges, lifeIns, propIns, total: serviceCharges + lifeIns + propIns };
+}
+function fmtAED(n) {
+  if (!isFinite(n) || n === 0) return 'AED 0';
+  return 'AED ' + Math.round(n).toLocaleString();
+}
+function buildAmortSparkline(schedule) {
+  if (!schedule || !schedule.length) return '';
+  const max = schedule[0].startBal;
+  const w = 320, h = 50;
+  const pts = schedule.map((row,i) => {
+    const x = (i / (schedule.length - 1 || 1)) * w;
+    const y = h - (row.endBal / max) * h;
+    return `${x},${y}`;
+  });
+  return `<svg class="amort-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    <polyline points="${pts.join(' ')}" fill="none" stroke="var(--gold)" stroke-width="1.5"/>
+    <polyline points="0,${h} ${pts.join(' ')} ${w},${h}" fill="rgba(200,169,81,0.12)" stroke="none"/>
+  </svg>`;
+}
+function readMortInputs() {
+  MortgageState.price = +document.getElementById('mort-price').value || 0;
+  MortgageState.dpPct = +document.getElementById('mort-dp').value || getMortMinDp(MortgageState.buyerType, MortgageState.price);
+  MortgageState.rate = +document.getElementById('mort-rate').value || 4.5;
+  MortgageState.termYears = +document.getElementById('mort-term').value || 20;
+  // Re-evaluate min DP if price crossed 5M boundary
+  const min = getMortMinDp(MortgageState.buyerType, MortgageState.price);
+  document.getElementById('mort-dp').min = min;
+  if (MortgageState.dpPct < min) {
+    MortgageState.dpPct = min;
+    document.getElementById('mort-dp').value = min;
+  }
+}
+function renderMortgageTab() {
+  // Populate area dropdown on first render
+  const areaSel = document.getElementById('mort-area');
+  if (areaSel && !areaSel.options.length) {
+    areaSel.innerHTML = '<option value="">— Custom price —</option>' +
+      AREAS.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+  }
+  readMortInputs();
+  const s = MortgageState;
+  const m = calcMortgage(s);
+  const c = calcCashToClose(s, m);
+  const ann = calcAnnualCosts(s);
+  // Update DP labels
+  document.getElementById('mort-dp-pct').textContent = s.dpPct + '%';
+  document.getElementById('mort-dp-aed').textContent = fmtAED(c.dp);
+  const minDp = getMortMinDp(s.buyerType, s.price);
+  document.getElementById('mort-dp-min-hint').textContent = s.buyerType === 'cash'
+    ? 'Cash purchase — no financing.'
+    : `Minimum ${minDp}% required for ${s.buyerType === 'resident' ? (s.price >= 5000000 ? 'Resident, price ≥ 5M' : 'Resident, price < 5M') : 'Non-Resident'}.`;
+
+  const isCash = s.buyerType === 'cash';
+  const principalPct = m.loan ? (1 - m.totalInterest / (m.loan + m.totalInterest)) * 100 : 0;
+  const interestPct = 100 - principalPct;
+
+  const heroHtml = isCash ? `
+    <div class="mort-hero">
+      <div class="mort-hero-label">Cash Purchase</div>
+      <div class="mort-hero-monthly">${fmtAED(s.price)}</div>
+      <div class="mort-hero-sub">
+        <div class="mort-hero-sub-item"><div class="lbl">Term</div><div class="val">Single payment</div></div>
+        <div class="mort-hero-sub-item"><div class="lbl">Interest paid</div><div class="val">${fmtAED(0)}</div></div>
+      </div>
+    </div>
+  ` : `
+    <div class="mort-hero">
+      <div class="mort-hero-label">Monthly Payment</div>
+      <div class="mort-hero-monthly">${fmtAED(m.monthly)}</div>
+      <div class="mort-hero-sub">
+        <div class="mort-hero-sub-item"><div class="lbl">Total Interest (Life of Loan)</div><div class="val">${fmtAED(m.totalInterest)}</div></div>
+        <div class="mort-hero-sub-item"><div class="lbl">Total Cost (Loan + Interest)</div><div class="val">${fmtAED(m.totalCost)}</div></div>
+      </div>
+      <div class="mort-pi-bar">
+        <div class="pi-principal" style="width:${principalPct}%"></div>
+        <div class="pi-interest" style="width:${interestPct}%"></div>
+      </div>
+      <div class="mort-pi-legend">
+        <span><span class="dot" style="background:var(--green)"></span>Principal ${principalPct.toFixed(0)}%</span>
+        <span><span class="dot" style="background:var(--gold)"></span>Interest ${interestPct.toFixed(0)}%</span>
+      </div>
+    </div>
+  `;
+
+  const cashRows = [
+    { lbl:'Down Payment', sub:s.dpPct + '% of price', val:c.dp },
+    { lbl:'DLD Transfer Fee', sub:'4% of price', val:c.dldTransfer },
+    { lbl:'DLD Admin Fee', sub:'Fixed', val:c.dldAdmin },
+    { lbl:'Agency Fee', sub:'2% + 5% VAT', val:c.agencyTotal },
+  ];
+  if (!isCash) {
+    cashRows.push({ lbl:'Mortgage Registration', sub:'0.25% of loan + AED 290', val:c.mortgageReg });
+    cashRows.push({ lbl:'Bank Processing Fee', sub:'1% of loan (cap AED 8K)', val:c.bankFee });
+    cashRows.push({ lbl:'Property Valuation', sub:'Estimate', val:c.valuation });
+  }
+  const cashHtml = `
+    <div class="mort-section-title">Cash Required to Close</div>
+    <div class="cash-card">
+      ${cashRows.map(r => `<div class="cash-row"><div class="lbl">${r.lbl}<small>${r.sub}</small></div><div class="val">${fmtAED(r.val)}</div></div>`).join('')}
+      <div class="cash-total"><span class="lbl">Total Cash Needed</span><span class="val">${fmtAED(c.total)}</span></div>
+    </div>
+  `;
+
+  const annHtml = `
+    <div class="collapsible" id="mort-annual-coll">
+      <div class="collapsible-head" onclick="document.getElementById('mort-annual-coll').classList.toggle('open')">
+        <span class="mort-section-title" style="margin:0">Annual Costs (~${fmtAED(ann.total)}/yr)</span>
+        <span class="chev">&#9656;</span>
+      </div>
+      <div class="collapsible-body">
+        <div class="cash-card">
+          <div class="cash-row"><div class="lbl">Service Charges<small>Building/community fees (estimate)</small></div><div class="val">${fmtAED(ann.serviceCharges)}</div></div>
+          ${!isCash ? `<div class="cash-row"><div class="lbl">Property Life Insurance<small>~0.4% of loan</small></div><div class="val">${fmtAED(ann.lifeIns)}</div></div>` : ''}
+          <div class="cash-row"><div class="lbl">Property Insurance<small>~0.05% of value</small></div><div class="val">${fmtAED(ann.propIns)}</div></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const amortHtml = (!isCash && m.schedule && m.schedule.length) ? `
+    <div class="collapsible" id="mort-amort-coll">
+      <div class="collapsible-head" onclick="document.getElementById('mort-amort-coll').classList.toggle('open')">
+        <span class="mort-section-title" style="margin:0">Amortization Schedule</span>
+        <span class="chev">&#9656;</span>
+      </div>
+      <div class="collapsible-body">
+        ${buildAmortSparkline(m.schedule)}
+        <div style="max-height:240px;overflow:auto;border:1px solid var(--border);border-radius:var(--radius-sm)">
+        <table class="amort-table">
+          <thead><tr><th>Year</th><th>Begin Bal</th><th>Interest</th><th>Principal</th><th>End Bal</th></tr></thead>
+          <tbody>
+            ${m.schedule.map(row => `<tr>
+              <td>${row.year}</td>
+              <td>${fmtAED(row.startBal)}</td>
+              <td>${fmtAED(row.interest)}</td>
+              <td>${fmtAED(row.principal)}</td>
+              <td>${fmtAED(row.endBal)}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  ` : '';
+
+  document.getElementById('mort-output').innerHTML = heroHtml + cashHtml + annHtml + amortHtml;
+}
+
+/* ═══════════════════════════════════════
+   AFFORDABILITY ENGINE
+═══════════════════════════════════════ */
+const Affordability = {
+  active: false,
+  buyerType: 'resident',
+  budget: 12000,
+  cash: 600000,
+  rate: 4.5,
+  termYears: 20,
+  maxPrice: 0,
+  matchingIds: new Set(),
+};
+function setAffBuyerType(t) {
+  Affordability.buyerType = t;
+  document.querySelectorAll('[data-aff-buyer]').forEach(el => {
+    el.classList.toggle('active', el.dataset.affBuyer === t);
+  });
+  // Cash buyer: hide budget + rate (price = cash)
+  const isCash = t === 'cash';
+  document.getElementById('aff-budget-row').style.display = isCash ? 'none' : 'block';
+  document.getElementById('aff-rate-row').style.display = isCash ? 'none' : 'block';
+  renderAffordabilityTab();
+}
+function calcMaxPriceFromBudget(monthly, rate, years) {
+  if (monthly <= 0) return 0;
+  const r = rate / 100 / 12;
+  const n = years * 12;
+  // Inverse of monthly = loan*r / (1 - (1+r)^-n)  →  loan = monthly*(1-(1+r)^-n)/r
+  if (r === 0) return monthly * n;
+  return (monthly * (1 - Math.pow(1 + r, -n))) / r;
+}
+function estimateAreaUnitPrice(a) {
+  // Assume average unit ~ 1000 sqft for apt, 3000 sqft for villa, 1500 mixed
+  const sqft = a.pinType === 'villa' ? 3000 : a.pinType === 'apt' ? 1000 : 1500;
+  return Math.round(a.curP * sqft);
+}
+function calcAffordability(s) {
+  let maxPrice;
+  if (s.buyerType === 'cash') {
+    maxPrice = s.cash;
+  } else {
+    const minDpPct = s.buyerType === 'nonresident' ? 25 : 20;
+    // Use the user's cash to determine actual DP %, but enforce minimum.
+    // Then compute max loan from budget, and max price = loan + cash, BUT
+    // capped by cash/minDp (since DP must be at least minDp% of price).
+    const maxLoan = calcMaxPriceFromBudget(s.budget, s.rate, s.termYears);
+    const priceFromBudget = maxLoan + s.cash;
+    const priceFromCash = s.cash / (minDpPct / 100); // price s.t. DP = cash exactly at minDp%
+    maxPrice = Math.min(priceFromBudget, priceFromCash);
+  }
+  const matches = [];
+  AREAS.forEach(a => {
+    const est = estimateAreaUnitPrice(a);
+    if (est <= maxPrice) {
+      // Compute monthly payment for this area's est price
+      const dp = s.buyerType === 'cash' ? est : Math.max(s.cash, est * (s.buyerType === 'nonresident' ? 0.25 : 0.20));
+      const loan = est - dp;
+      let monthly = 0;
+      if (loan > 0 && s.buyerType !== 'cash') {
+        const r = s.rate / 100 / 12;
+        const n = s.termYears * 12;
+        monthly = (loan * r) / (1 - Math.pow(1 + r, -n));
+      }
+      matches.push({ area:a, est, monthly, headroom: maxPrice - est });
+    }
+  });
+  matches.sort((a, b) => a.headroom - b.headroom); // closest to budget first
+  return { maxPrice, matches };
+}
+function renderAffordabilityTab() {
+  Affordability.budget = +document.getElementById('aff-budget').value;
+  Affordability.cash = +document.getElementById('aff-cash').value;
+  Affordability.rate = +document.getElementById('aff-rate').value || 4.5;
+  Affordability.termYears = +document.getElementById('aff-term').value || 20;
+
+  document.getElementById('aff-budget-val').textContent = fmtAED(Affordability.budget) + '/mo';
+  document.getElementById('aff-cash-val').textContent = fmtAED(Affordability.cash);
+
+  const result = calcAffordability(Affordability);
+  Affordability.maxPrice = result.maxPrice;
+  Affordability.matchingIds = new Set(result.matches.map(m => m.area.id));
+  Affordability.active = true;
+
+  document.getElementById('aff-max-price').textContent = fmtAED(result.maxPrice);
+  document.getElementById('aff-list-title').textContent =
+    `${result.matches.length} matching area${result.matches.length !== 1 ? 's' : ''}`;
+
+  const list = document.getElementById('aff-list');
+  if (!result.matches.length) {
+    list.innerHTML = '<div class="aff-empty">No areas match this budget. Try increasing your monthly budget or down payment.</div>';
+  } else {
+    list.innerHTML = result.matches.map(m => `
+      <div class="aff-row" onclick="affJumpTo('${m.area.id}')">
+        <div class="name">${m.area.name}<small>${m.area.pinType.toUpperCase()} &middot; ${m.area.growth}</small></div>
+        <div class="price">${fmtAED(m.est)}</div>
+        <div class="monthly">${m.monthly > 0 ? fmtAED(m.monthly) + '/mo' : 'Cash'}</div>
+      </div>
+    `).join('');
+  }
+
+  // Update map dimming + chip
+  document.getElementById('aff-chip').classList.add('active');
+  updateMarkerDimming();
+}
+function affJumpTo(id) {
+  closeCalc();
+  selectArea(id);
+}
+function clearAffordabilityFilter() {
+  Affordability.active = false;
+  Affordability.matchingIds.clear();
+  document.getElementById('aff-chip').classList.remove('active');
+  updateMarkerDimming();
+}
+
+let _activeCalcTab = 'roi';
+function openCalc(tab, areaId) {
+  document.getElementById('calc-modal').classList.add('open');
+  initCalc();
+  if (areaId) {
+    const sel = document.getElementById('calc-area');
+    if (sel) { sel.value = areaId; runCalc(); }
+  }
+  switchCalcTab(tab || _activeCalcTab || 'roi');
+}
 function closeCalc() { document.getElementById('calc-modal').classList.remove('open'); }
+function switchCalcTab(tab) {
+  _activeCalcTab = tab;
+  document.querySelectorAll('.calc-tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.calcTab === tab);
+  });
+  document.querySelectorAll('.calc-panel').forEach(el => {
+    el.classList.toggle('active', el.dataset.calcPanel === tab);
+  });
+  if (tab === 'mortgage' && typeof renderMortgageTab === 'function') renderMortgageTab();
+  if (tab === 'affordability' && typeof renderAffordabilityTab === 'function') renderAffordabilityTab();
+}
 function runCalc() {
   const price = +document.getElementById('calc-price').value || 0;
   const dp = (+document.getElementById('calc-dp').value || 0) / 100;
@@ -1944,6 +2845,15 @@ function runCalc() {
    KEYBOARD
 ═══════════════════════════════════════ */
 document.addEventListener('keydown', function(e) {
+  // Shift+D toggles theme globally (skip when typing in inputs)
+  const tag = (e.target && e.target.tagName) || '';
+  const typing = tag === 'INPUT' || tag === 'TEXTAREA' || (e.target && e.target.isContentEditable);
+  if (e.shiftKey && (e.key === 'D' || e.key === 'd') && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    e.preventDefault();
+    toggleTheme();
+    dismissThemeToast();
+    return;
+  }
   // Feature 8: Cmd+K / Ctrl+K command palette
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
     e.preventDefault();
@@ -2061,9 +2971,61 @@ selectArea = function(id) {
 ═══════════════════════════════════════ */
 function handleHash() {
   const h = window.location.hash.replace('#','');
-  if (h && AREAS.find(a => a.id === h)) selectArea(h);
+  if (!h) return;
+  // Legacy form: #areaId
+  if (AREAS.find(a => a.id === h)) { selectArea(h); return; }
+  // New form: #calc=mortgage&area=marina or #calc=roi
+  if (h.indexOf('=') !== -1) {
+    const params = {};
+    h.split('&').forEach(kv => { const [k,v] = kv.split('='); if (k) params[k] = decodeURIComponent(v||''); });
+    if (params.area && AREAS.find(a => a.id === params.area)) selectArea(params.area);
+    if (params.calc) {
+      const validTabs = ['mortgage','roi','affordability'];
+      const tab = validTabs.indexOf(params.calc) !== -1 ? params.calc : 'roi';
+      setTimeout(() => openCalc(tab, params.area), 200);
+    }
+  }
 }
 window.addEventListener('hashchange', handleHash);
+
+/* ═══════════════════════════════════════
+   FINANCING SNAPSHOT (Layer 1 of mortgage system)
+═══════════════════════════════════════ */
+function estimateMonthlyForArea(a, dpPct, rate, years) {
+  const price = estimateAreaUnitPrice(a);
+  const loan = price * (1 - dpPct/100);
+  if (loan <= 0) return { price:price, monthly:0 };
+  const r = rate/100/12, n = years*12;
+  const monthly = (loan * r) / (1 - Math.pow(1+r, -n));
+  return { price, monthly };
+}
+function estimate5yrROI(a) {
+  // Rough: yield + appreciation compounded over 5 years
+  const yld = parseYieldNum(a.yield_) || 5;
+  const annualGrowth = Math.min(a.growthPct / Math.max(a.yearsLive || 5, 1), 25); // cap to avoid extreme outliers
+  const apprPct = Math.pow(1 + annualGrowth/100, 5) - 1;
+  return Math.round((yld * 5) + (apprPct * 100));
+}
+function buildFinancingSnapshot(d) {
+  const est = estimateMonthlyForArea(d, 25, 4.5, 20);
+  const roi5 = estimate5yrROI(d);
+  return `<div class="fin-snapshot">
+    <div class="fin-head">
+      <div class="fin-title">Financing Snapshot</div>
+      <div class="fin-pills">
+        <span class="fin-pill active" data-fin-mode="buy">BUY</span>
+        <span class="fin-pill" data-fin-mode="invest">INVEST</span>
+      </div>
+    </div>
+    <div class="fin-stats">
+      <div class="fin-stat"><div class="lbl">Avg Unit ~</div><div class="val">${fmtAED(est.price)}</div></div>
+      <div class="fin-stat"><div class="lbl">Monthly</div><div class="val gold">${fmtAED(est.monthly)}</div></div>
+      <div class="fin-stat"><div class="lbl">Down 25%</div><div class="val">${fmtAED(est.price * 0.25)}</div></div>
+      <div class="fin-stat"><div class="lbl">5yr ROI Est.</div><div class="val teal">${roi5 >= 0 ? '+' : ''}${roi5}%</div></div>
+    </div>
+    <button class="fin-cta" onclick="openCalc('mortgage','${d.id}')">Open full calculator &rarr;</button>
+  </div>`;
+}
 
 /* ═══════════════════════════════════════
    FEATURE 1: ANIMATED NUMBER COUNTERS
@@ -2410,72 +3372,51 @@ function exportReport() {
 }
 
 /* ═══════════════════════════════════════
+   THEME TOAST
+═══════════════════════════════════════ */
+let _themeToastTimer = null;
+function showThemeToast() {
+  const t = document.getElementById('theme-toast');
+  if (!t) return;
+  // Re-trigger transition
+  t.classList.remove('visible');
+  void t.offsetWidth;
+  t.classList.add('visible');
+  if (_themeToastTimer) clearTimeout(_themeToastTimer);
+  _themeToastTimer = setTimeout(dismissThemeToast, 7000);
+}
+function dismissThemeToast() {
+  const t = document.getElementById('theme-toast');
+  if (!t) return;
+  t.classList.remove('visible');
+  if (_themeToastTimer) { clearTimeout(_themeToastTimer); _themeToastTimer = null; }
+  try { localStorage.setItem('dpi-seen-theme-hint', '1'); } catch(e){}
+}
+function maybeShowThemeToast() {
+  // Only show if user hasn't dismissed before AND hasn't set a theme preference yet
+  let seen = false, savedTheme = null;
+  try { seen = !!localStorage.getItem('dpi-seen-theme-hint'); } catch(e){}
+  try { savedTheme = localStorage.getItem('dpi-theme'); } catch(e){}
+  if (seen || savedTheme) return;
+  setTimeout(showThemeToast, 1000);
+}
+document.addEventListener('DOMContentLoaded', function(){
+  const close = document.getElementById('tt-close');
+  const sw = document.getElementById('tt-switch');
+  if (close) close.addEventListener('click', dismissThemeToast);
+  if (sw) sw.addEventListener('click', function(){
+    toggleTheme();
+    dismissThemeToast();
+  });
+});
+
+/* ═══════════════════════════════════════
    INIT
 ═══════════════════════════════════════ */
 initTheme();
 handleHash();
+maybeShowThemeToast();
 </script>
-
-<!-- FILTER PANEL -->
-<div class="filter-panel" id="filter-panel">
-  <h3>Smart Filters</h3>
-  <div class="filter-group">
-    <label>Price Range (AED/sqft)</label>
-    <div class="range-row">
-      <span class="range-val" id="fp-price-min-val">0</span>
-      <input type="range" id="fp-price-min" min="0" max="10000" value="0" step="100" oninput="applyFilters()">
-      <input type="range" id="fp-price-max" min="0" max="10000" value="10000" step="100" oninput="applyFilters()">
-      <span class="range-val" id="fp-price-max-val">10,000</span>
-    </div>
-  </div>
-  <div class="filter-group">
-    <label>Growth % Range</label>
-    <div class="range-row">
-      <span class="range-val" id="fp-growth-min-val">0%</span>
-      <input type="range" id="fp-growth-min" min="0" max="1000" value="0" step="5" oninput="applyFilters()">
-      <input type="range" id="fp-growth-max" min="0" max="1000" value="1000" step="5" oninput="applyFilters()">
-      <span class="range-val" id="fp-growth-max-val">1000%</span>
-    </div>
-  </div>
-  <div class="filter-group">
-    <label>Yield Range</label>
-    <div class="range-row">
-      <span class="range-val" id="fp-yield-min-val">0%</span>
-      <input type="range" id="fp-yield-min" min="0" max="15" value="0" step="0.5" oninput="applyFilters()">
-      <input type="range" id="fp-yield-max" min="0" max="15" value="15" step="0.5" oninput="applyFilters()">
-      <span class="range-val" id="fp-yield-max-val">15%</span>
-    </div>
-  </div>
-  <div class="filter-group">
-    <label>Property Type</label>
-    <div class="filter-toggles">
-      <span class="ft-btn active" data-ftype="villa" onclick="toggleFilterType(this)">Villa</span>
-      <span class="ft-btn active" data-ftype="apt" onclick="toggleFilterType(this)">Apt</span>
-      <span class="ft-btn active" data-ftype="ultra" onclick="toggleFilterType(this)">Ultra</span>
-    </div>
-  </div>
-  <div class="filter-group">
-    <label>Freehold Only</label>
-    <div class="filter-toggles">
-      <span class="ft-btn" id="fp-freehold" onclick="toggleFreeholdFilter(this)">Freehold</span>
-    </div>
-  </div>
-  <div class="filter-match-count" id="fp-match-count">13 areas match</div>
-</div>
-
-<!-- COMMAND PALETTE -->
-<div class="cmd-palette" id="cmd-palette">
-  <div class="cmd-inner">
-    <div class="cmd-input-wrap">
-      <input type="text" id="cmd-input" placeholder="Search areas or actions..." autocomplete="off">
-    </div>
-    <div class="cmd-results" id="cmd-results"></div>
-    <div class="cmd-hint">&#8593;&#8595; Navigate &middot; Enter Select &middot; Esc Close</div>
-  </div>
-</div>
-
-<!-- CONFETTI CANVAS -->
-<canvas id="confetti-canvas"></canvas>
 
 <!-- CREDIT BUBBLE -->
 <div class="credit-bubble">
