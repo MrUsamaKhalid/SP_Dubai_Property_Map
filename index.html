@@ -1415,7 +1415,7 @@ html, body {
       <div class="mc-btn" onclick="resetMapView()" title="Reset view">&#8962;</div>
       <div class="mc-btn" id="heatmap-toggle" onclick="toggleHeatmap()" title="Price heatmap">&#9681;</div>
       <div class="mc-btn" id="playback-toggle" onclick="togglePlayback()" title="Historical Playback">&#9654;</div>
-      <div class="mc-btn" onclick="openCalc()" title="ROI Calculator">&#9749;</div>
+      <div class="mc-btn" onclick="openCalc()" title="Calculator (Mortgage / ROI / Affordability)" role="button" tabindex="0" aria-label="Open Calculator" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCalc();}">&#9749;</div>
     </div>
     <div class="playback-bar" id="playback-bar" style="display:none">
       <span class="pb-label" id="pb-label">--</span>
@@ -1468,10 +1468,10 @@ html, body {
       <h2>Calculator</h2>
       <div class="modal-close" onclick="closeCalc()">&#10005;</div>
     </div>
-    <div class="calc-tabs" role="tablist">
-      <div class="calc-tab" data-calc-tab="mortgage" onclick="switchCalcTab('mortgage')" role="tab"><span class="calc-tab-icon">&#127960;</span> Mortgage</div>
-      <div class="calc-tab active" data-calc-tab="roi" onclick="switchCalcTab('roi')" role="tab"><span class="calc-tab-icon">&#128200;</span> ROI</div>
-      <div class="calc-tab" data-calc-tab="affordability" onclick="switchCalcTab('affordability')" role="tab"><span class="calc-tab-icon">&#128181;</span> Affordability</div>
+    <div class="calc-tabs" role="tablist" aria-label="Calculator tools" onkeydown="handleCalcTabKey(event)">
+      <div class="calc-tab" data-calc-tab="mortgage" onclick="switchCalcTab('mortgage')" role="tab" tabindex="-1" aria-selected="false"><span class="calc-tab-icon">&#127960;</span> Mortgage</div>
+      <div class="calc-tab active" data-calc-tab="roi" onclick="switchCalcTab('roi')" role="tab" tabindex="0" aria-selected="true"><span class="calc-tab-icon">&#128200;</span> ROI</div>
+      <div class="calc-tab" data-calc-tab="affordability" onclick="switchCalcTab('affordability')" role="tab" tabindex="-1" aria-selected="false"><span class="calc-tab-icon">&#128181;</span> Affordability</div>
     </div>
     <div class="modal-body">
 
@@ -2474,8 +2474,8 @@ function onMortAreaChange() {
   const sel = document.getElementById('mort-area');
   const a = AREAS.find(x => x.id === sel.value);
   if (a) {
-    // Estimate avg unit price from price/sqft × ~1000sqft typical apt size
-    const est = Math.round(a.curP * 1000 / 50000) * 50000;
+    // Use shared helper — type-aware (villa 3000sqft, apt 1000, mixed 1500)
+    const est = Math.round(estimateAreaUnitPrice(a) / 50000) * 50000;
     document.getElementById('mort-price').value = Math.max(est, 500000);
     renderMortgageTab();
   }
@@ -2795,17 +2795,63 @@ let _activeCalcTab = 'roi';
 function openCalc(tab, areaId) {
   document.getElementById('calc-modal').classList.add('open');
   initCalc();
-  if (areaId) {
-    const sel = document.getElementById('calc-area');
-    if (sel) { sel.value = areaId; runCalc(); }
+  const targetTab = tab || _activeCalcTab || 'roi';
+  switchCalcTab(targetTab);
+  // Pre-fill area across ALL tab inputs (must come AFTER switchCalcTab so
+  // dropdowns are populated by their lazy renderers)
+  if (areaId && AREAS.find(a => a.id === areaId)) {
+    setCalcArea(areaId);
   }
-  switchCalcTab(tab || _activeCalcTab || 'roi');
+}
+function setCalcArea(areaId) {
+  const a = AREAS.find(x => x.id === areaId);
+  if (!a) return;
+  // ROI tab dropdown
+  const roiSel = document.getElementById('calc-area');
+  if (roiSel) { roiSel.value = areaId; runCalc(); }
+  // Mortgage tab: set dropdown + estimate price + re-render
+  const mortSel = document.getElementById('mort-area');
+  if (mortSel) {
+    mortSel.value = areaId;
+    const est = Math.round(estimateAreaUnitPrice(a) / 50000) * 50000;
+    document.getElementById('mort-price').value = Math.max(est, 500000);
+    renderMortgageTab();
+  }
 }
 function closeCalc() { document.getElementById('calc-modal').classList.remove('open'); }
+/* Keyboard nav for calculator tabs (WAI-ARIA Authoring Practices: tabs pattern) */
+function handleCalcTabKey(e) {
+  const tabs = ['mortgage','roi','affordability'];
+  const cur = tabs.indexOf(_activeCalcTab);
+  if (cur === -1) return;
+  let nextIdx = -1;
+  if (e.key === 'ArrowRight') nextIdx = (cur + 1) % tabs.length;
+  else if (e.key === 'ArrowLeft') nextIdx = (cur - 1 + tabs.length) % tabs.length;
+  else if (e.key === 'Home') nextIdx = 0;
+  else if (e.key === 'End') nextIdx = tabs.length - 1;
+  else if (e.key === 'Enter' || e.key === ' ') {
+    // Activate the focused tab
+    const focused = document.activeElement;
+    if (focused && focused.dataset && focused.dataset.calcTab) {
+      e.preventDefault();
+      switchCalcTab(focused.dataset.calcTab);
+    }
+    return;
+  }
+  if (nextIdx === -1) return;
+  e.preventDefault();
+  switchCalcTab(tabs[nextIdx]);
+  // Focus the newly active tab so keyboard user knows where they are
+  const newTab = document.querySelector(`.calc-tab[data-calc-tab="${tabs[nextIdx]}"]`);
+  if (newTab) newTab.focus();
+}
 function switchCalcTab(tab) {
   _activeCalcTab = tab;
   document.querySelectorAll('.calc-tab').forEach(el => {
-    el.classList.toggle('active', el.dataset.calcTab === tab);
+    const isActive = el.dataset.calcTab === tab;
+    el.classList.toggle('active', isActive);
+    el.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    el.setAttribute('tabindex', isActive ? '0' : '-1');
   });
   document.querySelectorAll('.calc-panel').forEach(el => {
     el.classList.toggle('active', el.dataset.calcPanel === tab);
@@ -3263,7 +3309,9 @@ function getCmdItems(query) {
   });
   // Action items
   items.push({ type:'action', label:'Toggle Theme', icon:'\u263c', action: () => toggleTheme() });
-  items.push({ type:'action', label:'ROI Calculator', icon:'\u2615', action: () => { closeCmdPalette(); openCalc(); } });
+  items.push({ type:'action', label:'Open Calculator', icon:'\u2615', action: () => { closeCmdPalette(); openCalc(); } });
+  items.push({ type:'action', label:'Mortgage Calculator', icon:'\ud83c\udfe0', action: () => { closeCmdPalette(); openCalc('mortgage'); } });
+  items.push({ type:'action', label:'Affordability Search', icon:'\ud83d\udcb5', action: () => { closeCmdPalette(); openCalc('affordability'); } });
   items.push({ type:'action', label:'Toggle Heatmap', icon:'\u25d1', action: () => toggleHeatmap() });
   items.push({ type:'action', label:'Reset View', icon:'\u2302', action: () => resetMapView() });
   items.push({ type:'action', label:'Export PDF', icon:'\ud83d\udcc4', action: () => { closeCmdPalette(); window.print(); } });
