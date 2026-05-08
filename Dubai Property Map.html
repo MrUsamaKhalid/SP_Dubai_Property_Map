@@ -2474,8 +2474,8 @@ function onMortAreaChange() {
   const sel = document.getElementById('mort-area');
   const a = AREAS.find(x => x.id === sel.value);
   if (a) {
-    // Estimate avg unit price from price/sqft × ~1000sqft typical apt size
-    const est = Math.round(a.curP * 1000 / 50000) * 50000;
+    // Use shared helper — type-aware (villa 3000sqft, apt 1000, mixed 1500)
+    const est = Math.round(estimateAreaUnitPrice(a) / 50000) * 50000;
     document.getElementById('mort-price').value = Math.max(est, 500000);
     renderMortgageTab();
   }
@@ -2795,17 +2795,37 @@ let _activeCalcTab = 'roi';
 function openCalc(tab, areaId) {
   document.getElementById('calc-modal').classList.add('open');
   initCalc();
-  if (areaId) {
-    const sel = document.getElementById('calc-area');
-    if (sel) { sel.value = areaId; runCalc(); }
+  const targetTab = tab || _activeCalcTab || 'roi';
+  switchCalcTab(targetTab);
+  // Pre-fill area across ALL tab inputs (must come AFTER switchCalcTab so
+  // dropdowns are populated by their lazy renderers)
+  if (areaId && AREAS.find(a => a.id === areaId)) {
+    setCalcArea(areaId);
   }
-  switchCalcTab(tab || _activeCalcTab || 'roi');
+}
+function setCalcArea(areaId) {
+  const a = AREAS.find(x => x.id === areaId);
+  if (!a) return;
+  // ROI tab dropdown
+  const roiSel = document.getElementById('calc-area');
+  if (roiSel) { roiSel.value = areaId; runCalc(); }
+  // Mortgage tab: set dropdown + estimate price + re-render
+  const mortSel = document.getElementById('mort-area');
+  if (mortSel) {
+    mortSel.value = areaId;
+    const est = Math.round(estimateAreaUnitPrice(a) / 50000) * 50000;
+    document.getElementById('mort-price').value = Math.max(est, 500000);
+    renderMortgageTab();
+  }
 }
 function closeCalc() { document.getElementById('calc-modal').classList.remove('open'); }
 function switchCalcTab(tab) {
   _activeCalcTab = tab;
   document.querySelectorAll('.calc-tab').forEach(el => {
-    el.classList.toggle('active', el.dataset.calcTab === tab);
+    const isActive = el.dataset.calcTab === tab;
+    el.classList.toggle('active', isActive);
+    el.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    el.setAttribute('tabindex', isActive ? '0' : '-1');
   });
   document.querySelectorAll('.calc-panel').forEach(el => {
     el.classList.toggle('active', el.dataset.calcPanel === tab);
