@@ -1415,7 +1415,7 @@ html, body {
       <div class="mc-btn" onclick="resetMapView()" title="Reset view">&#8962;</div>
       <div class="mc-btn" id="heatmap-toggle" onclick="toggleHeatmap()" title="Price heatmap">&#9681;</div>
       <div class="mc-btn" id="playback-toggle" onclick="togglePlayback()" title="Historical Playback">&#9654;</div>
-      <div class="mc-btn" onclick="openCalc()" title="ROI Calculator">&#9749;</div>
+      <div class="mc-btn" onclick="openCalc()" title="Calculator (Mortgage / ROI / Affordability)" role="button" tabindex="0" aria-label="Open Calculator" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCalc();}">&#9749;</div>
     </div>
     <div class="playback-bar" id="playback-bar" style="display:none">
       <span class="pb-label" id="pb-label">--</span>
@@ -3283,7 +3283,9 @@ function getCmdItems(query) {
   });
   // Action items
   items.push({ type:'action', label:'Toggle Theme', icon:'\u263c', action: () => toggleTheme() });
-  items.push({ type:'action', label:'ROI Calculator', icon:'\u2615', action: () => { closeCmdPalette(); openCalc(); } });
+  items.push({ type:'action', label:'Open Calculator', icon:'\u2615', action: () => { closeCmdPalette(); openCalc(); } });
+  items.push({ type:'action', label:'Mortgage Calculator', icon:'\ud83c\udfe0', action: () => { closeCmdPalette(); openCalc('mortgage'); } });
+  items.push({ type:'action', label:'Affordability Search', icon:'\ud83d\udcb5', action: () => { closeCmdPalette(); openCalc('affordability'); } });
   items.push({ type:'action', label:'Toggle Heatmap', icon:'\u25d1', action: () => toggleHeatmap() });
   items.push({ type:'action', label:'Reset View', icon:'\u2302', action: () => resetMapView() });
   items.push({ type:'action', label:'Export PDF', icon:'\ud83d\udcc4', action: () => { closeCmdPalette(); window.print(); } });
