@@ -1468,10 +1468,10 @@ html, body {
       <h2>Calculator</h2>
       <div class="modal-close" onclick="closeCalc()">&#10005;</div>
     </div>
-    <div class="calc-tabs" role="tablist">
-      <div class="calc-tab" data-calc-tab="mortgage" onclick="switchCalcTab('mortgage')" role="tab"><span class="calc-tab-icon">&#127960;</span> Mortgage</div>
-      <div class="calc-tab active" data-calc-tab="roi" onclick="switchCalcTab('roi')" role="tab"><span class="calc-tab-icon">&#128200;</span> ROI</div>
-      <div class="calc-tab" data-calc-tab="affordability" onclick="switchCalcTab('affordability')" role="tab"><span class="calc-tab-icon">&#128181;</span> Affordability</div>
+    <div class="calc-tabs" role="tablist" aria-label="Calculator tools" onkeydown="handleCalcTabKey(event)">
+      <div class="calc-tab" data-calc-tab="mortgage" onclick="switchCalcTab('mortgage')" role="tab" tabindex="-1" aria-selected="false"><span class="calc-tab-icon">&#127960;</span> Mortgage</div>
+      <div class="calc-tab active" data-calc-tab="roi" onclick="switchCalcTab('roi')" role="tab" tabindex="0" aria-selected="true"><span class="calc-tab-icon">&#128200;</span> ROI</div>
+      <div class="calc-tab" data-calc-tab="affordability" onclick="switchCalcTab('affordability')" role="tab" tabindex="-1" aria-selected="false"><span class="calc-tab-icon">&#128181;</span> Affordability</div>
     </div>
     <div class="modal-body">
 
@@ -2819,6 +2819,32 @@ function setCalcArea(areaId) {
   }
 }
 function closeCalc() { document.getElementById('calc-modal').classList.remove('open'); }
+/* Keyboard nav for calculator tabs (WAI-ARIA Authoring Practices: tabs pattern) */
+function handleCalcTabKey(e) {
+  const tabs = ['mortgage','roi','affordability'];
+  const cur = tabs.indexOf(_activeCalcTab);
+  if (cur === -1) return;
+  let nextIdx = -1;
+  if (e.key === 'ArrowRight') nextIdx = (cur + 1) % tabs.length;
+  else if (e.key === 'ArrowLeft') nextIdx = (cur - 1 + tabs.length) % tabs.length;
+  else if (e.key === 'Home') nextIdx = 0;
+  else if (e.key === 'End') nextIdx = tabs.length - 1;
+  else if (e.key === 'Enter' || e.key === ' ') {
+    // Activate the focused tab
+    const focused = document.activeElement;
+    if (focused && focused.dataset && focused.dataset.calcTab) {
+      e.preventDefault();
+      switchCalcTab(focused.dataset.calcTab);
+    }
+    return;
+  }
+  if (nextIdx === -1) return;
+  e.preventDefault();
+  switchCalcTab(tabs[nextIdx]);
+  // Focus the newly active tab so keyboard user knows where they are
+  const newTab = document.querySelector(`.calc-tab[data-calc-tab="${tabs[nextIdx]}"]`);
+  if (newTab) newTab.focus();
+}
 function switchCalcTab(tab) {
   _activeCalcTab = tab;
   document.querySelectorAll('.calc-tab').forEach(el => {
