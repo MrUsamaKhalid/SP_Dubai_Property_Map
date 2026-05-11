@@ -2066,7 +2066,7 @@ html, body {
           </div>
         </div>
         <div class="mort-actions">
-          <button class="mort-pdf-btn" onclick="window.print()">&#128196; Save as PDF</button>
+          <button class="mort-pdf-btn" onclick="exportMortgagePDF()">&#128196; Save as PDF</button>
         </div>
       </div>
 
@@ -4023,6 +4023,28 @@ function triggerConfetti() {
 /* ═══════════════════════════════════════
    FEATURE 10: PDF EXPORT (print CSS already added)
 ═══════════════════════════════════════ */
+function exportMortgagePDF() {
+  // Expand all collapsibles inside the mortgage panel so they show in the PDF
+  const panel = document.querySelector('[data-calc-panel="mortgage"]');
+  const collapsibles = panel ? panel.querySelectorAll('.collapsible') : [];
+  const wasOpen = [];
+  collapsibles.forEach((el, i) => {
+    wasOpen[i] = el.classList.contains('open');
+    el.classList.add('open');
+  });
+  // Defer print one frame so the DOM reflows with expanded sections
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.print();
+      // Restore original collapsed/expanded state after print dialog closes
+      setTimeout(() => {
+        collapsibles.forEach((el, i) => {
+          if (!wasOpen[i]) el.classList.remove('open');
+        });
+      }, 500);
+    });
+  });
+}
 function exportReport() {
   window.print();
 }
