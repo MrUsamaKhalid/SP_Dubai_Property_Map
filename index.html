@@ -2661,7 +2661,7 @@ currentTileLayer = L.tileLayer(
   { attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:19 }
 ).addTo(map);
 
-const rawColorMap = { apt:'#C8A951', villa:'#3ecfcf', ultra:'#e07a5f' };
+const rawColorMap = { apt:'#6b6b6b', villa:'#3ecfcf', ultra:'#e07a5f' };
 const AREA_ICONS = {
   nas:'\ud83c\udfc7', pja:'\ud83c\udf34', palm:'\ud83c\udfdd\ufe0f', marina:'\u2693',
   emirates:'\ud83c\udfc6', jge:'\u26f3', oasis:'\ud83d\udca7', downtown:'\ud83c\udfdb\ufe0f',
@@ -2699,7 +2699,7 @@ function toggleHeatmap() {
   if (App.heatmapOn) {
     const maxP = Math.max(...AREAS.map(a => a.curP));
     const pts = AREAS.map(a => [a.lat, a.lng, a.curP / maxP]);
-    heatLayer = L.heatLayer(pts, { radius:45, blur:35, maxZoom:14, gradient:{0.2:'#3ecfcf',0.5:'#C8A951',0.8:'#e8c96a',1:'#e07a5f'} }).addTo(map);
+    heatLayer = L.heatLayer(pts, { radius:45, blur:35, maxZoom:14, gradient:{0.2:'#3ecfcf',0.5:'#6b6b6b',0.8:'#a0a0a0',1:'#e07a5f'} }).addTo(map);
   } else if (heatLayer) {
     map.removeLayer(heatLayer);
     heatLayer = null;
@@ -3978,7 +3978,7 @@ function triggerConfetti() {
   canvas.height = window.innerHeight;
   const ctx = canvas.getContext('2d');
   const particles = [];
-  const colors = ['#C8A951','#e8c96a','#f0a500','#d4a843','#b8922a','#e07a5f'];
+  const colors = ['#6b6b6b','#a0a0a0','#3ecfcf','#52c97a','#e05252','#e07a5f'];
   for (let i = 0; i < 150; i++) {
     particles.push({
       x: Math.random() * canvas.width,
