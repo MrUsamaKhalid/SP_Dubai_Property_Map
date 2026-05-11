@@ -2027,9 +2027,9 @@ html, body {
 
 <!-- CALCULATOR MODAL (Mortgage / ROI / Affordability) -->
 <div class="modal-overlay" id="calc-modal">
-  <div class="modal modal-wide">
+  <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="calc-modal-title">
     <div class="modal-head">
-      <h2>Calculator<span class="sync-toast" id="calc-sync-toast"></span></h2>
+      <h2 id="calc-modal-title">Calculator<span class="sync-toast" id="calc-sync-toast"></span></h2>
       <div style="display:flex;gap:8px;align-items:center">
         <button class="calc-mode-toggle" id="calc-mode-toggle" onclick="toggleCalcMode()" title="Toggle drawer / centered modal" aria-label="Toggle layout mode">&#8597;</button>
         <div class="modal-close" onclick="closeCalc()">&#10005;</div>
@@ -3383,6 +3383,37 @@ function clearAffordabilityFilter() {
 }
 
 let _activeCalcTab = 'roi';
+let _calcModalOpener = null;
+let _calcFocusTrapHandler = null;
+function installCalcFocusTrap() {
+  const modal = document.querySelector('#calc-modal .modal');
+  if (!modal) return;
+  const focusableSel = 'button, [href], input:not([disabled]), select:not([disabled]), textarea, [tabindex]:not([tabindex="-1"])';
+  // Focus the first interactive control inside the modal
+  const first = modal.querySelector(focusableSel);
+  if (first) try { first.focus(); } catch(e){}
+  _calcFocusTrapHandler = function(e) {
+    if (e.key !== 'Tab') return;
+    if (!document.getElementById('calc-modal').classList.contains('open')) return;
+    const focusables = Array.from(modal.querySelectorAll(focusableSel))
+      .filter(el => el.offsetParent !== null);
+    if (!focusables.length) return;
+    const firstEl = focusables[0];
+    const lastEl = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === firstEl) {
+      e.preventDefault(); lastEl.focus();
+    } else if (!e.shiftKey && document.activeElement === lastEl) {
+      e.preventDefault(); firstEl.focus();
+    }
+  };
+  document.addEventListener('keydown', _calcFocusTrapHandler);
+}
+function uninstallCalcFocusTrap() {
+  if (_calcFocusTrapHandler) {
+    document.removeEventListener('keydown', _calcFocusTrapHandler);
+    _calcFocusTrapHandler = null;
+  }
+}
 function isDesktop() { return window.matchMedia('(min-width:769px)').matches; }
 function getCalcModePref() {
   // 'drawer' | 'centered'. Default: drawer on desktop, centered on mobile (forced).
@@ -3412,6 +3443,9 @@ function openCalc(tab, areaId) {
   if (typeof dismissCalcTourToast === 'function') dismissCalcTourToast();
   applyCalcMode(getCalcModePref());
   document.getElementById('calc-modal').classList.add('open');
+  // Remember opener for focus restoration, install focus trap
+  _calcModalOpener = document.activeElement;
+  setTimeout(installCalcFocusTrap, 50);
   initCalc();
   const targetTab = tab || _activeCalcTab || 'roi';
   switchCalcTab(targetTab);
@@ -3453,7 +3487,14 @@ function flashSyncIndicator(areaName) {
   clearTimeout(flashSyncIndicator._t);
   flashSyncIndicator._t = setTimeout(() => toast.classList.remove('visible'), 1800);
 }
-function closeCalc() { document.getElementById('calc-modal').classList.remove('open'); }
+function closeCalc() {
+  document.getElementById('calc-modal').classList.remove('open');
+  uninstallCalcFocusTrap();
+  if (_calcModalOpener && typeof _calcModalOpener.focus === 'function') {
+    try { _calcModalOpener.focus(); } catch(e){}
+  }
+  _calcModalOpener = null;
+}
 /* Keyboard nav for calculator tabs (WAI-ARIA Authoring Practices: tabs pattern) */
 function handleCalcTabKey(e) {
   const tabs = ['mortgage','roi','affordability'];
