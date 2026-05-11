@@ -2082,6 +2082,80 @@ html, body {
   opacity:0.4; pointer-events:none;
 }
 
+/* Info tooltip system — small (i) icon next to dense labels */
+.info-tip {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:16px; height:16px; border-radius:50%;
+  background:var(--panel);
+  border:1px solid var(--border);
+  color:var(--text-muted);
+  font-size:10px; font-weight:600;
+  cursor:help; user-select:none;
+  margin-left:6px; vertical-align:middle;
+  transition:all .15s ease;
+  font-family:Georgia, 'Times New Roman', serif;
+  font-style:italic;
+  line-height:1;
+  flex-shrink:0;
+}
+.info-tip:hover, .info-tip:focus-visible {
+  background:var(--accent);
+  color:var(--bg);
+  border-color:var(--accent);
+  outline:none;
+}
+[data-theme="light"] .info-tip:hover, [data-theme="light"] .info-tip:focus-visible {
+  color:#fff;
+}
+.info-pop {
+  position:fixed;
+  background:#0a0a0a;
+  color:#ffffff;
+  padding:11px 14px;
+  border-radius:10px;
+  font-size:12.5px; font-weight:500; line-height:1.5;
+  max-width:280px; min-width:160px;
+  box-shadow:0 12px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2);
+  z-index:9500;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-4px);
+  transition:opacity .18s ease, transform .18s ease;
+  font-family:var(--font-body);
+  letter-spacing:0.005em;
+}
+.info-pop.visible {
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+.info-pop::before {
+  content:'';
+  position:absolute;
+  top:-5px;
+  left:18px;
+  width:10px; height:10px;
+  background:#0a0a0a;
+  transform:rotate(45deg);
+}
+.info-pop.below::before { top:auto; bottom:-5px; }
+
+/* Bump dense small text — easier to read at a glance */
+.cash-row { font-size:13.5px; padding:13px 0; }
+.cash-row .lbl small {
+  font-size:11.5px;
+  margin-top:3px;
+}
+.mort-pi-legend { font-size:11.5px; }
+.dp-min-hint { font-size:11.5px; line-height:1.45; }
+.mort-hero-label, .aff-summary .lbl, .mort-hero-sub-item .lbl {
+  font-size:10.5px;
+  letter-spacing:0.5px;
+}
+.fin-stat .lbl { font-size:10.5px; }
+.compare-col-stat { font-size:12.5px; }
+.compare-col-monthly-lbl { font-size:10.5px; letter-spacing:0.5px; }
+
 /* Compare tab opens as a full-screen takeover — overrides drawer/centered modal */
 .modal-overlay.compare-fullscreen {
   display:flex;
@@ -2326,7 +2400,7 @@ html, body {
         <div class="mort-grid">
           <div>
             <div class="calc-row">
-              <label>Buyer Type</label>
+              <label>Buyer Type <span class="info-tip" data-tip="UAE banks set different minimum down payments by buyer type: Resident 20% (30% if price ≥ AED 5M), Non-Resident 25%, Cash 100%. Affects total cash needed at signing." tabindex="0" role="button" aria-label="More info">i</span></label>
               <div class="buyer-toggles" id="mort-buyer-toggles">
                 <div class="buyer-toggle active" data-buyer="resident" onclick="setBuyerType('resident')">Resident</div>
                 <div class="buyer-toggle" data-buyer="nonresident" onclick="setBuyerType('nonresident')">Non-Resident</div>
@@ -2342,7 +2416,7 @@ html, body {
               <input type="number" id="mort-price" value="2400000" step="50000" oninput="renderMortgageTab()" onchange="renderMortgageTab()">
             </div>
             <div class="calc-row" id="mort-dp-row">
-              <label>Down Payment</label>
+              <label>Down Payment <span class="info-tip" data-tip="The portion of the price you pay upfront. Higher down payment = lower monthly mortgage but more cash needed at signing. Drag the slider to compare scenarios." tabindex="0" role="button" aria-label="More info">i</span></label>
               <div class="dp-slider-row">
                 <input type="range" id="mort-dp" min="20" max="100" value="25" step="1" oninput="renderMortgageTab()">
                 <span class="dp-pct" id="mort-dp-pct">25%</span>
@@ -2351,11 +2425,11 @@ html, body {
               <div class="dp-min-hint" id="mort-dp-min-hint"></div>
             </div>
             <div class="calc-row" id="mort-rate-row">
-              <label>Interest Rate (% p.a.)</label>
+              <label>Interest Rate (% p.a.) <span class="info-tip" data-tip="Annual interest rate offered by your bank. Most UAE banks offer 4–5% for residents in 2026. Compare offers before committing — even a 0.5% difference adds up over 20 years." tabindex="0" role="button" aria-label="More info">i</span></label>
               <input type="number" id="mort-rate" value="4.5" step="0.1" oninput="renderMortgageTab()" onchange="renderMortgageTab()">
             </div>
             <div class="calc-row" id="mort-term-row">
-              <label>Term (Years)</label>
+              <label>Term (Years) <span class="info-tip" data-tip="Length of the loan in years. Longer term lowers the monthly payment but increases total interest paid. Common range: 15–25 years." tabindex="0" role="button" aria-label="More info">i</span></label>
               <input type="number" id="mort-term" value="20" min="5" max="25" oninput="renderMortgageTab()" onchange="renderMortgageTab()">
             </div>
           </div>
@@ -3626,11 +3700,11 @@ function renderMortgageTab() {
     </div>
   ` : `
     <div class="mort-hero">
-      <div class="mort-hero-label">Monthly Payment</div>
+      <div class="mort-hero-label">Monthly Payment <span class="info-tip" data-tip="The amount you pay your bank every month: principal + interest only. Does not include service charges or insurance — those appear under Annual Costs below." tabindex="0" role="button" aria-label="More info">i</span></div>
       <div class="mort-hero-monthly">${fmtAED(m.monthly)}</div>
       <div class="mort-hero-sub">
-        <div class="mort-hero-sub-item"><div class="lbl">Total Interest (Life of Loan)</div><div class="val">${fmtAED(m.totalInterest)}</div></div>
-        <div class="mort-hero-sub-item"><div class="lbl">Total Cost (Loan + Interest)</div><div class="val">${fmtAED(m.totalCost)}</div></div>
+        <div class="mort-hero-sub-item"><div class="lbl">Total Interest <span class="info-tip" data-tip="Sum of all interest paid over the full life of the loan. Longer terms = lower monthly payment but more total interest." tabindex="0" role="button" aria-label="More info">i</span></div><div class="val">${fmtAED(m.totalInterest)}</div></div>
+        <div class="mort-hero-sub-item"><div class="lbl">Total Cost <span class="info-tip" data-tip="Original loan amount plus all interest, i.e., the true cost of borrowing this property." tabindex="0" role="button" aria-label="More info">i</span></div><div class="val">${fmtAED(m.totalCost)}</div></div>
       </div>
       <div class="mort-pi-bar">
         <div class="pi-principal" style="width:${principalPct}%"></div>
@@ -3644,20 +3718,27 @@ function renderMortgageTab() {
   `;
 
   const cashRows = [
-    { lbl:'Down Payment', sub:s.dpPct + '% of price', val:c.dp },
-    { lbl:'DLD Transfer Fee', sub:'4% of price', val:c.dldTransfer },
-    { lbl:'DLD Admin Fee', sub:'Fixed', val:c.dldAdmin },
-    { lbl:'Agency Fee', sub:'2% + 5% VAT', val:c.agencyTotal },
+    { lbl:'Down Payment', sub:s.dpPct + '% of price', val:c.dp,
+      tip:'The portion of the property price you pay upfront from your own funds. UAE banks require a minimum percentage based on buyer type and property value.' },
+    { lbl:'DLD Transfer Fee', sub:'4% of price', val:c.dldTransfer,
+      tip:'Dubai Land Department transfer fee. A one-time 4% charge on the property price, paid at the moment ownership is transferred into your name.' },
+    { lbl:'DLD Admin Fee', sub:'Fixed', val:c.dldAdmin,
+      tip:'Fixed AED 580 administrative charge from the Dubai Land Department on every property transaction.' },
+    { lbl:'Agency Fee', sub:'2% + 5% VAT', val:c.agencyTotal,
+      tip:'Real estate agency commission. The market standard is 2% of the property price, plus 5% VAT on that commission.' },
   ];
   if (!isCash) {
-    cashRows.push({ lbl:'Mortgage Registration', sub:'0.25% of loan + AED 290', val:c.mortgageReg });
-    cashRows.push({ lbl:'Bank Processing Fee', sub:'1% of loan (cap AED 8K)', val:c.bankFee });
-    cashRows.push({ lbl:'Property Valuation', sub:'Estimate', val:c.valuation });
+    cashRows.push({ lbl:'Mortgage Registration', sub:'0.25% of loan + AED 290', val:c.mortgageReg,
+      tip:'Cost to register your mortgage with the Dubai Land Department. 0.25% of the loan amount plus a fixed AED 290 fee.' });
+    cashRows.push({ lbl:'Bank Processing Fee', sub:'1% of loan (cap AED 8K)', val:c.bankFee,
+      tip:'One-time processing charge from your bank for arranging the mortgage. Typically 1% of the loan amount, capped at AED 8,000.' });
+    cashRows.push({ lbl:'Property Valuation', sub:'Estimate', val:c.valuation,
+      tip:'Mandatory bank-ordered valuation of the property before the loan is approved. Typically AED 2,500–3,500.' });
   }
   const cashHtml = `
-    <div class="mort-section-title">Cash Required to Close</div>
+    <div class="mort-section-title">Cash Required to Close <span class="info-tip" data-tip="The total cash you need ready at signing — your down payment plus all government, agency, and bank fees that are paid once at the start." tabindex="0" role="button" aria-label="More info">i</span></div>
     <div class="cash-card">
-      ${cashRows.map(r => `<div class="cash-row"><div class="lbl">${r.lbl}<small>${r.sub}</small></div><div class="val">${fmtAED(r.val)}</div></div>`).join('')}
+      ${cashRows.map(r => `<div class="cash-row"><div class="lbl">${r.lbl}${r.tip ? ` <span class="info-tip" data-tip="${r.tip.replace(/"/g, '&quot;')}" tabindex="0" role="button" aria-label="More info">i</span>` : ''}<small>${r.sub}</small></div><div class="val">${fmtAED(r.val)}</div></div>`).join('')}
       <div class="cash-total"><span class="lbl">Total Cash Needed</span><span class="val">${fmtAED(c.total)}</span></div>
     </div>
   `;
@@ -3670,9 +3751,9 @@ function renderMortgageTab() {
       </div>
       <div class="collapsible-body">
         <div class="cash-card">
-          <div class="cash-row"><div class="lbl">Service Charges<small>Building/community fees (estimate)</small></div><div class="val">${fmtAED(ann.serviceCharges)}</div></div>
-          ${!isCash ? `<div class="cash-row"><div class="lbl">Property Life Insurance<small>~0.4% of loan</small></div><div class="val">${fmtAED(ann.lifeIns)}</div></div>` : ''}
-          <div class="cash-row"><div class="lbl">Property Insurance<small>~0.05% of value</small></div><div class="val">${fmtAED(ann.propIns)}</div></div>
+          <div class="cash-row"><div class="lbl">Service Charges <span class="info-tip" data-tip="Annual building or community maintenance fees paid to the developer or community association. Varies by area and unit size — this is an area-average estimate." tabindex="0" role="button" aria-label="More info">i</span><small>Building/community fees (estimate)</small></div><div class="val">${fmtAED(ann.serviceCharges)}</div></div>
+          ${!isCash ? `<div class="cash-row"><div class="lbl">Property Life Insurance <span class="info-tip" data-tip="Required by most UAE banks. Covers the outstanding loan balance if the borrower passes away. Roughly 0.4% of the loan balance per year." tabindex="0" role="button" aria-label="More info">i</span><small>~0.4% of loan</small></div><div class="val">${fmtAED(ann.lifeIns)}</div></div>` : ''}
+          <div class="cash-row"><div class="lbl">Property Insurance <span class="info-tip" data-tip="Mandatory home insurance covering fire, theft, water damage, and natural disasters. Roughly 0.05% of property value per year." tabindex="0" role="button" aria-label="More info">i</span><small>~0.05% of value</small></div><div class="val">${fmtAED(ann.propIns)}</div></div>
         </div>
       </div>
     </div>
@@ -4718,6 +4799,66 @@ initTheme();
 handleHash();
 maybeShowThemeToast();
 maybeShowCalcTourToast();
+
+/* ═══════════════════════════════════════
+   INFO TOOLTIP SYSTEM (reusable across the app)
+═══════════════════════════════════════ */
+(function initInfoTips(){
+  let pop = null;
+  function ensurePop() {
+    if (pop) return pop;
+    pop = document.createElement('div');
+    pop.className = 'info-pop';
+    pop.setAttribute('role', 'tooltip');
+    document.body.appendChild(pop);
+    return pop;
+  }
+  function position(tip) {
+    const p = ensurePop();
+    const rect = tip.getBoundingClientRect();
+    const popRect = p.getBoundingClientRect();
+    const margin = 12;
+    const popWidth = popRect.width || 280;
+    const popHeight = popRect.height || 60;
+    let left = rect.left + rect.width/2 - 22;
+    if (left + popWidth > window.innerWidth - margin) left = window.innerWidth - popWidth - margin;
+    if (left < margin) left = margin;
+    let top = rect.bottom + 10;
+    let below = true;
+    if (top + popHeight > window.innerHeight - margin) {
+      top = rect.top - 10 - popHeight;
+      below = false;
+    }
+    p.style.left = left + 'px';
+    p.style.top = top + 'px';
+    p.classList.toggle('below', !below);
+  }
+  function showFor(tip) {
+    const p = ensurePop();
+    p.textContent = tip.dataset.tip || '';
+    p.classList.add('visible');
+    requestAnimationFrame(() => position(tip));
+  }
+  function hide() { if (pop) pop.classList.remove('visible'); }
+  document.addEventListener('mouseover', e => {
+    const tip = e.target.closest && e.target.closest('.info-tip');
+    if (tip) showFor(tip);
+  });
+  document.addEventListener('mouseout', e => {
+    if (!e.target.closest) return;
+    const tip = e.target.closest('.info-tip');
+    if (tip && !e.relatedTarget?.closest?.('.info-pop')) hide();
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest) return;
+    const tip = e.target.closest('.info-tip');
+    if (tip) { e.stopPropagation(); showFor(tip); return; }
+    if (!e.target.closest('.info-pop')) hide();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+  window.addEventListener('scroll', hide, true);
+  window.addEventListener('resize', hide);
+})();
 </script>
 
 <!-- MOBILE FAB (Calculator) -->
