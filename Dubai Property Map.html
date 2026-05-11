@@ -2384,7 +2384,13 @@ html, body {
             </div>
             <div class="aff-list-title" id="aff-list-title">Matching Areas</div>
             <div class="aff-list" id="aff-list"></div>
-            <button class="aff-clear-btn" onclick="clearAffordabilityFilter()">Clear filter & restore map</button>
+            <div style="display:flex;align-items:center;gap:14px;margin-top:10px;flex-wrap:wrap">
+              <button class="aff-clear-btn" onclick="clearAffordabilityFilter()">Clear filter & restore map</button>
+              <label style="display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--text-muted);cursor:pointer;user-select:none">
+                <input type="checkbox" id="aff-persist" onchange="Affordability.persistAfterClose=this.checked" style="width:14px;height:14px;cursor:pointer;accent-color:var(--accent)">
+                Keep filter active after closing
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -3625,6 +3631,7 @@ function renderMortgageTab() {
 ═══════════════════════════════════════ */
 const Affordability = {
   active: false,
+  persistAfterClose: false,
   buyerType: 'resident',
   budget: 12000,
   cash: 600000,
@@ -3842,6 +3849,10 @@ function flashSyncIndicator(areaName) {
   flashSyncIndicator._t = setTimeout(() => toast.classList.remove('visible'), 1800);
 }
 function closeCalc() {
+  // Auto-clear Affordability filter unless the user explicitly opted to keep it
+  if (Affordability.active && !Affordability.persistAfterClose) {
+    clearAffordabilityFilter();
+  }
   document.getElementById('calc-modal').classList.remove('open');
   uninstallCalcFocusTrap();
   if (_calcModalOpener && typeof _calcModalOpener.focus === 'function') {
