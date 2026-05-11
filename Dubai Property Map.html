@@ -1963,16 +1963,29 @@ html, body {
 .cmp-shared #cmp-buyer-toggles { margin-bottom:0; }
 
 .compare-grid {
-  display:grid; gap:14px;
+  display:flex;
+  gap:14px;
+  overflow-x:auto;
+  overflow-y:visible;
+  padding-bottom:12px;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
 }
-.compare-grid.cols-1 { grid-template-columns:1fr; }
-.compare-grid.cols-2 { grid-template-columns:1fr 1fr; }
-.compare-grid.cols-3 { grid-template-columns:1fr 1fr 1fr; }
-@media (max-width:900px) {
-  .compare-grid.cols-3 { grid-template-columns:1fr 1fr; }
+.compare-grid::-webkit-scrollbar { height:8px; }
+.compare-grid::-webkit-scrollbar-track { background:transparent; }
+.compare-grid::-webkit-scrollbar-thumb {
+  background:var(--border);
+  border-radius:999px;
 }
-@media (max-width:600px) {
-  .compare-grid.cols-2, .compare-grid.cols-3 { grid-template-columns:1fr; }
+.compare-grid::-webkit-scrollbar-thumb:hover { background:var(--accent-ring); }
+.compare-grid .compare-col,
+.compare-grid .compare-add-col {
+  flex:0 0 280px;
+  scroll-snap-align:start;
+}
+@media (min-width:1100px) {
+  .compare-grid .compare-col,
+  .compare-grid .compare-add-col { flex-basis:300px; }
 }
 
 .compare-col {
@@ -3497,10 +3510,6 @@ function renderCompareGrid() {
       </div>`
     : '';
   grid.innerHTML = cols + addCol;
-  // Set responsive column count class
-  const totalSlots = CompareState.areaIds.length + (CompareState.areaIds.length < CompareState.maxCols ? 1 : 0);
-  grid.classList.remove('cols-1','cols-2','cols-3');
-  grid.classList.add('cols-' + Math.min(totalSlots, 3));
 }
 function changeCompareArea(idx, areaId) {
   CompareState.areaIds[idx] = areaId;
