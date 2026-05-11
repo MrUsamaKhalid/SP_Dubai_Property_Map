@@ -1928,6 +1928,160 @@ html, body {
 .dir.up::before { content:'↑'; color:var(--green); }
 .dir.down::before { content:'↓'; color:var(--red); }
 .dir.flat::before { content:'·'; color:var(--text-muted); margin-right:5px; }
+
+/* ═══════ COMPARE MODE ═══════ */
+.compare-toggle {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:7px 14px;
+  background:var(--panel2);
+  border:1px solid var(--border2);
+  border-radius:999px;
+  color:var(--text-primary);
+  font-family:var(--font-body); font-size:12px; font-weight:600;
+  letter-spacing:0.1px;
+  cursor:pointer;
+  transition:all .18s ease;
+}
+.compare-toggle:hover {
+  background:var(--panel);
+  border-color:var(--accent-ring);
+}
+.compare-toggle.active {
+  background:#0a0a0a;
+  color:#ffffff;
+  border-color:#0a0a0a;
+}
+.compare-toggle .ct-plus {
+  display:inline-block; transition:transform .25s ease;
+}
+.compare-toggle.active .ct-plus { transform:rotate(45deg); }
+
+/* When compare-mode is active on the mortgage panel, reflow its layout */
+[data-calc-panel="mortgage"].compare-mode .mort-grid { display:block; }
+[data-calc-panel="mortgage"].compare-mode .mort-grid > div:first-child {
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:12px;
+}
+[data-calc-panel="mortgage"].compare-mode .mort-grid > div:first-child .calc-row { margin-bottom:0; }
+[data-calc-panel="mortgage"].compare-mode .mort-grid > div:nth-child(2) { display:none; }
+[data-calc-panel="mortgage"].compare-mode #mort-area-row { display:none; }
+[data-calc-panel="mortgage"].compare-mode #mort-price-row { display:none; }
+[data-calc-panel="mortgage"].compare-mode #mort-dp-row { grid-column:span 4; margin-top:8px; }
+[data-calc-panel="mortgage"]:not(.compare-mode) #compare-grid-wrap { display:none; }
+
+@media (max-width:768px) {
+  [data-calc-panel="mortgage"].compare-mode .mort-grid > div:first-child {
+    grid-template-columns:repeat(2, 1fr);
+  }
+  [data-calc-panel="mortgage"].compare-mode #mort-dp-row { grid-column:span 2; }
+}
+
+#compare-grid-wrap { margin-top:18px; }
+.compare-grid {
+  display:grid; gap:14px;
+}
+.compare-grid.cols-1 { grid-template-columns:1fr; }
+.compare-grid.cols-2 { grid-template-columns:1fr 1fr; }
+.compare-grid.cols-3 { grid-template-columns:1fr 1fr 1fr; }
+@media (max-width:900px) {
+  .compare-grid.cols-3 { grid-template-columns:1fr 1fr; }
+}
+@media (max-width:600px) {
+  .compare-grid.cols-2, .compare-grid.cols-3 { grid-template-columns:1fr; }
+}
+
+.compare-col {
+  background:var(--panel2);
+  border:1px solid var(--border2);
+  border-radius:14px;
+  padding:16px;
+  position:relative;
+  box-shadow:0 1px 2px rgba(0,0,0,0.04);
+  display:flex; flex-direction:column;
+  min-width:0;
+}
+[data-theme="light"] .compare-col {
+  background:#ffffff;
+  border-color:rgba(0,0,0,0.06);
+}
+.compare-col-head { margin-bottom:12px; }
+.compare-col-head select {
+  width:100%; padding:9px 12px;
+  border:1px solid var(--border2); border-radius:9px;
+  background:var(--panel); color:var(--text-primary);
+  font-family:var(--font-body); font-size:13px; font-weight:600;
+  cursor:pointer; outline:none;
+  transition:border .18s ease;
+}
+.compare-col-head select:focus { border-color:var(--accent); }
+.compare-col-remove {
+  position:absolute; top:8px; right:8px;
+  width:24px; height:24px; border-radius:50%;
+  background:transparent; border:none; cursor:pointer;
+  color:var(--text-muted); font-size:13px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .15s;
+}
+.compare-col-remove:hover { background:var(--accent-soft); color:var(--text-primary); }
+
+.compare-col-monthly {
+  font-size:24px; font-weight:700; color:var(--text-primary);
+  letter-spacing:-0.025em; line-height:1.05; margin:8px 0 4px;
+  font-variant-numeric:tabular-nums; font-feature-settings:'tnum' 1;
+}
+.compare-col-monthly-lbl {
+  font-size:10px; font-weight:500; color:var(--text-muted);
+  letter-spacing:0.4px; text-transform:uppercase; margin-bottom:2px;
+}
+.compare-col-price {
+  font-size:11px; color:var(--text-muted); font-weight:500;
+  margin-bottom:14px;
+  font-variant-numeric:tabular-nums; font-feature-settings:'tnum' 1;
+}
+.compare-col-stats {
+  display:flex; flex-direction:column; gap:8px;
+  padding:12px 0 4px;
+  border-top:1px solid var(--border2);
+}
+.compare-col-stat {
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-size:12px;
+}
+.compare-col-stat .lbl { color:var(--text-muted); font-weight:500; }
+.compare-col-stat .val {
+  font-weight:600; color:var(--text-primary);
+  font-variant-numeric:tabular-nums; font-feature-settings:'tnum' 1;
+}
+.compare-col-stat.cash-total-row { margin-top:8px; padding:10px; background:#0a0a0a; color:#fff; border-radius:8px; }
+.compare-col-stat.cash-total-row .lbl { color:#fff; font-weight:600; }
+.compare-col-stat.cash-total-row .val { color:#fff; font-weight:700; font-size:14px; }
+
+.compare-add-col {
+  background:transparent;
+  border:1.5px dashed var(--border);
+  border-radius:14px;
+  padding:16px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:8px; min-height:200px;
+  cursor:pointer;
+  color:var(--text-muted);
+  transition:all .18s ease;
+  font-family:var(--font-body); font-size:12px; font-weight:600;
+}
+.compare-add-col:hover {
+  border-color:var(--accent-ring);
+  color:var(--text-primary);
+  background:var(--accent-soft);
+}
+.compare-add-col-plus {
+  width:34px; height:34px; border-radius:50%;
+  background:var(--panel); border:1px solid var(--border2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:300;
+}
+
+.compare-other-tab-disabled {
+  opacity:0.4; pointer-events:none;
+}
 </style>
 </head>
 <body>
