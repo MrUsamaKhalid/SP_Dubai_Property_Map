@@ -134,9 +134,9 @@ html, body {
 ═══════════════════════════════════════ */
 #topbar {
   display:flex; align-items:center; justify-content:space-between;
-  padding:18px 28px; background:var(--panel); border-bottom:1px solid var(--border2);
+  padding:14px 28px; background:var(--panel); border-bottom:1px solid var(--border2);
   z-index:1000; transition:background 0.4s;
-  min-height:78px;
+  min-height:68px;
 }
 .tb-left { display:flex; align-items:center; gap:22px; }
 .tb-logo {
@@ -145,14 +145,14 @@ html, body {
   color:#0a0a0a;
 }
 .tb-logo svg {
-  height:42px; width:auto;
+  height:32px; width:auto;
   display:block;
   transition:color .2s ease;
 }
 [data-theme="dark"] .tb-logo { color:#f4f4f4; }
 @media (max-width:768px) {
-  #topbar { padding:12px 16px; min-height:64px; }
-  .tb-logo svg { height:32px; }
+  #topbar { padding:12px 16px; min-height:60px; }
+  .tb-logo svg { height:26px; }
 }
 .tb-sep { width:1px; height:24px; background:var(--border); }
 .tb-title { font-size:12px; font-weight:500; color:var(--text-secondary); letter-spacing:0.3px; }
@@ -2081,6 +2081,64 @@ html, body {
 .compare-other-tab-disabled {
   opacity:0.4; pointer-events:none;
 }
+
+/* Compare tab opens as a full-screen takeover — overrides drawer/centered modal */
+.modal-overlay.compare-fullscreen {
+  display:flex;
+  align-items:stretch;
+  justify-content:stretch;
+  padding:0;
+  background:var(--bg);
+  backdrop-filter:none;
+  pointer-events:auto;
+}
+.modal-overlay.compare-fullscreen .modal {
+  width:100vw !important;
+  max-width:100vw !important;
+  height:100vh !important;
+  max-height:100vh !important;
+  border-radius:0;
+  border:none;
+  margin:0;
+  animation:compareTakeoverIn 0.28s cubic-bezier(0.2,0.8,0.2,1);
+  display:flex; flex-direction:column;
+  box-shadow:none;
+}
+.modal-overlay.compare-fullscreen .modal-body {
+  flex:1;
+  overflow-y:auto;
+  padding:24px 40px 40px;
+}
+.modal-overlay.compare-fullscreen .modal-head {
+  padding:18px 40px 16px;
+}
+.modal-overlay.compare-fullscreen .calc-tabs {
+  margin:14px 40px 0;
+}
+/* Hide the mode-toggle when in fullscreen — it doesn't apply */
+.modal-overlay.compare-fullscreen .calc-mode-toggle {
+  display:none !important;
+}
+@keyframes compareTakeoverIn {
+  from { opacity:0; transform:scale(0.985); }
+  to { opacity:1; transform:scale(1); }
+}
+@media (max-width:768px) {
+  .modal-overlay.compare-fullscreen .modal-body { padding:18px 16px 24px; }
+  .modal-overlay.compare-fullscreen .modal-head { padding:14px 16px; }
+  .modal-overlay.compare-fullscreen .calc-tabs { margin:10px 16px 0; }
+}
+/* Wider compare cards when there's more horizontal real estate (fullscreen) */
+.modal-overlay.compare-fullscreen .compare-grid .compare-col,
+.modal-overlay.compare-fullscreen .compare-grid .compare-add-col {
+  flex-basis:320px;
+}
+@media (min-width:1400px) {
+  .modal-overlay.compare-fullscreen .compare-grid .compare-col,
+  .modal-overlay.compare-fullscreen .compare-grid .compare-add-col {
+    flex-basis:340px;
+  }
+}
 </style>
 </head>
 <body>
@@ -3876,7 +3934,9 @@ function closeCalc() {
   if (Affordability.active && !Affordability.persistAfterClose) {
     clearAffordabilityFilter();
   }
-  document.getElementById('calc-modal').classList.remove('open');
+  const modal = document.getElementById('calc-modal');
+  modal.classList.remove('open');
+  modal.classList.remove('compare-fullscreen');
   uninstallCalcFocusTrap();
   if (_calcModalOpener && typeof _calcModalOpener.focus === 'function') {
     try { _calcModalOpener.focus(); } catch(e){}
@@ -3920,6 +3980,13 @@ function switchCalcTab(tab) {
   document.querySelectorAll('.calc-panel').forEach(el => {
     el.classList.toggle('active', el.dataset.calcPanel === tab);
   });
+  // Compare opens as a full-screen takeover; other tabs stay in drawer/centered modal
+  const overlay = document.getElementById('calc-modal');
+  if (tab === 'compare') {
+    overlay.classList.add('compare-fullscreen');
+  } else {
+    overlay.classList.remove('compare-fullscreen');
+  }
   if (tab === 'mortgage' && typeof renderMortgageTab === 'function') renderMortgageTab();
   if (tab === 'affordability' && typeof renderAffordabilityTab === 'function') renderAffordabilityTab();
   if (tab === 'compare' && typeof renderCompareGrid === 'function') {
