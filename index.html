@@ -3080,6 +3080,38 @@ function initCalc() {
   runCalc();
 }
 /* ═══════════════════════════════════════
+   COMPARE MODE STATE
+═══════════════════════════════════════ */
+const CompareState = {
+  active: false,
+  areaIds: [],   // 1-3 areas being compared
+  maxCols: 3
+};
+function calcForCompareArea(areaId, sharedState) {
+  // sharedState: { buyerType, dpPct, rate, termYears } — same shape as MortgageState minus price
+  const a = AREAS.find(x => x.id === areaId);
+  if (!a) return null;
+  const price = Math.max(estimateAreaUnitPrice(a), 500000);
+  const state = {
+    buyerType: sharedState.buyerType,
+    price,
+    dpPct: sharedState.dpPct,
+    rate: sharedState.rate,
+    termYears: sharedState.termYears
+  };
+  const m = calcMortgage(state);
+  const c = calcCashToClose(state, m);
+  return { area: a, price, state, m, c };
+}
+function readSharedMortInputs() {
+  return {
+    buyerType: MortgageState.buyerType,
+    dpPct: +document.getElementById('mort-dp').value || getMortMinDp(MortgageState.buyerType, MortgageState.price),
+    rate: +document.getElementById('mort-rate').value || 4.5,
+    termYears: +document.getElementById('mort-term').value || 20
+  };
+}
+/* ═══════════════════════════════════════
    MORTGAGE CALCULATOR ENGINE (UAE-aware)
 ═══════════════════════════════════════ */
 const MortgageState = {
