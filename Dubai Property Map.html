@@ -1940,52 +1940,28 @@ html, body {
 .dir.flat::before { content:'·'; color:var(--text-muted); margin-right:5px; }
 
 /* ═══════ COMPARE MODE ═══════ */
-.compare-toggle {
-  display:inline-flex; align-items:center; gap:6px;
-  padding:7px 14px;
+/* Compare tab shared inputs row */
+.cmp-shared {
   background:var(--panel2);
   border:1px solid var(--border2);
-  border-radius:999px;
-  color:var(--text-primary);
-  font-family:var(--font-body); font-size:12px; font-weight:600;
-  letter-spacing:0.1px;
-  cursor:pointer;
-  transition:all .18s ease;
+  border-radius:14px;
+  padding:14px 16px;
+  margin-bottom:16px;
 }
-.compare-toggle:hover {
-  background:var(--panel);
-  border-color:var(--accent-ring);
+[data-theme="light"] .cmp-shared {
+  background:#ffffff;
+  border-color:rgba(0,0,0,0.06);
+  box-shadow:0 1px 2px rgba(0,0,0,0.03);
 }
-.compare-toggle.active {
-  background:#0a0a0a;
-  color:#ffffff;
-  border-color:#0a0a0a;
+.cmp-shared-row {
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;
 }
-.compare-toggle .ct-plus {
-  display:inline-block; transition:transform .25s ease;
+@media (max-width:600px) {
+  .cmp-shared-row { grid-template-columns:1fr; }
 }
-.compare-toggle.active .ct-plus { transform:rotate(45deg); }
+.cmp-shared .calc-row { margin-bottom:0; }
+.cmp-shared #cmp-buyer-toggles { margin-bottom:0; }
 
-/* When compare-mode is active on the mortgage panel, reflow its layout */
-[data-calc-panel="mortgage"].compare-mode .mort-grid { display:block; }
-[data-calc-panel="mortgage"].compare-mode .mort-grid > div:first-child {
-  display:grid; grid-template-columns:repeat(4, 1fr); gap:12px;
-}
-[data-calc-panel="mortgage"].compare-mode .mort-grid > div:first-child .calc-row { margin-bottom:0; }
-[data-calc-panel="mortgage"].compare-mode .mort-grid > div:nth-child(2) { display:none; }
-[data-calc-panel="mortgage"].compare-mode #mort-area-row { display:none; }
-[data-calc-panel="mortgage"].compare-mode #mort-price-row { display:none; }
-[data-calc-panel="mortgage"].compare-mode #mort-dp-row { grid-column:span 4; margin-top:8px; }
-[data-calc-panel="mortgage"]:not(.compare-mode) #compare-grid-wrap { display:none; }
-
-@media (max-width:768px) {
-  [data-calc-panel="mortgage"].compare-mode .mort-grid > div:first-child {
-    grid-template-columns:repeat(2, 1fr);
-  }
-  [data-calc-panel="mortgage"].compare-mode #mort-dp-row { grid-column:span 2; }
-}
-
-#compare-grid-wrap { margin-top:18px; }
 .compare-grid {
   display:grid; gap:14px;
 }
@@ -2262,9 +2238,6 @@ html, body {
     <div class="modal-head">
       <h2 id="calc-modal-title">Calculator<span class="sync-toast" id="calc-sync-toast"></span></h2>
       <div style="display:flex;gap:8px;align-items:center">
-        <button class="compare-toggle" id="compare-toggle" onclick="toggleCompareMode()" aria-pressed="false">
-          <span class="ct-plus">+</span> <span>Compare</span>
-        </button>
         <button class="calc-mode-toggle" id="calc-mode-toggle" onclick="toggleCalcMode()" title="Toggle drawer / centered modal" aria-label="Toggle layout mode">&#8597;</button>
         <div class="modal-close" onclick="closeCalc()">&#10005;</div>
       </div>
@@ -2273,6 +2246,7 @@ html, body {
       <div class="calc-tab" data-calc-tab="mortgage" onclick="switchCalcTab('mortgage')" role="tab" tabindex="-1" aria-selected="false"><span class="calc-tab-icon">&#127960;</span> Mortgage</div>
       <div class="calc-tab active" data-calc-tab="roi" onclick="switchCalcTab('roi')" role="tab" tabindex="0" aria-selected="true"><span class="calc-tab-icon">&#128200;</span> ROI</div>
       <div class="calc-tab" data-calc-tab="affordability" onclick="switchCalcTab('affordability')" role="tab" tabindex="-1" aria-selected="false"><span class="calc-tab-icon">&#128181;</span> Affordability</div>
+      <div class="calc-tab" data-calc-tab="compare" onclick="switchCalcTab('compare')" role="tab" tabindex="-1" aria-selected="false"><span class="calc-tab-icon">&#8646;</span> Compare</div>
     </div>
     <div class="modal-body">
 
@@ -2317,9 +2291,6 @@ html, body {
           <div>
             <div id="mort-output"></div>
           </div>
-        </div>
-        <div id="compare-grid-wrap">
-          <div class="compare-grid" id="compare-grid"></div>
         </div>
         <div class="mort-actions">
           <button class="mort-pdf-btn" onclick="exportMortgagePDF()">&#128196; Save as PDF</button>
@@ -2419,6 +2390,37 @@ html, body {
               </label>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- COMPARE PANEL -->
+      <div class="calc-panel" data-calc-panel="compare" role="tabpanel">
+        <div class="cmp-shared">
+          <div class="calc-row" style="margin-bottom:12px">
+            <label>Buyer Type</label>
+            <div class="buyer-toggles" id="cmp-buyer-toggles">
+              <div class="buyer-toggle active" data-buyer="resident" onclick="setCmpBuyerType('resident')">Resident</div>
+              <div class="buyer-toggle" data-buyer="nonresident" onclick="setCmpBuyerType('nonresident')">Non-Resident</div>
+              <div class="buyer-toggle" data-buyer="cash" onclick="setCmpBuyerType('cash')">Cash</div>
+            </div>
+          </div>
+          <div class="cmp-shared-row">
+            <div class="calc-row">
+              <label>Down Payment %</label>
+              <input type="number" id="cmp-dp" value="25" min="0" max="100" step="1" oninput="renderCompareGrid()" onchange="renderCompareGrid()">
+            </div>
+            <div class="calc-row" id="cmp-rate-row">
+              <label>Interest Rate (% p.a.)</label>
+              <input type="number" id="cmp-rate" value="4.5" step="0.1" oninput="renderCompareGrid()" onchange="renderCompareGrid()">
+            </div>
+            <div class="calc-row" id="cmp-term-row">
+              <label>Term (Years)</label>
+              <input type="number" id="cmp-term" value="20" min="5" max="25" oninput="renderCompareGrid()" onchange="renderCompareGrid()">
+            </div>
+          </div>
+        </div>
+        <div id="compare-grid-wrap-tab">
+          <div class="compare-grid" id="compare-grid"></div>
         </div>
       </div>
 
@@ -3277,8 +3279,9 @@ function initCalc() {
 ═══════════════════════════════════════ */
 const CompareState = {
   active: false,
-  areaIds: [],   // 1-3 areas being compared
-  maxCols: 3
+  areaIds: [],
+  maxCols: 12,
+  buyerType: 'resident'
 };
 function calcForCompareArea(areaId, sharedState) {
   // sharedState: { buyerType, dpPct, rate, termYears } — same shape as MortgageState minus price
@@ -3303,6 +3306,24 @@ function readSharedMortInputs() {
     rate: +document.getElementById('mort-rate').value || 4.5,
     termYears: +document.getElementById('mort-term').value || 20
   };
+}
+function readCompareInputs() {
+  return {
+    buyerType: CompareState.buyerType || 'resident',
+    dpPct: +document.getElementById('cmp-dp').value || 25,
+    rate: +document.getElementById('cmp-rate').value || 4.5,
+    termYears: +document.getElementById('cmp-term').value || 20
+  };
+}
+function setCmpBuyerType(t) {
+  CompareState.buyerType = t;
+  document.querySelectorAll('#cmp-buyer-toggles .buyer-toggle').forEach(el => {
+    el.classList.toggle('active', el.dataset.buyer === t);
+  });
+  const isCash = t === 'cash';
+  document.getElementById('cmp-rate-row').style.display = isCash ? 'none' : 'block';
+  document.getElementById('cmp-term-row').style.display = isCash ? 'none' : 'block';
+  renderCompareGrid();
 }
 /* ═══════════════════════════════════════
    MORTGAGE CALCULATOR ENGINE (UAE-aware)
@@ -3434,46 +3455,12 @@ function readMortInputs() {
   // If compare mode is active, refresh the grid whenever shared inputs change
   if (CompareState.active) renderCompareGrid();
 }
-function toggleCompareMode() {
-  CompareState.active = !CompareState.active;
-  const toggle = document.getElementById('compare-toggle');
-  const panel = document.querySelector('[data-calc-panel="mortgage"]');
-  if (CompareState.active) {
-    toggle.classList.add('active');
-    toggle.setAttribute('aria-pressed', 'true');
-    toggle.querySelector('span:last-child').textContent = 'Exit Compare';
-    panel.classList.add('compare-mode');
-    // Seed columns: current area + 1 placeholder OR use existing CompareState if set
-    if (CompareState.areaIds.length === 0) {
-      const seed = MortgageState.areaId
-        || (document.getElementById('mort-area') && document.getElementById('mort-area').value)
-        || AREAS[0].id;
-      CompareState.areaIds = [seed];
-    }
-    // Also disable visual state on other tabs while comparing
-    document.querySelectorAll('.calc-tab').forEach(t => {
-      if (t.dataset.calcTab !== 'mortgage') t.classList.add('compare-other-tab-disabled');
-    });
-    renderCompareGrid();
-  } else {
-    toggle.classList.remove('active');
-    toggle.setAttribute('aria-pressed', 'false');
-    toggle.querySelector('span:last-child').textContent = 'Compare';
-    panel.classList.remove('compare-mode');
-    document.querySelectorAll('.calc-tab').forEach(t => t.classList.remove('compare-other-tab-disabled'));
-    renderMortgageTab();
-  }
-}
 function renderCompareGrid() {
   if (!CompareState.active) return;
   const grid = document.getElementById('compare-grid');
   if (!grid) return;
-  // Use existing shared inputs (buyer type, DP, rate, term) via readSharedMortInputs.
-  // First populate the mort-area dropdown if empty (renderMortgageTab does this for non-compare;
-  // we need to ensure dropdowns inside columns also work)
-  const shared = readSharedMortInputs();
-  // Update the visual DP percentage label using the slider value
-  document.getElementById('mort-dp-pct').textContent = shared.dpPct + '%';
+  // Compare tab has its own dedicated shared inputs (cmp-dp / cmp-rate / cmp-term)
+  const shared = readCompareInputs();
   // Render N columns + optional add-column placeholder
   const cols = CompareState.areaIds.map((id, idx) => {
     const result = calcForCompareArea(id, shared);
@@ -3889,7 +3876,7 @@ function closeCalc() {
 }
 /* Keyboard nav for calculator tabs (WAI-ARIA Authoring Practices: tabs pattern) */
 function handleCalcTabKey(e) {
-  const tabs = ['mortgage','roi','affordability'];
+  const tabs = ['mortgage','roi','affordability','compare'];
   const cur = tabs.indexOf(_activeCalcTab);
   if (cur === -1) return;
   let nextIdx = -1;
@@ -3926,6 +3913,19 @@ function switchCalcTab(tab) {
   });
   if (tab === 'mortgage' && typeof renderMortgageTab === 'function') renderMortgageTab();
   if (tab === 'affordability' && typeof renderAffordabilityTab === 'function') renderAffordabilityTab();
+  if (tab === 'compare' && typeof renderCompareGrid === 'function') {
+    // Seed first column if compare list is empty — use whatever area is selected
+    if (CompareState.areaIds.length === 0) {
+      const seed = (document.getElementById('mort-area') && document.getElementById('mort-area').value)
+        || (App.activeId)
+        || AREAS[0].id;
+      CompareState.areaIds = [seed];
+    }
+    CompareState.active = true;
+    renderCompareGrid();
+  } else if (tab !== 'compare') {
+    CompareState.active = false;
+  }
 }
 function runCalc() {
   const price = +document.getElementById('calc-price').value || 0;
@@ -4385,6 +4385,7 @@ function getCmdItems(query) {
   items.push({ type:'action', label:'Open Calculator', icon:'\u2615', action: () => { closeCmdPalette(); openCalc(); } });
   items.push({ type:'action', label:'Mortgage Calculator', icon:'\ud83c\udfe0', action: () => { closeCmdPalette(); openCalc('mortgage'); } });
   items.push({ type:'action', label:'Affordability Search', icon:'\ud83d\udcb5', action: () => { closeCmdPalette(); openCalc('affordability'); } });
+  items.push({ type:'action', label:'Side-by-side Compare', icon:'\u21c4', action: () => { closeCmdPalette(); openCalc('compare'); } });
   items.push({ type:'action', label:'Toggle Heatmap', icon:'\u25d1', action: () => toggleHeatmap() });
   items.push({ type:'action', label:'Reset View', icon:'\u2302', action: () => resetMapView() });
   items.push({ type:'action', label:'Export PDF', icon:'\ud83d\udcc4', action: () => { closeCmdPalette(); window.print(); } });
