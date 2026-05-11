@@ -3308,6 +3308,7 @@ function setBuyerType(t) {
   document.getElementById('mort-rate-row').style.display = isCash ? 'none' : 'block';
   document.getElementById('mort-term-row').style.display = isCash ? 'none' : 'block';
   renderMortgageTab();
+  if (CompareState.active) renderCompareGrid();
 }
 function onMortAreaChange() {
   const sel = document.getElementById('mort-area');
@@ -3397,6 +3398,111 @@ function readMortInputs() {
     MortgageState.dpPct = min;
     document.getElementById('mort-dp').value = min;
   }
+  // If compare mode is active, refresh the grid whenever shared inputs change
+  if (CompareState.active) renderCompareGrid();
+}
+function toggleCompareMode() {
+  CompareState.active = !CompareState.active;
+  const toggle = document.getElementById('compare-toggle');
+  const panel = document.querySelector('[data-calc-panel="mortgage"]');
+  if (CompareState.active) {
+    toggle.classList.add('active');
+    toggle.setAttribute('aria-pressed', 'true');
+    toggle.querySelector('span:last-child').textContent = 'Exit Compare';
+    panel.classList.add('compare-mode');
+    // Seed columns: current area + 1 placeholder OR use existing CompareState if set
+    if (CompareState.areaIds.length === 0) {
+      const seed = MortgageState.areaId
+        || (document.getElementById('mort-area') && document.getElementById('mort-area').value)
+        || AREAS[0].id;
+      CompareState.areaIds = [seed];
+    }
+    // Also disable visual state on other tabs while comparing
+    document.querySelectorAll('.calc-tab').forEach(t => {
+      if (t.dataset.calcTab !== 'mortgage') t.classList.add('compare-other-tab-disabled');
+    });
+    renderCompareGrid();
+  } else {
+    toggle.classList.remove('active');
+    toggle.setAttribute('aria-pressed', 'false');
+    toggle.querySelector('span:last-child').textContent = 'Compare';
+    panel.classList.remove('compare-mode');
+    document.querySelectorAll('.calc-tab').forEach(t => t.classList.remove('compare-other-tab-disabled'));
+    renderMortgageTab();
+  }
+}
+function renderCompareGrid() {
+  if (!CompareState.active) return;
+  const grid = document.getElementById('compare-grid');
+  if (!grid) return;
+  // Use existing shared inputs (buyer type, DP, rate, term) via readSharedMortInputs.
+  // First populate the mort-area dropdown if empty (renderMortgageTab does this for non-compare;
+  // we need to ensure dropdowns inside columns also work)
+  const shared = readSharedMortInputs();
+  // Update the visual DP percentage label using the slider value
+  document.getElementById('mort-dp-pct').textContent = shared.dpPct + '%';
+  // Render N columns + optional add-column placeholder
+  const cols = CompareState.areaIds.map((id, idx) => {
+    const result = calcForCompareArea(id, shared);
+    if (!result) return '';
+    const areaOptions = AREAS.map(a =>
+      `<option value="${a.id}"${a.id === id ? ' selected' : ''}>${a.name}</option>`
+    ).join('');
+    const monthly = result.m.monthly;
+    const cashTotal = result.c.total;
+    return `<div class="compare-col" data-col-idx="${idx}">
+      ${CompareState.areaIds.length > 1
+        ? `<button class="compare-col-remove" onclick="removeCompareCol(${idx})" aria-label="Remove column">&#10005;</button>`
+        : ''}
+      <div class="compare-col-head">
+        <select onchange="changeCompareArea(${idx}, this.value)" aria-label="Area for column ${idx + 1}">
+          ${areaOptions}
+        </select>
+      </div>
+      <div class="compare-col-monthly-lbl">Monthly Payment</div>
+      <div class="compare-col-monthly">${fmtAED(monthly)}</div>
+      <div class="compare-col-price">${fmtAED(result.price)} property &middot; ${result.area.pinType.toUpperCase()}</div>
+      <div class="compare-col-stats">
+        <div class="compare-col-stat"><span class="lbl">Total Interest</span><span class="val">${fmtAED(result.m.totalInterest)}</span></div>
+        <div class="compare-col-stat"><span class="lbl">Total Cost</span><span class="val">${fmtAED(result.m.totalCost)}</span></div>
+        <div class="compare-col-stat"><span class="lbl">5yr ROI Est.</span><span class="val">${estimate5yrROI(result.area)}%</span></div>
+        <div class="compare-col-stat cash-total-row"><span class="lbl">Cash to Close</span><span class="val">${fmtAED(cashTotal)}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+  const addCol = CompareState.areaIds.length < CompareState.maxCols
+    ? `<div class="compare-add-col" onclick="addCompareCol()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addCompareCol();}">
+        <div class="compare-add-col-plus">+</div>
+        <div>Add area</div>
+      </div>`
+    : '';
+  grid.innerHTML = cols + addCol;
+  // Set responsive column count class
+  const totalSlots = CompareState.areaIds.length + (CompareState.areaIds.length < CompareState.maxCols ? 1 : 0);
+  grid.classList.remove('cols-1','cols-2','cols-3');
+  grid.classList.add('cols-' + Math.min(totalSlots, 3));
+}
+function changeCompareArea(idx, areaId) {
+  CompareState.areaIds[idx] = areaId;
+  renderCompareGrid();
+}
+function addCompareCol() {
+  if (CompareState.areaIds.length >= CompareState.maxCols) return;
+  // Default new area: pick the first AREA not already in compare list
+  const used = new Set(CompareState.areaIds);
+  const next = AREAS.find(a => !used.has(a.id));
+  if (!next) return;
+  CompareState.areaIds.push(next.id);
+  renderCompareGrid();
+}
+function removeCompareCol(idx) {
+  CompareState.areaIds.splice(idx, 1);
+  if (CompareState.areaIds.length === 0) {
+    // Auto-exit compare mode if no columns left
+    toggleCompareMode();
+    return;
+  }
+  renderCompareGrid();
 }
 function renderMortgageTab() {
   // Populate area dropdown on first render
