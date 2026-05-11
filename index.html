@@ -2091,35 +2091,41 @@ html, body {
 
       <!-- ROI PANEL (existing fields preserved) -->
       <div class="calc-panel active" data-calc-panel="roi" role="tabpanel">
-        <div class="calc-row">
-          <label>Property Area</label>
-          <select id="calc-area" onchange="runCalc()"></select>
+        <div class="mort-grid">
+          <div>
+            <div class="calc-row">
+              <label>Property Area</label>
+              <select id="calc-area" onchange="runCalc()"></select>
+            </div>
+            <div class="calc-row">
+              <label>Purchase Price (AED)</label>
+              <input type="number" id="calc-price" value="3000000" onchange="runCalc()" oninput="runCalc()">
+            </div>
+            <div class="calc-row">
+              <label>Down Payment (%)</label>
+              <input type="number" id="calc-dp" value="25" min="0" max="100" onchange="runCalc()" oninput="runCalc()">
+            </div>
+            <div class="calc-row">
+              <label>Mortgage Rate (% p.a.)</label>
+              <input type="number" id="calc-rate" value="4.5" step="0.1" onchange="runCalc()" oninput="runCalc()">
+            </div>
+            <div class="calc-row">
+              <label>Expected Annual Appreciation (%)</label>
+              <input type="number" id="calc-appr" value="8" step="0.5" onchange="runCalc()" oninput="runCalc()">
+            </div>
+            <div class="calc-row">
+              <label>Annual Rental Yield (%)</label>
+              <input type="number" id="calc-yield" value="6" step="0.5" onchange="runCalc()" oninput="runCalc()">
+            </div>
+            <div class="calc-row">
+              <label>Holding Period (Years)</label>
+              <input type="number" id="calc-years" value="5" min="1" max="30" onchange="runCalc()" oninput="runCalc()">
+            </div>
+          </div>
+          <div>
+            <div class="calc-result" id="calc-result"></div>
+          </div>
         </div>
-        <div class="calc-row">
-          <label>Purchase Price (AED)</label>
-          <input type="number" id="calc-price" value="3000000" onchange="runCalc()" oninput="runCalc()">
-        </div>
-        <div class="calc-row">
-          <label>Down Payment (%)</label>
-          <input type="number" id="calc-dp" value="25" min="0" max="100" onchange="runCalc()" oninput="runCalc()">
-        </div>
-        <div class="calc-row">
-          <label>Mortgage Rate (% p.a.)</label>
-          <input type="number" id="calc-rate" value="4.5" step="0.1" onchange="runCalc()" oninput="runCalc()">
-        </div>
-        <div class="calc-row">
-          <label>Expected Annual Appreciation (%)</label>
-          <input type="number" id="calc-appr" value="8" step="0.5" onchange="runCalc()" oninput="runCalc()">
-        </div>
-        <div class="calc-row">
-          <label>Annual Rental Yield (%)</label>
-          <input type="number" id="calc-yield" value="6" step="0.5" onchange="runCalc()" oninput="runCalc()">
-        </div>
-        <div class="calc-row">
-          <label>Holding Period (Years)</label>
-          <input type="number" id="calc-years" value="5" min="1" max="30" onchange="runCalc()" oninput="runCalc()">
-        </div>
-        <div class="calc-result" id="calc-result"></div>
       </div>
 
       <!-- AFFORDABILITY PANEL -->
