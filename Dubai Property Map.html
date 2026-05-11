@@ -1882,6 +1882,16 @@ html, body {
   content:'↻'; display:inline-block; margin-right:5px;
   color:var(--text-primary); font-weight:700;
 }
+/* Hide FAB when mobile bottom-sheet feed is expanded to avoid overlap */
+@media (max-width:768px) {
+  #feed.expanded ~ .calc-fab,
+  body:has(#feed.expanded) .calc-fab {
+    opacity:0;
+    pointer-events:none;
+    transform:scale(0.6);
+    transition:opacity .2s ease, transform .2s ease;
+  }
+}
 </style>
 </head>
 <body>
