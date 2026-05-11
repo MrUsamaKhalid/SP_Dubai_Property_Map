@@ -2235,6 +2235,9 @@ html, body {
     <div class="modal-head">
       <h2 id="calc-modal-title">Calculator<span class="sync-toast" id="calc-sync-toast"></span></h2>
       <div style="display:flex;gap:8px;align-items:center">
+        <button class="compare-toggle" id="compare-toggle" onclick="toggleCompareMode()" aria-pressed="false">
+          <span class="ct-plus">+</span> <span>Compare</span>
+        </button>
         <button class="calc-mode-toggle" id="calc-mode-toggle" onclick="toggleCalcMode()" title="Toggle drawer / centered modal" aria-label="Toggle layout mode">&#8597;</button>
         <div class="modal-close" onclick="closeCalc()">&#10005;</div>
       </div>
@@ -2258,11 +2261,11 @@ html, body {
                 <div class="buyer-toggle" data-buyer="cash" onclick="setBuyerType('cash')">Cash</div>
               </div>
             </div>
-            <div class="calc-row">
+            <div id="mort-area-row" class="calc-row">
               <label>Property Area</label>
               <select id="mort-area" onchange="onMortAreaChange()"></select>
             </div>
-            <div class="calc-row">
+            <div id="mort-price-row" class="calc-row">
               <label>Property Price (AED)</label>
               <input type="number" id="mort-price" value="2400000" step="50000" oninput="renderMortgageTab()" onchange="renderMortgageTab()">
             </div>
@@ -2287,6 +2290,9 @@ html, body {
           <div>
             <div id="mort-output"></div>
           </div>
+        </div>
+        <div id="compare-grid-wrap">
+          <div class="compare-grid" id="compare-grid"></div>
         </div>
         <div class="mort-actions">
           <button class="mort-pdf-btn" onclick="exportMortgagePDF()">&#128196; Save as PDF</button>
