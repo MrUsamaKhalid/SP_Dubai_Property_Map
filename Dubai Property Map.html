@@ -1863,6 +1863,25 @@ html, body {
     scroll-behavior: auto !important;
   }
 }
+/* Auto-sync flash on modal head when drawer refreshes for a newly clicked area */
+@keyframes syncFlash {
+  0% { background:var(--accent-soft); }
+  100% { background:transparent; }
+}
+.modal-head.syncing {
+  animation:syncFlash 700ms ease-out;
+}
+.modal-head .sync-toast {
+  display:none; font-size:11px; font-weight:600;
+  color:var(--text-secondary); letter-spacing:0.1px;
+  margin-left:14px; opacity:0;
+  transition:opacity .2s ease;
+}
+.modal-head .sync-toast.visible { display:inline; opacity:1; }
+.modal-head .sync-toast::before {
+  content:'↻'; display:inline-block; margin-right:5px;
+  color:var(--text-primary); font-weight:700;
+}
 </style>
 </head>
 <body>
@@ -2010,7 +2029,7 @@ html, body {
 <div class="modal-overlay" id="calc-modal">
   <div class="modal modal-wide">
     <div class="modal-head">
-      <h2>Calculator</h2>
+      <h2>Calculator<span class="sync-toast" id="calc-sync-toast"></span></h2>
       <div style="display:flex;gap:8px;align-items:center">
         <button class="calc-mode-toggle" id="calc-mode-toggle" onclick="toggleCalcMode()" title="Toggle drawer / centered modal" aria-label="Toggle layout mode">&#8597;</button>
         <div class="modal-close" onclick="closeCalc()">&#10005;</div>
@@ -3409,6 +3428,7 @@ function openCalc(tab, areaId) {
 function setCalcArea(areaId) {
   const a = AREAS.find(x => x.id === areaId);
   if (!a) return;
+  flashSyncIndicator(a.name);
   // ROI tab dropdown
   const roiSel = document.getElementById('calc-area');
   if (roiSel) { roiSel.value = areaId; runCalc(); }
@@ -3420,6 +3440,18 @@ function setCalcArea(areaId) {
     document.getElementById('mort-price').value = Math.max(est, 500000);
     renderMortgageTab();
   }
+}
+function flashSyncIndicator(areaName) {
+  const head = document.querySelector('#calc-modal .modal-head');
+  const toast = document.getElementById('calc-sync-toast');
+  if (!head || !toast) return;
+  // Only flash if modal is currently open
+  if (!document.getElementById('calc-modal').classList.contains('open')) return;
+  head.classList.remove('syncing'); void head.offsetWidth; head.classList.add('syncing');
+  toast.textContent = 'Synced to ' + areaName;
+  toast.classList.add('visible');
+  clearTimeout(flashSyncIndicator._t);
+  flashSyncIndicator._t = setTimeout(() => toast.classList.remove('visible'), 1800);
 }
 function closeCalc() { document.getElementById('calc-modal').classList.remove('open'); }
 /* Keyboard nav for calculator tabs (WAI-ARIA Authoring Practices: tabs pattern) */
