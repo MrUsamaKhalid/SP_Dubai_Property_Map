@@ -1892,6 +1892,33 @@ html, body {
     transition:opacity .2s ease, transform .2s ease;
   }
 }
+/* Cmd+K hint chip */
+.cmdk-hint {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:7px 10px;
+  background:var(--panel2);
+  border:1px solid var(--border2);
+  border-radius:8px;
+  color:var(--text-muted);
+  font-family:var(--font-body); font-size:11px; font-weight:500;
+  cursor:pointer; user-select:none;
+  transition:all .15s ease;
+  letter-spacing:0.1px;
+}
+.cmdk-hint:hover {
+  color:var(--text-primary);
+  border-color:var(--accent-ring);
+  transform:translateY(-1px);
+}
+.cmdk-hint kbd {
+  background:var(--panel);
+  border:1px solid var(--border2);
+  border-radius:4px;
+  padding:1px 5px;
+  font-family:var(--font-body); font-size:10px; font-weight:600;
+  color:var(--text-secondary);
+}
+@media (max-width:1024px) { .cmdk-hint { display:none; } }
 </style>
 </head>
 <body>
@@ -1924,6 +1951,10 @@ html, body {
       <span>Affordable view</span>
       <button class="x" onclick="clearAffordabilityFilter()" title="Clear">&#10005;</button>
     </div>
+    <button class="cmdk-hint" onclick="openCmdPalette()" title="Open command palette" aria-label="Open command palette">
+      <span>Search</span>
+      <kbd>⌘</kbd><kbd>K</kbd>
+    </button>
     <button class="tb-calc-pill" onclick="openCalc()" title="Open Calculator (Mortgage / ROI / Affordability)" aria-label="Open Calculator">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="4" y="2" width="16" height="20" rx="2"/>
