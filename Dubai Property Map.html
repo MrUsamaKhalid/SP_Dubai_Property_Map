@@ -1919,6 +1919,15 @@ html, body {
   color:var(--text-secondary);
 }
 @media (max-width:1024px) { .cmdk-hint { display:none; } }
+/* Direction glyphs for status pcts — color-blind friendly */
+.dir::before {
+  display:inline-block; margin-right:3px;
+  font-weight:700; font-size:0.85em;
+  vertical-align:baseline;
+}
+.dir.up::before { content:'↑'; color:var(--green); }
+.dir.down::before { content:'↓'; color:var(--red); }
+.dir.flat::before { content:'·'; color:var(--text-muted); margin-right:5px; }
 </style>
 </head>
 <body>
@@ -2941,7 +2950,7 @@ function buildFeed(filter='all') {
       <div class="fi-name">${d.name}</div>
       <div class="fi-spark">${buildSparkline(d.timeline, d.pinType)}</div>
       <div class="fi-meta">
-        <span class="fi-growth">${d.growth}</span>
+        <span class="fi-growth dir ${d.growthPct > 0 ? 'up' : d.growthPct < 0 ? 'down' : 'flat'}">${d.growth}</span>
         <span class="fi-price">AED ${d.curP.toLocaleString()}/sqft</span>
       </div>
       <div class="fi-loc">${d.developer} \u00b7 ${d.yoy} YoY</div>
@@ -3025,7 +3034,7 @@ function selectArea(id) {
       <div class="tl">
         ${d.timeline.map(t=> t.p===0
           ? `<div class="tl-row"><span class="tl-yr">${t.y}</span><span style="font-size:9px;color:var(--text-muted);font-family:var(--mono);flex:1">${t.note||'\u2014'}</span></div>`
-          : `<div class="tl-row ${t.cur?'cur':''}"><span class="tl-yr">${t.y}</span><div class="tl-bw"><div class="tl-b" data-w="${Math.round(t.p/maxP*100)}"></div></div><span class="tl-p">AED ${t.p.toLocaleString()}</span>${t.chg?`<span class="tl-chg ${t.chg.includes('-')?'down':'up'}">${t.chg}</span>`:'<span class="tl-chg"></span>'}</div>`
+          : `<div class="tl-row ${t.cur?'cur':''}"><span class="tl-yr">${t.y}</span><div class="tl-bw"><div class="tl-b" data-w="${Math.round(t.p/maxP*100)}"></div></div><span class="tl-p">AED ${t.p.toLocaleString()}</span>${t.chg?`<span class="tl-chg dir ${t.chg.includes('-')?'down':'up'}">${t.chg}</span>`:'<span class="tl-chg"></span>'}</div>`
         ).join('')}
       </div>
       <div class="det-sec-title">Current Unit Prices</div>
