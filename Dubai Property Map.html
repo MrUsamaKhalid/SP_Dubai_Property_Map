@@ -9,7 +9,7 @@
 <title>Dubai Property Intelligence — Sykon Properties 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
@@ -41,80 +41,80 @@ input[type="number"] {
    THEME SYSTEM
 ═══════════════════════════════════════ */
 :root, [data-theme="dark"] {
-  --bg:           #0a0a0c;
-  --panel:        #101013;
-  --panel2:       #161619;
-  --panel3:       #1c1c20;
-  --surface:      rgba(255,255,255,0.03);
-  --surface2:     rgba(255,255,255,0.06);
-  --border:       rgba(255,255,255,0.08);
-  --border2:      rgba(255,255,255,0.04);
-  --gold:         #ffffff;       /* monochrome accent: white on dark theme */
-  --gold2:        #ffffff;
-  --gold-dim:     rgba(255,255,255,0.10);
-  --accent:       #ffffff;
-  --accent-ring:  rgba(255,255,255,0.18);
-  --accent-soft:  rgba(255,255,255,0.06);
-  --brand-gold:   #C8A951;       /* preserved only for chart data + heatmap legacy */
-  --teal:         #3ecfcf;
-  --teal-dim:     rgba(62,207,207,0.12);
-  --rose:         #e07a5f;
-  --rose-dim:     rgba(224,122,95,0.12);
-  --green:        #52c97a;
-  --amber:        #f0a500;
-  --red:          #e05252;
-  --text-primary:    #eaeaee;
-  --text-secondary:  #9898a6;
-  --text-muted:      #5e5e6c;
-  --marker-bg:    rgba(10,10,12,0.92);
-  --overlay-bg:   rgba(10,10,12,0.85);
-  --shadow-sm:    0 1px 3px rgba(0,0,0,0.5);
-  --shadow-md:    0 4px 16px rgba(0,0,0,0.6);
-  --shadow-lg:    0 12px 40px rgba(0,0,0,0.7);
+  --bg:           #111111;
+  --panel:        #161617;
+  --panel2:       #1B1B1C;
+  --panel3:       #202021;
+  --surface:      rgba(254,254,254,0.04);
+  --surface2:     rgba(254,254,254,0.07);
+  --border:       rgba(254,254,254,0.10);
+  --border2:      rgba(254,254,254,0.05);
+  --gold:         #FFD60A;       /* yellow accent: headline metrics & wealth highlights */
+  --gold2:        #E8C200;
+  --gold-dim:     rgba(255,214,10,0.10);
+  --accent:       #0A84FF;       /* blue accent: interactive primary */
+  --accent-ring:  rgba(10,132,255,0.30);
+  --accent-soft:  rgba(10,132,255,0.12);
+  --brand-gold:   #B69000;       /* chart yellow (validated vs #111111) */
+  --teal:         #26A249;       /* villa pins: green (validated vs #111111) */
+  --teal-dim:     rgba(38,162,73,0.14);
+  --rose:         #B69000;       /* ultra pins: yellow-gold */
+  --rose-dim:     rgba(255,214,10,0.10);
+  --green:        #30D158;
+  --amber:        #FFD60A;
+  --red:          #FF453A;
+  --text-primary:    #FEFEFE;
+  --text-secondary:  rgba(254,254,254,0.64);
+  --text-muted:      rgba(254,254,254,0.40);
+  --marker-bg:    rgba(17,17,17,0.92);
+  --overlay-bg:   rgba(17,17,17,0.80);
+  --shadow-sm:    0 1px 2px rgba(0,0,0,0.40);
+  --shadow-md:    0 8px 24px rgba(0,0,0,0.45);
+  --shadow-lg:    0 24px 64px rgba(0,0,0,0.55);
   --glow-gold:    0 0 30px var(--accent-soft);
-  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-body:    'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', 'Segoe UI', sans-serif;
+  --font-body:    'SF Pro Text', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', 'Segoe UI', sans-serif;
   --mono:         var(--font-body);
-  --scrollbar-thumb: var(--accent-ring);
-  --tooltip-shadow: 0 12px 48px rgba(0,0,0,0.7);
-  --radius:       8px;
-  --radius-sm:    5px;
+  --scrollbar-thumb: rgba(254,254,254,0.18);
+  --tooltip-shadow: 0 16px 48px rgba(0,0,0,0.60);
+  --radius:       12px;
+  --radius-sm:    8px;
 }
 
 [data-theme="light"] {
-  --bg:           #f2f1ed;
-  --panel:        #ffffff;
-  --panel2:       #f7f6f3;
-  --panel3:       #eeedea;
-  --surface:      rgba(0,0,0,0.025);
-  --surface2:     rgba(0,0,0,0.05);
-  --border:       rgba(0,0,0,0.1);
-  --border2:      rgba(0,0,0,0.05);
-  --gold:         #0a0a0a;       /* monochrome accent: black on light theme */
-  --gold2:        #0a0a0a;
-  --gold-dim:     rgba(0,0,0,0.06);
-  --accent:       #0a0a0a;
-  --accent-ring:  rgba(0,0,0,0.12);
-  --accent-soft:  rgba(0,0,0,0.04);
-  --brand-gold:   #96761A;
-  --teal:         #1a8585;
-  --teal-dim:     rgba(26,133,133,0.1);
-  --rose:         #a84430;
-  --rose-dim:     rgba(168,68,48,0.1);
-  --green:        #2a8f4d;
-  --amber:        #b07600;
-  --red:          #b83030;
-  --text-primary:    #1a1a1e;
-  --text-secondary:  #555560;
-  --text-muted:      #8a8a96;
-  --marker-bg:    rgba(255,255,255,0.96);
-  --overlay-bg:   rgba(255,255,255,0.9);
-  --shadow-sm:    0 1px 4px rgba(0,0,0,0.06);
-  --shadow-md:    0 4px 16px rgba(0,0,0,0.08);
-  --shadow-lg:    0 12px 40px rgba(0,0,0,0.1);
-  --glow-gold:    0 0 30px rgba(150,118,26,0.06);
-  --scrollbar-thumb: rgba(150,118,26,0.2);
-  --tooltip-shadow: 0 12px 48px rgba(0,0,0,0.12);
+  --bg:           #FEFEFE;
+  --panel:        #FFFFFF;
+  --panel2:       #F7F7F8;
+  --panel3:       #F0F0F1;
+  --surface:      rgba(17,17,17,0.03);
+  --surface2:     rgba(17,17,17,0.06);
+  --border:       rgba(17,17,17,0.10);
+  --border2:      rgba(17,17,17,0.05);
+  --gold:         #A87F00;       /* yellow-gold, readable on #FEFEFE */
+  --gold2:        #8F6C00;
+  --gold-dim:     rgba(199,154,0,0.10);
+  --accent:       #0A6DD6;       /* blue accent (validated vs #FEFEFE) */
+  --accent-ring:  rgba(10,109,214,0.25);
+  --accent-soft:  rgba(10,109,214,0.08);
+  --brand-gold:   #C79A00;       /* chart yellow (validated vs #FEFEFE) */
+  --teal:         #1B7A3E;       /* villa pins: green (validated vs #FEFEFE) */
+  --teal-dim:     rgba(27,122,62,0.10);
+  --rose:         #C79A00;       /* ultra pins: yellow-gold */
+  --rose-dim:     rgba(199,154,0,0.10);
+  --green:        #1E8E46;
+  --amber:        #C79A00;
+  --red:          #D70015;
+  --text-primary:    #111111;
+  --text-secondary:  rgba(17,17,17,0.62);
+  --text-muted:      rgba(17,17,17,0.42);
+  --marker-bg:    rgba(254,254,254,0.95);
+  --overlay-bg:   rgba(254,254,254,0.85);
+  --shadow-sm:    0 1px 2px rgba(17,17,17,0.05);
+  --shadow-md:    0 8px 24px rgba(17,17,17,0.07);
+  --shadow-lg:    0 24px 64px rgba(17,17,17,0.10);
+  --glow-gold:    0 0 30px rgba(199,154,0,0.08);
+  --scrollbar-thumb: rgba(17,17,17,0.16);
+  --tooltip-shadow: 0 16px 48px rgba(17,17,17,0.14);
 }
 
 html, body {
@@ -435,8 +435,8 @@ html, body {
 .mk-wrap { display:flex; flex-direction:column; align-items:center; cursor:pointer; transition:transform 0.25s ease; }
 .mk-wrap:hover { transform:scale(1.12); }
 .mk-wrap:hover .mk-dot { box-shadow:0 0 0 6px var(--accent-ring), 0 0 25px var(--accent-ring); }
-.mk-wrap:hover .mk-dot.villa { box-shadow:0 0 0 6px rgba(62,207,207,0.15), 0 0 25px rgba(62,207,207,0.15); }
-.mk-wrap:hover .mk-dot.ultra { box-shadow:0 0 0 6px rgba(224,122,95,0.15), 0 0 25px rgba(224,122,95,0.15); }
+.mk-wrap:hover .mk-dot.villa { box-shadow:0 0 0 6px rgba(38,162,73,0.15), 0 0 25px rgba(38,162,73,0.15); }
+.mk-wrap:hover .mk-dot.ultra { box-shadow:0 0 0 6px rgba(199,154,0,0.15), 0 0 25px rgba(199,154,0,0.15); }
 
 .mk-dot {
   width:40px; height:40px; border-radius:50%;
@@ -446,13 +446,13 @@ html, body {
   box-shadow:0 0 0 4px var(--accent-soft), var(--shadow-md);
   position:relative; transition:all 0.3s ease;
 }
-.mk-dot.villa { border-color:var(--teal); box-shadow:0 0 0 4px rgba(62,207,207,0.08), var(--shadow-md); }
-.mk-dot.ultra { border-color:var(--rose); box-shadow:0 0 0 4px rgba(224,122,95,0.08), var(--shadow-md); }
+.mk-dot.villa { border-color:var(--teal); box-shadow:0 0 0 4px rgba(38,162,73,0.08), var(--shadow-md); }
+.mk-dot.ultra { border-color:var(--rose); box-shadow:0 0 0 4px rgba(199,154,0,0.08), var(--shadow-md); }
 
 .mk-dot.selected { transform:scale(1.2); }
 .mk-dot.selected.apt   { background:var(--accent-ring); box-shadow:0 0 0 8px var(--accent-ring), 0 0 30px var(--accent-ring); }
-.mk-dot.selected.villa { background:rgba(62,207,207,0.2); box-shadow:0 0 0 8px rgba(62,207,207,0.15), 0 0 30px rgba(62,207,207,0.25); }
-.mk-dot.selected.ultra { background:rgba(224,122,95,0.2); box-shadow:0 0 0 8px rgba(224,122,95,0.15), 0 0 30px rgba(224,122,95,0.25); }
+.mk-dot.selected.villa { background:rgba(38,162,73,0.2); box-shadow:0 0 0 8px rgba(38,162,73,0.15), 0 0 30px rgba(38,162,73,0.25); }
+.mk-dot.selected.ultra { background:rgba(199,154,0,0.2); box-shadow:0 0 0 8px rgba(199,154,0,0.15), 0 0 30px rgba(199,154,0,0.25); }
 
 .mk-dot::after { display:none; }
 
@@ -1408,9 +1408,9 @@ html, body {
   padding:2px 7px; border-radius:10px; margin-left:4px; vertical-align:middle;
   line-height:1.4;
 }
-.heat-badge.heat-cold { background:rgba(62,130,247,0.15); color:#3e82f7; }
+.heat-badge.heat-cold { background:var(--accent-soft); color:var(--accent); }
 .heat-badge.heat-warm { background:var(--accent-ring); color:var(--gold); }
-.heat-badge.heat-hot { background:rgba(224,80,80,0.15); color:#e05050; }
+.heat-badge.heat-hot { background:rgba(255,69,58,0.14); color:var(--red); }
 
 /* ─── FILTER PANEL ─── */
 .filter-toggle {
@@ -2213,6 +2213,37 @@ html, body {
     flex-basis:340px;
   }
 }
+
+/* ═══════════════════════════════════════
+   2026-07 UI PASS — shared Dubai/RAK refinement layer
+   (#111111 / #FEFEFE bases · R/G/B/Y accents · SF Pro · frosted surfaces)
+═══════════════════════════════════════ */
+html, body { transition:background-color .35s ease, color .35s ease; }
+#feed, #detail, .map-overlay, .filter-panel { transition:background-color .35s ease, border-color .35s ease; }
+#topbar, #statusbar { backdrop-filter:blur(28px) saturate(1.6); -webkit-backdrop-filter:blur(28px) saturate(1.6); }
+[data-theme="dark"] #topbar, [data-theme="dark"] #statusbar { background:rgba(17,17,17,0.80); }
+[data-theme="light"] #topbar, [data-theme="light"] #statusbar { background:rgba(254,254,254,0.80); }
+.modal-overlay { backdrop-filter:blur(20px) saturate(1.2); -webkit-backdrop-filter:blur(20px) saturate(1.2); }
+.feed-item { transition:background .18s ease, transform .28s cubic-bezier(.25,.1,.25,1), opacity .3s ease; }
+.feed-item:hover { transform:translateX(3px); }
+.feed-item:active { transform:translateX(3px) scale(.995); }
+.det-metric, .uc, .signal-row, .fin-snapshot { transition:transform .25s cubic-bezier(.25,.1,.25,1), box-shadow .25s ease, background .2s ease; }
+.det-metric:hover, .uc:hover { transform:translateY(-1px); box-shadow:var(--shadow-sm); }
+.mc-btn, .ftab, .mf-pill, .buyer-toggle, .calc-tab, .cb-btn, .ctt-btn, .tt-btn, .det-close, .det-export-btn, .theme-toggle, .fi-fav, .tb-calc-pill { transition:all .22s cubic-bezier(.25,.1,.25,1); }
+.cb-btn:active, .ctt-btn:active, .tt-btn:active, .mc-btn:active, .tb-calc-pill:active { transform:scale(.96); }
+:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+::selection { background:var(--accent-ring); }
+input[type="range"], input[type="checkbox"] { accent-color:var(--accent); }
+input[type="number"]:focus, input[type="text"]:focus, select:focus { border-color:var(--accent) !important; box-shadow:0 0 0 3px var(--accent-soft); outline:none; }
+[data-theme="light"] .compare-bar .cb-btn { color:#111111; }
+[data-theme="dark"] .info-tip:hover, [data-theme="dark"] .info-tip:focus-visible { color:#FEFEFE; }
+.tb-stat .sv, .det-name, .tb-title, .dm-val { letter-spacing:-0.02em; }
+.leaflet-container { font-family:var(--font-body); }
+.mk-dot { border-color:var(--accent); }         /* default/apt pins: blue */
+.mk-growth { color:var(--accent); }              /* default/apt growth: blue (villa/ultra override) */
+.heat-badge.heat-warm { background:var(--gold-dim); color:var(--gold); }
+.tick-chg.up { color:var(--green); }
+.tick-chg.down { color:var(--red); }
 </style>
 </head>
 <body>
@@ -3055,6 +3086,13 @@ function toggleTheme() {
   document.documentElement.setAttribute('data-theme', App.theme);
   document.getElementById('theme-toggle').innerHTML = App.theme === 'dark' ? '&#9788;' : '&#9790;';
   updateMapTiles();
+  Object.assign(rawColorMap, CHART_COLORS[App.theme] || CHART_COLORS.dark);
+  buildMarkers();
+  buildTicker();
+  buildFeed(App.currentTab);
+  updateMarkerDimming();
+  if (App.activeId && AREAS.some(a => a.id === App.activeId)) selectArea(App.activeId);
+  if (App.heatmapOn) { toggleHeatmap(); toggleHeatmap(); }
 }
 function updateMapTiles() {
   if (currentTileLayer) map.removeLayer(currentTileLayer);
@@ -3076,7 +3114,11 @@ currentTileLayer = L.tileLayer(
   { attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:19 }
 ).addTo(map);
 
-const rawColorMap = { apt:'#6b6b6b', villa:'#3ecfcf', ultra:'#e07a5f' };
+const CHART_COLORS = {
+  dark:  { apt:'#0A84FF', villa:'#26A249', ultra:'#B69000' },
+  light: { apt:'#0A6DD6', villa:'#1B7A3E', ultra:'#C79A00' },
+};
+const rawColorMap = Object.assign({}, CHART_COLORS[App.theme] || CHART_COLORS.dark);
 const AREA_ICONS = {
   nas:'\ud83c\udfc7', pja:'\ud83c\udf34', palm:'\ud83c\udfdd\ufe0f', marina:'\u2693',
   emirates:'\ud83c\udfc6', jge:'\u26f3', oasis:'\ud83d\udca7', downtown:'\ud83c\udfdb\ufe0f',
@@ -3085,6 +3127,9 @@ const AREA_ICONS = {
 const markers = {};
 let hoverPopup = null;
 
+function buildMarkers() {
+Object.values(markers).forEach(m => map.removeLayer(m));
+Object.keys(markers).forEach(k => delete markers[k]);
 AREAS.forEach(d => {
   const cls = d.pinType;
   const areaIcon = AREA_ICONS[d.id] || d.code;
@@ -3103,6 +3148,8 @@ AREAS.forEach(d => {
   m.on('mouseout', () => hideTooltip());
   markers[d.id] = m;
 });
+}
+buildMarkers();
 
 /* ═══════════════════════════════════════
    HEATMAP
@@ -3114,7 +3161,7 @@ function toggleHeatmap() {
   if (App.heatmapOn) {
     const maxP = Math.max(...AREAS.map(a => a.curP));
     const pts = AREAS.map(a => [a.lat, a.lng, a.curP / maxP]);
-    heatLayer = L.heatLayer(pts, { radius:45, blur:35, maxZoom:14, gradient:{0.2:'#3ecfcf',0.5:'#6b6b6b',0.8:'#a0a0a0',1:'#e07a5f'} }).addTo(map);
+    heatLayer = L.heatLayer(pts, { radius:45, blur:35, maxZoom:14, gradient:{0.15:'#0A84FF',0.45:'#26A249',0.7:'#FFD60A',1:'#FF453A'} }).addTo(map);
   } else if (heatLayer) {
     map.removeLayer(heatLayer);
     heatLayer = null;
@@ -4601,7 +4648,7 @@ function triggerConfetti() {
   canvas.height = window.innerHeight;
   const ctx = canvas.getContext('2d');
   const particles = [];
-  const colors = ['#6b6b6b','#a0a0a0','#3ecfcf','#52c97a','#e05252','#e07a5f'];
+  const colors = ['#0A84FF','#30D158','#FFD60A','#FF453A','#26A249','#B69000'];
   for (let i = 0; i < 150; i++) {
     particles.push({
       x: Math.random() * canvas.width,
