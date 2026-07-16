@@ -2244,6 +2244,19 @@ input[type="number"]:focus, input[type="text"]:focus, select:focus { border-colo
 .heat-badge.heat-warm { background:var(--gold-dim); color:var(--gold); }
 .tick-chg.up { color:var(--green); }
 .tick-chg.down { color:var(--red); }
+
+/* Emirate switcher — cross-map navigation (Dubai / RAK / Abu Dhabi) */
+.emirate-switch { display:inline-flex; align-items:center; gap:2px; background:var(--surface); border:1px solid var(--border2); border-radius:999px; padding:3px; margin-left:14px; flex-shrink:0; }
+.es-item { display:inline-flex; align-items:center; gap:5px; font-size:9.5px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; color:var(--text-muted); text-decoration:none; padding:5px 12px; border-radius:999px; cursor:pointer; white-space:nowrap; transition:all .22s cubic-bezier(.25,.1,.25,1); }
+.es-item:hover { color:var(--text-primary); background:var(--surface2); }
+.es-item.active { background:var(--text-primary); color:var(--bg); box-shadow:var(--shadow-sm); }
+.es-item.active:hover { color:var(--bg); }
+.es-item.soon { cursor:default; opacity:0.6; }
+.es-item.soon:hover { background:transparent; color:var(--text-muted); }
+.es-soon { font-size:7px; font-weight:800; letter-spacing:1px; background:var(--gold-dim); color:var(--gold); padding:2px 6px; border-radius:6px; }
+.es-min { display:none; }
+@media (max-width:1750px) { .es-full { display:none; } .es-min { display:inline; } .es-item { padding:5px 9px; } }
+@media (max-width:768px) { .emirate-switch { margin-left:8px; } }
 </style>
 </head>
 <body>
@@ -2275,6 +2288,11 @@ input[type="number"]:focus, input[type="text"]:focus, select:focus { border-colo
     </span>
     <div class="tb-sep"></div>
     <span class="tb-title">Dubai Property Intelligence 2026</span>
+    <nav class="emirate-switch" aria-label="Sykon market maps">
+      <a class="es-item active" aria-current="page" href="https://mrusamakhalid.github.io/SP_Dubai_Property_Map/"><span class="es-full">For Dubai</span><span class="es-min">DXB</span></a>
+      <a class="es-item" href="https://mrusamakhalid.github.io/SP_RAK_Map/"><span class="es-full">For RAK</span><span class="es-min">RAK</span></a>
+      <span class="es-item soon" title="Abu Dhabi market intelligence — coming soon"><span class="es-full">For Abu Dhabi</span><span class="es-min">AUH</span><span class="es-soon">Soon</span></span>
+    </nav>
     <div class="search-wrap">
       <span class="search-icon">&#9906;</span>
       <input type="text" id="search" placeholder="Search areas, developers..." autocomplete="off">
@@ -4585,6 +4603,7 @@ function getCmdItems(query) {
     items.push({ type:'area', label:a.name, icon:AREA_ICONS[a.id]||a.code, id:a.id });
   });
   // Action items
+  items.push({ type:'action', label:'Open RAK Map', icon:'\ud83c\udfdd\ufe0f', action: () => { window.location.href = 'https://mrusamakhalid.github.io/SP_RAK_Map/'; } });
   items.push({ type:'action', label:'Toggle Theme', icon:'\u263c', action: () => toggleTheme() });
   items.push({ type:'action', label:'Open Calculator', icon:'\u2615', action: () => { closeCmdPalette(); openCalc(); } });
   items.push({ type:'action', label:'Mortgage Calculator', icon:'\ud83c\udfe0', action: () => { closeCmdPalette(); openCalc('mortgage'); } });
