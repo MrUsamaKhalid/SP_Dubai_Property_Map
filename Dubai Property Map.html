@@ -2261,6 +2261,72 @@ input[type="number"]:focus, input[type="text"]:focus, select:focus { border-colo
 .tick-chg.up { color:var(--green); }
 .tick-chg.down { color:var(--red); }
 
+/* ── BURJ KHALIFA 3D LANDMARK MARKER ── */
+.mk-tooltip, .mk-tooltip .leaflet-popup-content-wrapper, .mk-tooltip .leaflet-popup-tip { pointer-events:none !important; }
+.lm-wrap { pointer-events:none; }
+#map .leaflet-marker-icon:has(.lm-wrap) { pointer-events:none !important; }
+.lm-banner {
+  pointer-events:auto; cursor:pointer; white-space:nowrap;
+  background:rgba(10,14,22,0.92); border:1px solid rgba(169,198,232,0.55);
+  color:#DCE9F7; font-size:10px; font-weight:800; letter-spacing:1.6px;
+  padding:4px 12px 3px; border-radius:20px; text-transform:uppercase;
+  display:flex; flex-direction:column; align-items:center; line-height:1.3;
+  box-shadow:0 2px 14px rgba(120,170,235,0.30); margin-bottom:2px;
+}
+.lm-banner-sub { font-size:7.5px; font-weight:600; letter-spacing:1px; color:#A9C6E8; text-transform:none; }
+.mk-dot.burj-3d, .mk-dot.burj-3d.apt, .mk-dot.burj-3d.villa, .mk-dot.burj-3d.ultra, .mk-dot.burj-3d.selected {
+  width:90px; height:146px; background:transparent !important; border:none !important;
+  box-shadow:none !important; border-radius:0; position:relative;
+  perspective:420px; perspective-origin:50% 12%;
+}
+.mk-wrap:hover .mk-dot.burj-3d { box-shadow:none !important; }
+.burj-tower {
+  position:absolute; left:50%; bottom:16px; width:36px; height:128px; margin-left:-18px;
+  transform-style:preserve-3d; animation:burjSpin 18s linear infinite;
+}
+.bt { position:absolute; left:50%; transform-style:preserve-3d; }
+.bf {
+  position:absolute; top:0; left:0; width:100%; height:100%; border-radius:2px;
+  background:
+    repeating-linear-gradient(0deg, rgba(30,45,60,0.35) 0 1.5px, transparent 1.5px 5px),
+    linear-gradient(180deg, #E8F0F7 0%, #B9C8D6 45%, #7B8DA0 100%);
+  box-shadow:inset 0 0 8px rgba(40,60,80,0.25);
+}
+.bt .l, .bt .r {
+  background:
+    repeating-linear-gradient(0deg, rgba(30,45,60,0.4) 0 1.5px, transparent 1.5px 5px),
+    linear-gradient(180deg, #C3D2E0 0%, #6F8092 100%);
+}
+.bt1 { width:34px; height:46px; bottom:0; margin-left:-17px; }
+.bt1 .f { transform:translateZ(17px); } .bt1 .b { transform:rotateY(180deg) translateZ(17px); }
+.bt1 .l { transform:rotateY(-90deg) translateZ(17px); } .bt1 .r { transform:rotateY(90deg) translateZ(17px); }
+.bt2 { width:24px; height:36px; bottom:44px; margin-left:-12px; }
+.bt2 .f { transform:translateZ(12px); } .bt2 .b { transform:rotateY(180deg) translateZ(12px); }
+.bt2 .l { transform:rotateY(-90deg) translateZ(12px); } .bt2 .r { transform:rotateY(90deg) translateZ(12px); }
+.bt3 { width:15px; height:28px; bottom:78px; margin-left:-7.5px; }
+.bt3 .f { transform:translateZ(7.5px); } .bt3 .b { transform:rotateY(180deg) translateZ(7.5px); }
+.bt3 .l { transform:rotateY(-90deg) translateZ(7.5px); } .bt3 .r { transform:rotateY(90deg) translateZ(7.5px); }
+.bt4 { width:8px; height:16px; bottom:104px; margin-left:-4px; }
+.bt4 .f { transform:translateZ(4px); } .bt4 .b { transform:rotateY(180deg) translateZ(4px); }
+.bt4 .l { transform:rotateY(-90deg) translateZ(4px); } .bt4 .r { transform:rotateY(90deg) translateZ(4px); }
+.burj-spire { position:absolute; bottom:119px; left:50%; width:2.5px; height:26px; margin-left:-1.25px; transform-style:preserve-3d; }
+.burj-spire .sp1, .burj-spire .sp2 { position:absolute; top:0; left:0; width:100%; height:100%; background:linear-gradient(180deg, #F2F7FC 0%, #93A6B8 100%); }
+.burj-spire .sp2 { transform:rotateY(90deg); }
+.burj-base {
+  position:absolute; left:50%; bottom:4px; width:80px; height:20px; margin-left:-40px;
+  background:radial-gradient(ellipse at center, rgba(150,195,255,0.65) 0%, rgba(120,170,235,0.22) 55%, transparent 75%);
+  border-radius:50%; animation:burjGlow 2.6s ease-in-out infinite alternate;
+}
+.lm-wrap:hover .burj-base, .mk-dot.burj-3d.selected .burj-base { opacity:1; transform:scale(1.15); }
+@keyframes burjSpin { from { transform:rotateX(-6deg) rotateY(0deg); } to { transform:rotateX(-6deg) rotateY(360deg); } }
+@keyframes burjGlow { from { opacity:0.5; transform:scale(0.92); } to { opacity:1; transform:scale(1.06); } }
+@media (prefers-reduced-motion: reduce) {
+  .burj-tower { animation:none; transform:rotateX(-6deg) rotateY(-30deg); }
+  .burj-base { animation:none; }
+}
+.mk-dimmed .lm-banner { pointer-events:none; }
+.fi-badge.fi-featured { background:linear-gradient(90deg, #9a6a1f, #d9a53e); color:#fff; }
+
 /* FX + rate-hint layer */
 .tick-fx .tick-price { color:var(--gold); }
 .tick-fx .tick-name { color:var(--text-secondary); }
@@ -3006,6 +3072,7 @@ const AREAS = [
   },
   {
     id:'downtown', name:'Downtown Dubai', type:'Luxury Apartments', pinType:'apt',
+    landmark:true, landmark_sub:'Burj Khalifa \u00b7 828 m \u00b7 163 floors',
     code:'DT', lat:25.1972, lng:55.2744,
     developer:'Emaar', launch:'2005', freehold:true,
     launchP:1200, curP:2957, growth:'+146%', growthPct:56,
@@ -3256,7 +3323,23 @@ AREAS.forEach(d => {
   const cls = d.pinType;
   const areaIcon = AREA_ICONS[d.id] || d.code;
   const hbHtml = heatBadgeHtml(d.heatScore);
-  const icon = L.divIcon({
+  const icon = d.landmark ? L.divIcon({
+    html:`<div class="mk-wrap lm-wrap" id="mkwrap-${d.id}">
+      <div class="lm-banner">${d.name}<span class="lm-banner-sub">${d.landmark_sub || ''}</span></div>
+      <div class="mk-dot burj-3d ${cls}" id="mkdot-${d.id}">
+        <div class="burj-tower">
+          <div class="bt bt1"><div class="bf f"></div><div class="bf b"></div><div class="bf l"></div><div class="bf r"></div></div>
+          <div class="bt bt2"><div class="bf f"></div><div class="bf b"></div><div class="bf l"></div><div class="bf r"></div></div>
+          <div class="bt bt3"><div class="bf f"></div><div class="bf b"></div><div class="bf l"></div><div class="bf r"></div></div>
+          <div class="bt bt4"><div class="bf f"></div><div class="bf b"></div><div class="bf l"></div><div class="bf r"></div></div>
+          <div class="burj-spire"><div class="sp1"></div><div class="sp2"></div></div>
+        </div>
+        <div class="burj-base"></div>
+      </div>
+      <div class="mk-growth">${d.growth} ${hbHtml}</div>
+    </div>`,
+    className:'', iconSize:[170,200], iconAnchor:[85,176],
+  }) : L.divIcon({
     html:`<div class="mk-wrap" id="mkwrap-${d.id}">
       <div class="mk-dot ${cls}" id="mkdot-${d.id}"><span class="mk-icon">${areaIcon}</span></div>
       <div class="mk-growth">${d.growth} ${hbHtml}</div>
@@ -3264,7 +3347,7 @@ AREAS.forEach(d => {
     </div>`,
     className:'', iconSize:[100,85], iconAnchor:[50,19],
   });
-  const m = L.marker([d.lat, d.lng], { icon }).addTo(map);
+  const m = L.marker([d.lat, d.lng], { icon, zIndexOffset: d.landmark ? 1000 : 0 }).addTo(map);
   const mkEl = m.getElement();
   if (mkEl) {
     mkEl.setAttribute('role', 'button');
@@ -3313,7 +3396,7 @@ function showTooltip(d) {
       <div class="mk-tt-stat"><div class="lbl">Yield</div><div class="val gold">${d.yield_}</div></div>
     </div>
   </div>`;
-  hoverPopup = L.popup({ className:'mk-tooltip', closeButton:false, offset:[0,-30], autoPan:false })
+  hoverPopup = L.popup({ className:'mk-tooltip', closeButton:false, offset:[0, d.landmark ? -180 : -30], autoPan:false })
     .setLatLng([d.lat, d.lng]).setContent(html).openOn(map);
 }
 function hideTooltip() { if(hoverPopup){map.closePopup(hoverPopup);hoverPopup=null;} }
@@ -3463,7 +3546,7 @@ function buildFeed(filter='all') {
     el.setAttribute('aria-label', d.name);
     el.innerHTML = `
       <div class="fi-top">
-        <span class="fi-badge ${d.pinType}">${d.pinType==='apt'?'APT':d.pinType==='villa'?'VILLA':'ULTRA'}</span>
+        <span class="fi-badge ${d.pinType}">${d.pinType==='apt'?'APT':d.pinType==='villa'?'VILLA':'ULTRA'}</span>${d.landmark ? '<span class="fi-badge fi-featured">\u2605 Featured</span>' : ''}
         ${heatBadgeHtml(d.heatScore)}
         <span class="fi-tier">Launch ${d.launch}</span>
         <span class="fi-fav ${isFav?'active':''}" tabindex="0" role="button" aria-label="Toggle favorite" onclick="toggleFavorite('${d.id}',event)">${isFav?'\u2605':'\u2606'}</span>
