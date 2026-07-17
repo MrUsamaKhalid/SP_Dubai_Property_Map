@@ -1,0 +1,12 @@
+{
+  "date": "2026-07-16",
+  "source": "fawazahmed0/exchange-api (baked daily by GitHub Actions)",
+  "aed": {
+    "usd": 0.2723,
+    "eur": 0.2375,
+    "gbp": 0.2012,
+    "inr": 26.235,
+    "cny": 1.843,
+    "rub": 21.097
+  }
+}

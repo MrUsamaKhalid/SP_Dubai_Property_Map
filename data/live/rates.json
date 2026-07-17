@@ -1,0 +1,8 @@
+{
+  "eibor_3m": 3.74,
+  "eibor_overnight": 3.45,
+  "cbuae_base_rate": 3.65,
+  "as_of": "Jul 2026",
+  "source": "centralbank.ae \u2014 manually curated (CBUAE has no open feed)",
+  "note": "Indicative interbank rates. Retail fixed mortgages typically from ~3.9%."
+}
