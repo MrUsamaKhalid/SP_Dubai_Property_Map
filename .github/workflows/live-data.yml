@@ -1,0 +1,50 @@
+name: Refresh live data
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  fx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch FX rates (AED base)
+        run: |
+          curl -fsSL --retry 3 https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/aed.min.json -o /tmp/aed.json \
+            || curl -fsSL --retry 3 https://latest.currency-api.pages.dev/v1/currencies/aed.min.json -o /tmp/aed.json
+          python3 - <<'PY'
+          import json
+          j = json.load(open('/tmp/aed.json'))
+          aed = j.get('aed', {})
+          out = {
+              'date': j.get('date'),
+              'source': 'fawazahmed0/exchange-api (baked daily by GitHub Actions)',
+              'aed': {c: aed[c] for c in ['usd', 'eur', 'gbp', 'inr', 'cny', 'rub'] if c in aed},
+          }
+          assert len(out['aed']) >= 4, 'FX payload incomplete'
+          json.dump(out, open('data/live/fx.json', 'w'), indent=2)
+          PY
+      - name: Commit if changed
+        id: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/live/fx.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "chore: refresh FX rates [skip ci]"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Trigger Pages deploy (bot pushes do not fire on-push workflows)
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main
