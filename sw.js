@@ -17,7 +17,7 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.hostname.includes('cartocdn') || url.hostname.includes('goatcounter')) return; // tiles/analytics: network only
+  if (url.hostname.includes('openfreemap') || url.hostname.includes('goatcounter')) return; // tiles/analytics: network only
   const isCdnLib = CDN_CACHE.some(u => req.url.startsWith(u)) || url.hostname.includes('fonts.g');
   if (isCdnLib) {
     e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(res => {

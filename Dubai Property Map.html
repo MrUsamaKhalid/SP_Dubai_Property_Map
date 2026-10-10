@@ -29,6 +29,9 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css"/>
+<script defer src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+<script defer src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 
@@ -3283,25 +3286,55 @@ function toggleTheme() {
   if (App.activeId && AREAS.some(a => a.id === App.activeId)) selectArea(App.activeId);
   if (App.heatmapOn) { toggleHeatmap(); toggleHeatmap(); }
 }
+/* Base map: OpenFreeMap vector styles drawn by MapLibre GL inside Leaflet
+   (Positron in light mode, Dark in dark mode). Free, no API key, no account.
+   CARTO raster tiles were dropped: since Sept 2026 they need an API key. */
+const BASEMAP_STYLES = {
+  light: 'https://tiles.openfreemap.org/styles/positron',
+  dark:  'https://tiles.openfreemap.org/styles/dark',
+};
+// Land and water colours of the old CARTO tiles, applied on top so the map keeps its look.
+const BASEMAP_COLORS = {
+  light: { land:'#fafaf8', water:'#d4dadc' },
+  dark:  { land:'#090909', water:'#262626' },
+};
+const BASEMAP_ATTRIBUTION = '<a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener">&copy; OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
+let basemapWebGL;
+function basemapSupported() {
+  if (basemapWebGL === undefined) {
+    try {
+      const c = document.createElement('canvas');
+      basemapWebGL = !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch (e) { basemapWebGL = false; }
+  }
+  return basemapWebGL;
+}
+function tintBasemap() {
+  const g = currentTileLayer && currentTileLayer.getMaplibreMap();
+  if (!g) return;
+  const c = App.theme === 'dark' ? BASEMAP_COLORS.dark : BASEMAP_COLORS.light;
+  if (g.getLayer('background')) g.setPaintProperty('background', 'background-color', c.land);
+  if (g.getLayer('water')) g.setPaintProperty('water', 'fill-color', c.water);
+}
 function updateMapTiles() {
-  if (currentTileLayer) map.removeLayer(currentTileLayer);
-  currentTileLayer = L.tileLayer(App.theme === 'dark'
-    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    { attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:19 }
-  ).addTo(map);
+  const style = App.theme === 'dark' ? BASEMAP_STYLES.dark : BASEMAP_STYLES.light;
+  if (!L.maplibreGL) {
+    // MapLibre scripts are deferred: add the base map once they have run.
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', updateMapTiles, { once:true });
+    return;
+  }
+  // Full reload (diff:false) so 'style.load' fires and tintBasemap runs for the new theme.
+  if (currentTileLayer) { currentTileLayer.getMaplibreMap().setStyle(style, { diff:false }); return; }
+  if (!basemapSupported()) return; // no WebGL: pins and panels still work, only the base map is missing
+  currentTileLayer = L.maplibreGL({ style, attributionControl:{ customAttribution: BASEMAP_ATTRIBUTION } }).addTo(map);
+  currentTileLayer.getMaplibreMap().on('style.load', tintBasemap);
 }
 
 /* ═══════════════════════════════════════
    MAP INIT
 ═══════════════════════════════════════ */
-const map = L.map('map', { center:[25.09,55.185], zoom:11, zoomControl:true, attributionControl:true });
-currentTileLayer = L.tileLayer(
-  App.theme === 'dark'
-    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-  { attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:19 }
-).addTo(map);
+const map = L.map('map', { center:[25.09,55.185], zoom:11, maxZoom:19, zoomControl:true, attributionControl:true });
+updateMapTiles();
 
 const CHART_COLORS = {
   dark:  { apt:'#0A84FF', villa:'#26A249', ultra:'#B69000' },
